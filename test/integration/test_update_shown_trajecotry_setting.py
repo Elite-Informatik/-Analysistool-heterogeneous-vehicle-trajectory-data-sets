@@ -1,5 +1,5 @@
-from test.controller.test_command import *
 from src.data_transfer.content.settings_enum import SettingsEnum
+from test.controller.test_command import *
 
 
 class TestIntegration1(StartedStoppedControllerTest):
@@ -34,7 +34,8 @@ class TestIntegration1(StartedStoppedControllerTest):
             self.check_event_types([SettingsChanged])
             self.get_first_event()
             self.assertEqual(
-                self.controller.data_request_facade.get_settings().find(SettingsEnum.TRAJECTORY_SAMPLE_SIZE)[0].selected[0],
+                self.controller.data_request_facade.get_settings().find(SettingsEnum.TRAJECTORY_SAMPLE_SIZE)[
+                    0].selected[0],
                 5
             )
 

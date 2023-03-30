@@ -1,5 +1,5 @@
-from test.integration.test_open_fcdui_dataset import OpenFCDUIDatasetControllerTest
 from src.data_transfer.content.settings_enum import SettingsEnum
+from test.integration.test_open_fcdui_dataset import OpenFCDUIDatasetControllerTest
 
 
 class SettingTest(OpenFCDUIDatasetControllerTest):

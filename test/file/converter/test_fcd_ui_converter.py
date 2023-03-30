@@ -4,14 +4,14 @@ from unittest import TestCase
 from uuid import UUID
 
 import pandas as pd
-import numpy
 from dateutil.parser import ParserError
 from pandas import DataFrame
 
 from src.data_transfer.content import Column
 from src.data_transfer.content.road_type import VehicleType
 from src.file.converter.fcd_ui_handler.fcd_columns import FcdColumn
-from src.file.converter.fcd_ui_handler.fcd_ui_handler import AccelerationCalculator, AccelerationDirectionCalculator
+from src.file.converter.fcd_ui_handler.fcd_ui_handler import AccelerationCalculator
+from src.file.converter.fcd_ui_handler.fcd_ui_handler import AccelerationDirectionCalculator
 from src.file.converter.fcd_ui_handler.fcd_ui_handler import DateCalculator
 from src.file.converter.fcd_ui_handler.fcd_ui_handler import GpsCoordinateCalculator
 from src.file.converter.fcd_ui_handler.fcd_ui_handler import IdCalculator
@@ -139,7 +139,7 @@ class FcdUiConverterTest(TestCase):
         self.assertEqual(converter.find_fatal_corruptions(source_df), [])
         self.assertEqual(converter.find_repairable_corruptions(source_df), [])
         converter.calculate_column(source_df, new_data_frame)
-        expected_df = DataFrame({Column.ACCELERATION_DIRECTION.value: [ 135.0, 270.0, 0.0]})
+        expected_df = DataFrame({Column.ACCELERATION_DIRECTION.value: [135.0, 270.0, 0.0]})
         self.assertTrue(new_data_frame.equals(expected_df))
 
 

@@ -3,16 +3,13 @@ import unittest
 from typing import List
 from typing import Tuple
 from unittest.mock import Mock
-from uuid import uuid4
 
 import pandas as pd
 
 from src.data_transfer.content import Column
 from src.data_transfer.record import AnalysisRecord
-from src.data_transfer.record import DataPointRecord as DataPoint
 from src.data_transfer.record import PolygonRecord
 from src.data_transfer.record import PositionRecord as Point
-from src.data_transfer.record import TrajectoryRecord
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
 from src.data_transfer.selection.discrete_option import DiscreteOption

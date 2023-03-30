@@ -37,6 +37,6 @@ if __name__ == "__main__":
     data_dict = {
         "time": [datetime.strptime("00:00:05", '%H:%M:%S').time(), datetime.strptime("00:00:01", '%H:%M:%S').time()],
         "speed": [1, 2]
-        }
+    }
     df = DataFrame(data_dict)
     print(df["time"].dtype)

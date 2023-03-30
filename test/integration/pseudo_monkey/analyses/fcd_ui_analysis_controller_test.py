@@ -1,11 +1,10 @@
 import unittest
-
 from typing import List
 
-from src.model.analysis_structure.concrete_analysis.heatmap_analysis import HeatmapAnalysis
 from src.data_transfer.content import Column
-from src.data_transfer.record import SettingRecord
 from src.data_transfer.record import AnalysisRecord
+from src.data_transfer.record import SettingRecord
+from src.model.analysis_structure.concrete_analysis.heatmap_analysis import HeatmapAnalysis
 from test.integration.test_open_fcdui_dataset import OpenFCDUIDatasetControllerTest
 
 
@@ -43,6 +42,7 @@ class FcdUIAnalysisControllerTest(OpenFCDUIDatasetControllerTest):
         self.analysis_id = self.events.pop().id
         self.analysis_settings: AnalysisRecord = \
             self.controller.data_request_facade.get_analysis_settings(uuid=self.analysis_id)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,8 +1,5 @@
 import os
-import string
-from random import choices
 
-from src.model.analysis_structure.concrete_analysis.heatmap_analysis import HeatmapAnalysis
 from src.data_transfer.content import SettingsEnum
 from src.data_transfer.record.setting_record import SettingRecord
 from test.controller.test_command import StartedStoppedControllerTest
@@ -10,7 +7,7 @@ from test.controller.test_command import StartedStoppedControllerTest
 
 class OpenFCDUIDatasetControllerTest(StartedStoppedControllerTest):
     def setUp(self) -> None:
-        #self.name = HeatmapAnalysis()._name
+        # self.name = HeatmapAnalysis()._name
         super().setUp()
         import_setting = SettingRecord.boolean_setting(
             context="Accept inacurracies?",
@@ -26,4 +23,3 @@ class OpenFCDUIDatasetControllerTest(StartedStoppedControllerTest):
 
     def test(self):
         pass
-
