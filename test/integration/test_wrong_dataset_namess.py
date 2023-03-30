@@ -20,7 +20,7 @@ class WrongDataSetNamesTest(StartedStoppedControllerTest):
     def test_wrong_dataset_names(self):
         for name in names_wrong:
             self.controller.communication_facade.import_dataset(
-                ["file/example_data_generated/intern_data4.csv"],
+                ["file/data_for_tests/intern_data4.csv"],
                 name, "intern"
             )
             self.check_errors([f"The name of the dataset is invalid Dataset name '{name}' is not valid! at importing "
@@ -29,4 +29,4 @@ class WrongDataSetNamesTest(StartedStoppedControllerTest):
 
     def test_write_dataset_names(self):
         for name in names_right:
-            self.open_dataset_intern(path="file/example_data_generated/intern_data4.csv", name=name)
+            self.open_dataset_intern(path="file/data_for_tests/intern_data4.csv", name=name)

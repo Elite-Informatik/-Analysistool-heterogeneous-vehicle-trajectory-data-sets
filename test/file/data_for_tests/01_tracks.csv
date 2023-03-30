@@ -1,0 +1,4 @@
+frame,id,x,y,width,height,xVelocity,yVelocity,xAcceleration,yAcceleration,frontSightDistance,backSightDistance,dhw,thw,ttc,precedingXVelocity,precedingId,followingId,leftPrecedingId,leftAlongsideId,leftFollowingId,rightPrecedingId,rightAlongsideId,rightFollowingId,laneId
+1,1,301,20,5,2,20,0.00,1,0.00,50,300,0.00,0.00,0.00,0.00,0,0,0,0,0,0,0,0,0
+2,1,302,21,5,2,20,0.00,1,0.00,50,300,0.00,0.00,0.00,0.00,0,0,0,0,0,0,0,0,0
+3,1,303,22,5,2,20,0.00,2,0.00,45,320,0.00,0.00,0.00,0.00,0,14,0,0,0,0,0,0,0

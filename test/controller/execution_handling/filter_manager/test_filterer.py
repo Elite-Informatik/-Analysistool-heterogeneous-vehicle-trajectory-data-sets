@@ -21,7 +21,7 @@ class FiltererTest(StartedStoppedControllerTest):
         opens the dataset for the tests.
         """
         super().setUp()
-        self.open_dataset_intern(path="file/example_data_generated/intern_data_performance_test.csv")
+        self.open_dataset_intern(path="file/data_for_tests/intern_data_performance_test.csv")
 
     def test_get_shown_trajectories(self):
         """

@@ -8,7 +8,7 @@ class TestIntegration1(StartedStoppedControllerTest):
         os.chdir(os.path.join(os.path.dirname(self.current_dir), 'test'))
 
         with self.subTest("import dataset"):
-            self.controller.communication_facade.import_dataset(["file/example_data_generated/intern_data.csv"],
+            self.controller.communication_facade.import_dataset(["file/data_for_tests/intern_data.csv"],
                                                                 "test_data", "intern")
             self.assertEqual(len(self.messages), 1)
             self.messages.pop()

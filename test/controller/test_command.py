@@ -292,7 +292,7 @@ class TestControllerStartStopCommands(BaseControllerTest):
 class OpenInternDatasetControllerTest(StartedStoppedControllerTest):
     def setUp(self) -> None:
         super().setUp()
-        self.open_dataset_intern(path="file/example_data_generated/intern_data.csv")
+        self.open_dataset_intern(path="file/data_for_tests/intern_data.csv")
 
 
 # -------------------------------------------------------------------- #
@@ -1137,7 +1137,7 @@ class TestImportDataset(StartedStoppedControllerTest):
     def test_import_dataset(self):
         self.current_dir = os.getcwd()
         os.chdir(os.path.join(os.path.dirname(self.current_dir), 'test'))
-        self.controller.communication_facade.import_dataset(["file/example_data_generated/intern_data.csv"],
+        self.controller.communication_facade.import_dataset(["file/data_for_tests/intern_data.csv"],
                                                             "test_data", "intern")
         self.check_event_types([DatasetAdded])
         self.assertEqual(len(self.messages), 1)
@@ -1151,7 +1151,7 @@ class TestDeleteDataset(StartedStoppedControllerTest):
     def test_delete_dataset(self):
         self.current_dir = os.getcwd()
         os.chdir(os.path.join(os.path.dirname(self.current_dir), 'test'))
-        self.controller.communication_facade.import_dataset(["file/example_data_generated/intern_data.csv"],
+        self.controller.communication_facade.import_dataset(["file/data_for_tests/intern_data.csv"],
                                                             "test_data", "intern")
         uuid = self.get_first_event().id
         self.assertEqual(len(self.messages), 1)
@@ -1177,7 +1177,7 @@ class TestDeleteDataset(StartedStoppedControllerTest):
         port = connection["port"]
         self.database_connection = create_engine(f"postgresql://{user}:{passwort}@{host}:{port}/{database}")
         os.chdir(os.path.join(os.path.dirname(self.current_dir), 'test'))
-        self.controller.communication_facade.import_dataset(["file/example_data_generated/intern_data.csv"],
+        self.controller.communication_facade.import_dataset(["file/data_for_tests/intern_data.csv"],
                                                             "test_data", "intern")
         uuid = self.get_first_event().id
         self.assertEqual(len(self.messages), 1)
@@ -1200,6 +1200,6 @@ class TestOpenDataset(StartedStoppedControllerTest):
     def test_open_dataset(self):
         self.current_dir = os.getcwd()
         os.chdir(os.path.join(os.path.dirname(self.current_dir), 'test'))
-        self.open_dataset_highD(["file/example_data_generated/01_recordingMeta.csv",
-                                 "file/example_data_generated/01_tracksMeta.csv",
-                                 "file/example_data_generated/01_tracks.csv"])
+        self.open_dataset_highD(["file/data_for_tests/01_recordingMeta.csv",
+                                 "file/data_for_tests/01_tracksMeta.csv",
+                                 "file/data_for_tests/01_tracks.csv"])

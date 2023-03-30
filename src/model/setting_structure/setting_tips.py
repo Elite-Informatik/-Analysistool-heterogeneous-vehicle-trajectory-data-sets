@@ -20,18 +20,18 @@ class SettingTips(Enum):
 
     TRAJECTORY_UNI_COLOR = "The color which is used for all trajectories if the color schema is set to uni color"
 
-    TRAJECTORY_PARAM_COLOR = "The parameter which is used for the colorization of the trajectories if the color schema " \
-                             "is set to parameter. The color of each trajectory point and segment is calculated with" \
-                             "the selected parameter "
+    TRAJECTORY_PARAM_COLOR = "The parameter which is used for the colorization of the trajectories if the color " \
+                             "schema is set to parameter. The color of each trajectory point and segment is " \
+                             "calculated with the selected parameter "
 
     FILTER_GREYED = "Decides if the datapoints that did not pass the filter are greyed out or not shown at all." \
                     "If checked the datapoints will be greyed out. If set to false the points wont be shown at all " \
-                    "which can increase the performance of the application" \
- \
+                    "which can increase the performance of the application"
+
     OFFSET = "This value decides which section of the dataset is displayed on the map. " \
              "The value must be between 0 and 1."
 
     RANDOM_SAMPLE = "If checked the application will randomly select the trajectories from the dataset." \
-                    "If unchecked the trajectories will be selected as a continuous chunk from the dataset." \
- \
+                    "If unchecked the trajectories will be selected as a continuous chunk from the dataset."
+
     RANDOM_SEED = "The random seed is used to determine the random sample."
