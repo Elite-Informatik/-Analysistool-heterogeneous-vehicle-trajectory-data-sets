@@ -122,8 +122,9 @@ class IFilterGetter(ABC):
 
 class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFacadeConsumer, AbstractManager):
     """
-    This class implements the FiltererInterface. It is responsible for collecting the trajectories being
-    visualised.
+    This class implements the Filterer. The Filterer is the core component to translate the tabular databse trajectory
+    data to the graphical representation. It is responsible for the filtering of the data and the calculation of the
+    colors of the trajectories.
     """
 
     def __init__(self):
@@ -152,7 +153,9 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
 
     def get_filtered_trajectories(self) -> [TrajectoryRecord]:
         """
-        Gets all trajectories that pass all filters from the model layer
+        Gets all trajectories that pass all filters from the model layer.
+        It calculates only the displayed trajectories, not all trajectories.
+        It also calculates the colors of the trajectories and the positions of the data points.
         :return: The list of trajectories
         """
         self.greyed_out = self.setting_facade.get_settings_record().find(SettingsEnum.FILTER_GREYED)[0].selected[0]
@@ -163,6 +166,10 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
         return self.calculate_records()
 
     def load_data(self, additional_columns: List[Column] = None) -> bool:
+        """
+        This method loads the concrete data (ids, latitudes, longitudes, times, order) from the database. It only
+        loads the trajectories that are currently displayed.
+        """
         columns_to_load: List[Column] = [Column.ID, Column.TRAJECTORY_ID, Column.LATITUDE, Column.LONGITUDE,
                                          Column.TIME, Column.ORDER]
 
@@ -190,7 +197,7 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
             self.current_data[Column.TRAJECTORY_ID.value].apply(lambda x: uuid.UUID(x))
 
         # Create a column POS_COL with PositionRecords. The position records are created from the lat and long columns.
-        # The method does not uses pandas dataframe methods instead of a for loop, because they are more efficient
+        # The method does not use pandas dataframe methods instead of a for loop, because they are more efficient
         def create_position_record(row):
             return PositionRecord(_longitude=row[Column.LONGITUDE.value], _latitude=row[Column.LATITUDE.value])
 
@@ -201,7 +208,7 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
 
     def calculate_records(self):
         """
-        Calculates the TrajectoryRecords from the current data
+        Calculates the TrajectoryRecords from the current data.
         :return: The list of TrajectoryRecords
         """
         self.current_data[DREC_COL] = self.current_data.apply(lambda row:
@@ -249,7 +256,7 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
 
     def select_color(self) -> bool:
         """
-        Calculates a the color of a trajectory. Chooses the right color function
+        Gets the current selected color and calls the corresponding method to calculate the colors.
         """
         color_type = self.setting_facade.get_settings_record().find(SettingsEnum.COLOR_SETTINGS)[0].selected[0]
         self.color_calc = self._color_map[color_type]
@@ -257,7 +264,9 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
 
     def calculate_random(self) -> bool:
         """
-        Calculates random colors
+        Calculates random colors for the trajectories.
+        Takes over the old colors if the trajectories are the same.
+        :return: True if the calculation was successful, False otherwise
         """
 
         if not self.load_data():
@@ -298,7 +307,8 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
 
     def calculate_param(self) -> bool:
         """
-        Calculates the color based on the parameter
+        Calculates the color based on the parameter. The color is calculated by the quotient of the parameter value and
+        the maximum parameter value.
         """
         column = self.setting_facade.get_settings_record().find(SettingsEnum.TRAJECTORY_PARAM_COLOR)[0].selected[0]
 
@@ -326,7 +336,14 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
 
     def calculate_trajectories(self) -> bool:
         """
-        Calculates the trajectories based on the current data.
+        Calculates the displayed trajectories.
+        Firstly calls the method to get visible trajectories.
+        Then it calculates the offset and the length of the displayed trajectory list.
+        Then rotates the trajectory list by the offset.
+        Saves the old trajectory list.
+
+        By default it returns the first n trajectories, where n is the sample size, from the previous trajectory list to
+        counter filter changes. Only if the settings change, completely new trajectories are calculated.
         """
 
         trajectory_list = self.get_visible_trajectories()
@@ -383,7 +400,7 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
 
     def get_visible_trajectories(self) -> Optional[List[uuid.UUID]]:
         """
-        Loads the datapoint data
+        Gets all trajectories which contain at least one visible data point.
         """
         data = self.data_facade.get_data([Column.TRAJECTORY_ID, Column.ID])
         if data is None:
