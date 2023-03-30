@@ -1,9 +1,10 @@
 from abc import ABC
 from abc import abstractmethod
 
-from src.controller.output_handling.event import AnalysisAdded, AnalysisImported
+from src.controller.output_handling.event import AnalysisAdded
 from src.controller.output_handling.event import AnalysisChanged
 from src.controller.output_handling.event import AnalysisDeleted
+from src.controller.output_handling.event import AnalysisImported
 from src.controller.output_handling.event import AnalysisRefreshed
 
 

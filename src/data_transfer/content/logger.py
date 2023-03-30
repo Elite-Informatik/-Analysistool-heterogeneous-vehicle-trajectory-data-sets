@@ -1,4 +1,5 @@
-from threading import Thread, enumerate
+from threading import Thread
+from threading import enumerate
 
 from src.data_transfer.record import ErrorRecord
 

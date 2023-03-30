@@ -1,4 +1,5 @@
-from re import compile, match
+from re import compile
+from re import match
 from typing import Optional
 from uuid import UUID
 

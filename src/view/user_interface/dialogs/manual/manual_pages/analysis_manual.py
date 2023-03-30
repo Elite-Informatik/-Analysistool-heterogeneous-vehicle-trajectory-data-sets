@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import DISABLED, END
+from tkinter import DISABLED
+from tkinter import END
 
 from src.view.user_interface.dialogs.manual.manual_pages.manual_page import ManPage
 from src.view.user_interface.ui_util.texts import EnglishTexts

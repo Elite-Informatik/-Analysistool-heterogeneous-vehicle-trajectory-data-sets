@@ -2,7 +2,9 @@ import math
 import tkinter as tk
 from tkinter.messagebox import showerror
 from tkinter.simpledialog import askstring
-from typing import Dict, List, Tuple
+from typing import Dict
+from typing import List
+from typing import Tuple
 from uuid import UUID
 
 from PIL import ImageGrab
@@ -10,8 +12,11 @@ from PIL.Image import Image
 from tkintermapview.canvas_path import CanvasPath
 from tkintermapview.canvas_polygon import CanvasPolygon
 
-from src.controller.output_handling.event import PolygonAdded, PolygonDeleted, PolygonChanged, RefreshTrajectoryData, \
-    SettingsChanged
+from src.controller.output_handling.event import PolygonAdded
+from src.controller.output_handling.event import PolygonChanged
+from src.controller.output_handling.event import PolygonDeleted
+from src.controller.output_handling.event import RefreshTrajectoryData
+from src.controller.output_handling.event import SettingsChanged
 from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record import TrajectoryRecord
 from src.data_transfer.record.file_record_map import FileRecordMap

@@ -1,9 +1,10 @@
 from typing import List
 
 from src.controller.output_handling.abstract_event import Event
-from src.controller.output_handling.event import AnalysisAdded, AnalysisImported
+from src.controller.output_handling.event import AnalysisAdded
 from src.controller.output_handling.event import AnalysisChanged
 from src.controller.output_handling.event import AnalysisDeleted
+from src.controller.output_handling.event import AnalysisImported
 from src.controller.output_handling.event import AnalysisRefreshed
 from src.view.event_handler.distributors.distributor import Distributor
 from src.view.event_handler.event_consumers import AnalysisEventConsumer

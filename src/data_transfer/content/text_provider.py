@@ -1,5 +1,6 @@
 import os
-from json import dump, load
+from json import dump
+from json import load
 
 
 class TextProvider:

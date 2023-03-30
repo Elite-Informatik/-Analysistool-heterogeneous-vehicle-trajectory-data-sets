@@ -1,9 +1,11 @@
 import random
 import re as re
-from typing import Dict, Tuple
+from typing import Dict
 from typing import List
 from typing import Optional
-from uuid import UUID, uuid4
+from typing import Tuple
+from uuid import UUID
+from uuid import uuid4
 
 import pandas as pd
 from sqlalchemy.sql import text
