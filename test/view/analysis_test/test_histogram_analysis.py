@@ -1,8 +1,5 @@
-from datetime import datetime
 import tkinter as tk
 
-import pandas as pd
-from matplotlib import pyplot as plt
 from pandas import DataFrame
 
 from src.data_transfer.record import DataRecord
@@ -22,8 +19,8 @@ class HistogramAnalysisTest:
         base_frame.rowconfigure(0, weight=1)
         base_frame.grid(row=0, column=0, sticky="nsew")
 
-        data_dict = {'values': ["1", "2", "4", "3", "5", "6", "7"],#, "acht", "neun", "zehn", "elf", "zwölf"],
-                     'occurencies': [1,2, 3, 4, 5, 6, 7]} # 8, 9, 10, 11, 12]}
+        data_dict = {'values': ["1", "2", "4", "3", "5", "6", "7"],  # , "acht", "neun", "zehn", "elf", "zwölf"],
+                     'occurencies': [1, 2, 3, 4, 5, 6, 7]}  # 8, 9, 10, 11, 12]}
         df = DataFrame(data_dict)
 
         # draw plot
@@ -35,4 +32,3 @@ class HistogramAnalysisTest:
 if __name__ == "__main__":
     histogram_test = HistogramAnalysisTest()
     histogram_test.test_histogram_analysis()
-

@@ -2,9 +2,12 @@ from typing import List
 
 from pandas import DataFrame
 
+from src.data_transfer.content import Column
+from src.data_transfer.content import SettingsEnum
+from src.data_transfer.record import SelectionRecord
+from src.data_transfer.record import SettingsRecord
+from src.data_transfer.record import TrajectoryRecord
 from src.model.setting_structure.setting_type import Color
-from src.data_transfer.content import Column, SettingsEnum
-from src.data_transfer.record import TrajectoryRecord, DataRecord, SettingsRecord, SelectionRecord
 from test.controller.test_command import StartedStoppedControllerTest
 
 

@@ -1,15 +1,15 @@
 import unittest
 
+from src.controller.output_handling.event import FilterAdded
+from src.controller.output_handling.event import FilterComponentDeleted
+from src.controller.output_handling.event import RefreshTrajectoryData
 from src.data_transfer.content import Column
-from src.data_transfer.record import SettingRecord
 from src.data_transfer.content import FilterType
-from src.data_transfer.record import FilterRecord
-from test.integration.test_open_fcdui_dataset import OpenFCDUIDatasetControllerTest
-from test.integration.pseudo_monkey.setting_combination_tester import possible_setting_combination
 from src.data_transfer.content.global_constants import FilterHandlerNames
-from src.controller.output_handling.event import FilterAdded, RefreshTrajectoryData, FilterComponentDeleted, \
-    DatasetOpened
-from src.data_transfer.record import TrajectoryRecord
+from src.data_transfer.record import FilterRecord
+from src.data_transfer.record import SettingRecord
+from test.integration.pseudo_monkey.setting_combination_tester import possible_setting_combination
+from test.integration.test_open_fcdui_dataset import OpenFCDUIDatasetControllerTest
 
 
 class DiscreteFilterTestI(OpenFCDUIDatasetControllerTest):
@@ -83,7 +83,7 @@ class DiscreteFilterTestI(OpenFCDUIDatasetControllerTest):
                                                          "trajectory id. But " + str(len(shown_trajectories))
                              + " are shown.")
             self.assertListEqual(discrete_setting.selection.selected,
-                                [str(self.controller.data_request_facade.get_shown_trajectories()[0].id)])
+                                 [str(self.controller.data_request_facade.get_shown_trajectories()[0].id)])
 
         self.controller.communication_facade.delete_filter(filter_id)
         self.check_event_types([FilterComponentDeleted, RefreshTrajectoryData])

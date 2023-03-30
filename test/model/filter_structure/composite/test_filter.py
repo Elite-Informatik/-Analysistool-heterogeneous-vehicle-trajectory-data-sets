@@ -2,14 +2,13 @@ import uuid
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from src.data_transfer.exception.custom_exception import UnexpectedArgumentError
-from src.data_transfer.content.settings_enum import SettingsEnum
-from src.data_transfer.record.id_record import IDRecord
-from src.data_transfer.record import PositionRecord
 from src.data_transfer.content import Column
+from src.data_transfer.content.settings_enum import SettingsEnum
+from src.data_transfer.exception.custom_exception import UnexpectedArgumentError
 from src.data_transfer.record import PolygonRecord
-from src.data_transfer.record import SettingContext
+from src.data_transfer.record import PositionRecord
 from src.data_transfer.record.filter_record import FilterRecord
+from src.data_transfer.record.id_record import IDRecord
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
 from src.data_transfer.selection.discrete_option import DiscreteOption

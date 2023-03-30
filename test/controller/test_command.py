@@ -1,35 +1,32 @@
 import os
 from typing import List
 from unittest import TestCase
-from uuid import uuid4, UUID
+from uuid import UUID
+from uuid import uuid4
 
 import pandas
 from sqlalchemy import create_engine
-from sqlalchemy import text
 
-from src.data_transfer.content.settings_enum import SettingsEnum
 from src.controller.controller import Controller
+from src.controller.execution_handling import database_manager
 from src.controller.output_handling.abstract_event import *
 from src.controller.output_handling.event import *
 from src.data_transfer.content import Column
 from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.content.logical_operator import LogicalOperator
+from src.data_transfer.content.settings_enum import SettingsEnum
+from src.data_transfer.exception import InvalidInput
 from src.data_transfer.exception import InvalidUUID
 from src.data_transfer.record import AnalysisRecord
 from src.data_transfer.record import FilterGroupRecord
 from src.data_transfer.record import FilterRecord
 from src.data_transfer.record import PolygonRecord
 from src.data_transfer.record import PositionRecord
-from src.data_transfer.record import SettingContext
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
 from src.data_transfer.selection import NumberIntervalOption
 from src.data_transfer.selection.discrete_option import DiscreteOption
-from src.data_transfer.exception import InvalidInput
-from src.data_transfer.content.settings_enum import SettingsEnum
-
 from src.database.database import Database
-from src.controller.execution_handling import database_manager
 from src.file.file_facade_manager import FileFacadeManager
 from src.model.filter_structure.composite.filters.discrete_filter import DiscreteFilter
 from src.model.filter_structure.composite.filters.interval_filter import IntervalFilter

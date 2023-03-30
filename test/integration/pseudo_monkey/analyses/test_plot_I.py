@@ -1,18 +1,17 @@
 import unittest
 from unittest import skip
 
-from src.model.analysis_structure.concrete_analysis.plot_analysis import PlotAnalysis
-from src.data_transfer.record import AnalysisDataRecord
-from test.integration.pseudo_monkey.analyses.fcd_ui_analysis_controller_test import set_record_selected, \
-    FcdUIAnalysisControllerTest
 from src.data_transfer.content import Column
-from src.data_transfer.record import AnalysisRecord, AnalysisDataRecord
+from src.data_transfer.record import AnalysisDataRecord
+from src.model.analysis_structure.concrete_analysis.plot_analysis import PlotAnalysis
+from test.integration.pseudo_monkey.analyses.fcd_ui_analysis_controller_test import FcdUIAnalysisControllerTest
+from test.integration.pseudo_monkey.analyses.fcd_ui_analysis_controller_test import set_record_selected
 
 
 class PlotTest(FcdUIAnalysisControllerTest):
 
     def setUp(self) -> None:
-        #self.name = "plot"
+        # self.name = "plot"
         super().setUp()
         self.init_analysis(PlotAnalysis()._name)
         self.assertEqual(PlotAnalysis()._name,

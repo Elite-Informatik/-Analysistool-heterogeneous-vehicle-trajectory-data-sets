@@ -1,10 +1,10 @@
 import unittest
 
+from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record.settings_record import SegmentRecord
 from src.data_transfer.selection.discrete_option import DiscreteOption
 from src.model.setting_structure.segment import Segment
 from src.model.setting_structure.setting import Setting
-from src.data_transfer.content.settings_enum import SettingsEnum
 
 
 class SegmentTest(unittest.TestCase):

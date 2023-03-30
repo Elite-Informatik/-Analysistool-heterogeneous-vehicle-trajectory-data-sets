@@ -2,6 +2,7 @@ from typing import List
 
 from src.data_transfer.record import SettingRecord
 
+
 def possible_settings_combinations(settings: List[SettingRecord]):
     """
     A helper function to get all possible combinations of the settings. It yields all possible combinations.

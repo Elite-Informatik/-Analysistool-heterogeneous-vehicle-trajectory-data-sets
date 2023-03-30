@@ -1,7 +1,7 @@
 # todo: mehr namen
 import os
 
-from test.controller.test_command import StartedStoppedControllerTest, DatasetAdded, DatasetOpened
+from test.controller.test_command import StartedStoppedControllerTest
 
 names_wrong = []
 names_right = ["aa", "aaaa", "aa_aa", "b"] + ["1", "2", "'", "#", "123ue09853092küegfsd"]
@@ -30,8 +30,3 @@ class WrongDataSetNamesTest(StartedStoppedControllerTest):
     def test_write_dataset_names(self):
         for name in names_right:
             self.open_dataset_intern(path="file/example_data_generated/intern_data4.csv", name=name)
-
-
-
-
-

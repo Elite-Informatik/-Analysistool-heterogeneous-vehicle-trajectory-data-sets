@@ -1,13 +1,14 @@
 import os
-from unittest import skipIf
 
-from src.model.analysis_structure.concrete_analysis.heatmap_analysis import HeatmapAnalysis
-from test.integration.pseudo_monkey.analyses.fcd_ui_analysis_controller_test import FcdUIAnalysisControllerTest, \
-    set_record_selected
-from src.data_transfer.record import AnalysisDataRecord
 from src.data_transfer.content import Column
+from src.data_transfer.record import AnalysisDataRecord
+from src.model.analysis_structure.concrete_analysis.heatmap_analysis import HeatmapAnalysis
+from test.integration.pseudo_monkey.analyses.fcd_ui_analysis_controller_test import FcdUIAnalysisControllerTest
+from test.integration.pseudo_monkey.analyses.fcd_ui_analysis_controller_test import set_record_selected
 
-slow_mode = int(os.environ.get("SLOW_MODE", 1)) # get the value of slow mode from the environment variable or use 0
+slow_mode = int(os.environ.get("SLOW_MODE", 1))  # get the value of slow mode from the environment variable or use 0
+
+
 # as default
 
 
@@ -18,7 +19,6 @@ class HeatMapTest(FcdUIAnalysisControllerTest):
         self.name = HeatmapAnalysis()._name
         super().setUp()
         self.init_analysis(self.name)
-
 
     def test_set_heatmap(self):
         """

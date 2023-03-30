@@ -1,11 +1,12 @@
 import unittest
 
+from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record.settings_record import SettingsRecord
 from src.model.setting_structure.page import Page
 from src.model.setting_structure.segment import Segment
 from src.model.setting_structure.setting import Setting
 from src.model.setting_structure.setting_structure import SettingStructure
-from src.data_transfer.content.settings_enum import SettingsEnum
+
 
 class SettingStructureTest(unittest.TestCase):
     def setUp(self) -> None:

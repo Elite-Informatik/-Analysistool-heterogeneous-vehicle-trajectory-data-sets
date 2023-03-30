@@ -1,12 +1,11 @@
 import unittest
-from unittest import skip
 from uuid import uuid4
 
 from src.controller.output_handling.event import DatasetAdded
 from src.controller.output_handling.event import DatasetDeleted
 from src.controller.output_handling.event import DatasetOpened
-from src.view.event_handler.event_consumers import DatasetEventConsumer
 from src.view.event_handler import EventHandler
+from src.view.event_handler.event_consumers import DatasetEventConsumer
 
 
 class TestDatasetEventConsumer(DatasetEventConsumer):

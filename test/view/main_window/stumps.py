@@ -8,12 +8,16 @@ import pandas as pd
 from src.controller.output_handling.event import DatasetDeleted
 from src.controller.output_handling.event import PolygonAdded
 from src.controller.output_handling.event import PolygonDeleted
-from src.data_transfer.record import DataPointRecord, SettingsRecord, PageRecord, SegmentRecord, SettingRecord, \
-    SelectionRecord
+from src.data_transfer.record import DataPointRecord
 from src.data_transfer.record import DataRecord
 from src.data_transfer.record import DatasetRecord
+from src.data_transfer.record import PageRecord
 from src.data_transfer.record import PolygonRecord
 from src.data_transfer.record import PositionRecord
+from src.data_transfer.record import SegmentRecord
+from src.data_transfer.record import SelectionRecord
+from src.data_transfer.record import SettingRecord
+from src.data_transfer.record import SettingsRecord
 from src.data_transfer.record import TrajectoryRecord
 from src.data_transfer.selection import BoolDiscreteOption
 from src.view.event_handler import EventHandler

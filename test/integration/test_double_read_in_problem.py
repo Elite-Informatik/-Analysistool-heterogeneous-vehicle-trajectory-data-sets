@@ -4,7 +4,6 @@
 import os
 from unittest import skip
 
-from src.controller.output_handling.event import DatasetAdded
 from src.data_transfer.record import SettingRecord
 from test.controller.test_command import StartedStoppedControllerTest
 
@@ -45,4 +44,3 @@ class TestSecoundDatasetFirstInvalidError(StartedStoppedControllerTest):
             "file/example_data_generated/01_tracksMeta.csv",
             "file/example_data_generated/01_tracks.csv"
         ])
-

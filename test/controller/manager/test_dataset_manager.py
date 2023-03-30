@@ -1,16 +1,17 @@
 import sys
 import unittest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import Mock
 
 import pandas as pd
 
-from src.controller.output_handling.request_manager import InputRequestManager
 from src.controller.execution_handling.database_manager import DatabaseManager
+from src.controller.output_handling.request_manager import InputRequestManager
 from src.data_transfer.content import Column
+from src.data_transfer.exception import InvalidInput
 from src.data_transfer.record import DataRecord
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
-from src.data_transfer.exception import InvalidInput
 from src.data_transfer.selection.number_interval_option import NumberIntervalOption
 from src.database.data_facade import DataFacade
 
@@ -69,10 +70,11 @@ class DatasetManagerTest(unittest.TestCase):
 
     def test_not_correct_column_type(self):
         self.manager.get_discrete_selection_column(Column.SPEED)
-        self.user_input_request.send_error.assert_called_with('The column does not fit the filter type  discrete column was expected')
+        self.user_input_request.send_error.assert_called_with(
+            'The column does not fit the filter type  discrete column was expected')
         self.manager.get_interval_selection_column(Column.ROAD_TYPE)
-        self.user_input_request.send_error.assert_called_with('The column does not fit the filter type  interval column was expected')
-
+        self.user_input_request.send_error.assert_called_with(
+            'The column does not fit the filter type  interval column was expected')
 
 
 if __name__ == '__main__':

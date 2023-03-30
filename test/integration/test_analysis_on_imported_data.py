@@ -1,9 +1,5 @@
-from src.data_transfer.record import AnalysisRecord
-from src.data_transfer.content import Column
 from src.data_transfer.record import PolygonRecord
 from src.data_transfer.record import PositionRecord
-from src.data_transfer.record.setting_record import SettingRecord
-from src.model.analysis_structure.concrete_analysis.heatmap_analysis import HeatmapAnalysis
 from test.integration.test_open_fcdui_dataset import OpenFCDUIDatasetControllerTest
 
 
@@ -30,5 +26,3 @@ class AnalysisTest(OpenFCDUIDatasetControllerTest):
         analysis_id = self.events.pop().id
         data_record = self.controller.data_request_facade.get_analysis_data(analysis_id)
         self.assertIsNotNone(data_record)
-
-
