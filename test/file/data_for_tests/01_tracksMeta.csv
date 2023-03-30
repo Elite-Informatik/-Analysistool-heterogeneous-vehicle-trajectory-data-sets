@@ -1,0 +1,2 @@
+id,width,height,initialFrame,finalFrame,numFrames,class,drivingDirection,traveledDistance,minXVelocity,maxXVelocity,meanXVelocity,minDHW,minTHW,minTTC,numLaneChanges
+1,5,2,1,1,1,Car,1,50,40,40,40,-1.00,-1.00,-1.00,0
