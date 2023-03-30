@@ -1,2 +1,2 @@
-,frameRate,locationId,speedLimit,month,weekDay,startTime,duration,totalDrivenDistance,totalDrivenTime,numVehicles,numCars,numTrucks,upperLaneMarkings,lowerLaneMarkings,,,,
+id,frameRate,locationId,speedLimit,month,weekDay,startTime,duration,totalDrivenDistance,totalDrivenTime,numVehicles,numCars,numTrucks,upperLaneMarkings,lowerLaneMarkings,,,,
 1,5,1,20,04.2023,Mon,00:00,0,30000,10000,1000,100,100,10,10,10,10,10,10
