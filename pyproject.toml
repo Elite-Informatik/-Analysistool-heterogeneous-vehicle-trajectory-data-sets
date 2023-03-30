@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "analysistool"
+authors = [
+    {name = "Alex Jenke", email = "uzyyi@student.kit.edu"},
+    {name = "Julian Heines"},
+    {name = "Laura Erb"},
+    {name = "Laurenz Wurzel"},
+    {name = "Tom Liemann"}
+]
+description = "An analysistool for heterogeneous vehicle trajectory datasets"
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["vehicle", "data", "analysis"]
+
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "tk"
+]
+dynamic = ["version"]
+
+[project.scripts]
+my-script = "src.application:main"
