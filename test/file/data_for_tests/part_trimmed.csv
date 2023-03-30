@@ -1,0 +1,5 @@
+trip,seg_type,seq_duration,seq_idx,seg_idx,appr_speed,appr_duration,source_frac,target_frac,fcd_time,fcd_azimuth,fcd_speed,fcd_point,road_id,road_osm_id,road_heading,road_length,road_max_speed,road_type,road_oneway,appr_seg_entry_time,road_class,polyline6,dist_from_start,trip_dist,dist_to_end
+1,trajectory,1,2,0,,,0.0,1.0,2023-03-30T04:38:11.000Z,10,50,POINT (8.5 50.1),10,50,forward,80,120,motorway,true,,1,,0,1000,1000
+1,segment,1,2,0,,,0.0,1.0,2023-03-30T05:38:11.000Z,10,50,POINT (8.5 50.1),10,51,forward,90,120,motorway,true,,1,,1,1100,1100
+1,segment,1,2,1,,,0.0,1.0,2023-03-30T06:38:11.000Z,10,50,POINT (8.5 50.1),10,52,forward,100,120,motorway,true,,1,,2,1200,1200
+1,trajectory,1,2,1,,,0.0,1.0,2023-03-30T07:38:11.000Z,10,50,POINT (8.5 50.1),11,53,forward,110,120,motorway,true,,1,,3,1300,1300
