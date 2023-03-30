@@ -1,8 +1,7 @@
+import tkinter as tk
 from tkinter import END, DISABLED
 
 from src.view.user_interface.dialogs.manual.manual_pages.manual_page import ManPage
-import tkinter as tk
-
 from src.view.user_interface.ui_util.texts import EnglishTexts
 
 
@@ -28,6 +27,7 @@ class DatasetManual(ManPage):
     def get_title(self) -> str:
         return EnglishTexts.DATASET_MANUAL_TITLE.value
 
+
 introduction: str = "In this section you can find a manual for importing, deleting and working with datasets.\n\n"
 import_heading: str = "How to import a new dataset:\n"
 import_steps: str = "1. Click on 'File'/ 'Import Dataset' button in the menu bar or on the 'Import Dataset' button in the start window.\n" \
@@ -48,5 +48,3 @@ delete_heading: str = "How to delete a dataset:\n"
 delete_steps: str = "1. Click on the 'Settings'/ 'Datasets' button in the menu bar.\n" \
                     "2. Right click on a dataset and click 'delete'.\n" \
                     "3. Confirm the deletion.\n\n"
-
-

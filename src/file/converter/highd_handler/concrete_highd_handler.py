@@ -20,17 +20,13 @@ from src.data_transfer.record import DataRecord
 from src.file.converter.util.data_util import add_distance_to_latitude
 from src.file.converter.util.data_util import add_distance_to_longitude
 from src.file.converter.util.data_util import calculate_drection
-from src.file.converter.util.data_util import find_duplicate_rows
-from src.file.converter.util.data_util import find_non_date_rows
-from src.file.converter.util.data_util import find_non_matching_rows
-from src.file.converter.util.data_util import find_non_numeric_rows
+from src.file.converter.util.data_util import print_duplicate_rows
+from src.file.converter.util.data_util import print_non_date_rows
+from src.file.converter.util.data_util import print_non_matching_rows
+from src.file.converter.util.data_util import print_non_numeric_rows
 from src.file.converter.util.data_util import repair_date_column
 from src.file.converter.util.data_util import repair_number_column
 from src.file.converter.util.data_util import repair_string_column
-from src.file.converter.util.data_util import print_non_date_rows
-from src.file.converter.util.data_util import print_non_numeric_rows
-from src.file.converter.util.data_util import print_duplicate_rows
-from src.file.converter.util.data_util import print_non_matching_rows
 
 DEF_SEARCH_SIZE: float = 100
 DEF_ROAD_TYPE: RoadType = RoadType.MOTORWAY

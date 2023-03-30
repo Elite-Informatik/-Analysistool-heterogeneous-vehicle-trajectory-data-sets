@@ -1,10 +1,8 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.controller.execution_handling.abstract_manager import AbstractManager
-    from src.model.error_handler import ErrorHandler
-from src.data_transfer.content.error import ErrorMessage
+    pass
 from src.data_transfer.exception import InvalidInput
 from src.data_transfer.exception import InvalidUUID
 

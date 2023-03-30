@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
-from matplotlib import dates
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from pandas import DataFrame

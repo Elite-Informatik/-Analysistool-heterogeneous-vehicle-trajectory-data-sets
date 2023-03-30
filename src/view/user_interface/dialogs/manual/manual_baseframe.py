@@ -1,4 +1,3 @@
-
 import tkinter as tk
 
 from src.view.user_interface.dialogs.manual.manual_notebook import ManualNotebook

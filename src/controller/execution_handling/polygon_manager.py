@@ -3,7 +3,6 @@ from abc import abstractmethod
 from typing import Optional
 from uuid import UUID
 
-from src.data_transfer.exception import InvalidUUID
 from src.controller.execution_handling.abstract_manager import AbstractManager
 from src.controller.facade_consumer.polygon_facade_consumer import PolygonFacadeConsumer
 from src.controller.output_handling.event import PolygonAdded

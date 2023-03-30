@@ -1,7 +1,4 @@
 import colorsys
-
-import numpy as np
-import pandas as pd
 import uuid
 from abc import ABC, abstractmethod
 from collections import deque
@@ -9,17 +6,20 @@ from random import randint, Random
 from typing import List, Optional, Tuple
 from uuid import UUID
 
+import numpy as np
+import pandas as pd
+
 from src.controller.execution_handling.abstract_manager import AbstractManager
 from src.controller.facade_consumer import DataFacadeConsumer
 from src.controller.facade_consumer import DatasetFacadeConsumer
 from src.controller.facade_consumer import SettingFacadeConsumer
 from src.data_transfer.content import Column
+from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record import DataPointRecord
 from src.data_transfer.record import FilterGroupRecord
 from src.data_transfer.record import FilterRecord
 from src.data_transfer.record import PositionRecord
 from src.data_transfer.record import TrajectoryRecord
-from src.data_transfer.content.settings_enum import SettingsEnum
 from src.model.setting_structure.setting_type import Color
 
 # The color internally is stored as HSV, but the user interface uses RGB
@@ -291,7 +291,8 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
             return False
 
         self.current_data[COLOR_COL] = self.current_data.apply(lambda row: self.convert_hsv_to_rgb(DEF_COLOR,
-                                                                                                   row[VISIBLE]), axis=1)
+                                                                                                   row[VISIBLE]),
+                                                               axis=1)
         self.old_color_type = Color.UNI
         return True
 

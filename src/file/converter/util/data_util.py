@@ -161,6 +161,7 @@ def find_duplicate_rows(df: pd.DataFrame, columns: List) -> List:
     duplicate_rows = df[df.duplicated(subset=columns, keep=False)].index.to_list()
     return duplicate_rows
 
+
 def print_duplicate_rows(df: pd.DataFrame, columns: List) -> List[str]:
     """
     Finds duplicate rows in a DataFrame based on the given columns.
@@ -189,6 +190,7 @@ def find_non_matching_rows(column_frame: pd.DataFrame, regex: re.Pattern = GENER
     mask = non_string_mask | non_matching_mask
 
     return column_frame[mask]
+
 
 def print_non_matching_rows(column_frame: pd.DataFrame, regex: re.Pattern = GENERIC_REGEX) -> List:
     """
@@ -219,6 +221,7 @@ def find_non_numeric_rows(df: pd.DataFrame) -> List[int]:
     non_numeric_rows = df[pd.to_numeric(df, errors='coerce').isna()].index.to_list()
     return non_numeric_rows
 
+
 def print_non_numeric_rows(df: pd.DataFrame) -> List[str]:
     """
     finds all non-numeric rows
@@ -230,6 +233,7 @@ def print_non_numeric_rows(df: pd.DataFrame) -> List[str]:
         return []
     return ["Column " + str(df.name) + " at indexes " + str(non_numeric_rows)]
 
+
 def print_non_date_rows(df: Series) -> List[str]:
     """
     finds all invalid date rows
@@ -240,6 +244,7 @@ def print_non_date_rows(df: Series) -> List[str]:
     if len(non_date_rows) == 0:
         return []
     return ["Column " + str(df.name) + " at indexes " + str(non_date_rows)]
+
 
 def find_non_date_rows(df: Series) -> List:
     """

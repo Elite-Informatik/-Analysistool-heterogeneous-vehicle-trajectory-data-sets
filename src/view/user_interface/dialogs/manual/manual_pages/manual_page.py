@@ -1,5 +1,5 @@
-from abc import ABC
 import tkinter as tk
+from abc import ABC
 from tkinter import scrolledtext
 
 
@@ -20,10 +20,10 @@ class ManPage(ABC):
         """
         self._base_frame = tk.Frame(master=master)
         self._text_area = scrolledtext.ScrolledText(master=self._base_frame,
-                                              bg="gray90",
-                                              borderwidth=0,
-                                              wrap=tk.WORD,
-                                              font=("Arial", 14))
+                                                    bg="gray90",
+                                                    borderwidth=0,
+                                                    wrap=tk.WORD,
+                                                    font=("Arial", 14))
         self._text_area.config(spacing1=8)  # Spacing above the first line in a block of text
         self._text_area.config(spacing2=8)  # Spacing between the lines in a block of text
         self._text_area.config(spacing3=8)  # Spacing after the last line in a block of text

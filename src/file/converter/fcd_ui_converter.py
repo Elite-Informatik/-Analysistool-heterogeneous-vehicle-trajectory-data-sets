@@ -168,7 +168,7 @@ class FCDUIConverter(DataConverter):
         """
         # only take the first trajectory entry from the seg_type column for each sequence.
         data['unique_entry'] = data[FcdColumn.TRIP.value].astype(str) \
-                                    + data[FcdColumn.DATE_TIME.value].astype(str)
+                               + data[FcdColumn.DATE_TIME.value].astype(str)
         result: pd.DataFrame = data[data['seg_type'] == "trajectory"].groupby('unique_entry').first()
         result = result.reset_index(drop=True)
         return result

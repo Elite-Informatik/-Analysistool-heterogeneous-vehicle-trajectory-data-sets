@@ -1,7 +1,7 @@
+import tkinter as tk
 from tkinter.messagebox import showerror
 from tkinter.messagebox import showinfo
 from tkinter.messagebox import showwarning
-import tkinter as tk
 
 from src.data_transfer.record.setting_record import SettingRecord
 from src.view.user_interface.selection.selection_dialog import SelectionDialog
@@ -40,7 +40,7 @@ class UserInputRequestFacade:
         message = self._cut_message(message)
         showinfo(message=message)
 
-    def ask_acceptance(self, message: str, accept_message="accept?", title: str="") -> bool:
+    def ask_acceptance(self, message: str, accept_message="accept?", title: str = "") -> bool:
         """
         Sends a message to the user and waits for an answer
         :param message: the message
@@ -80,7 +80,7 @@ class UserInputRequestFacade:
         :param line_length: the length of a line
         :return: the message with line breaks
         """
-        return "\n".join(message[i:i+line_length] for i in range(0, len(message), line_length))
+        return "\n".join(message[i:i + line_length] for i in range(0, len(message), line_length))
 
     def request_user_input(self, selections: SettingRecord) -> SettingRecord:
         """

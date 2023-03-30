@@ -11,7 +11,6 @@ class DataImporter(ABC):
     Abstract class representing a DataImporter.
     """
 
-
     def yield_import_data(self, path: str, sep: str = STANDARD_SEP) -> DataRecord:
         """
         Imports a file as Data from the given path.

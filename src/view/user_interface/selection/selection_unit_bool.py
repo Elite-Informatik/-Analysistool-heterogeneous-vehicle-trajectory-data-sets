@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import LEFT
-from tktooltip import ToolTip
 
 from src.data_transfer.record.setting_record import SettingRecord
 from src.view.user_interface.selection.selection_unit import SelectionUnit

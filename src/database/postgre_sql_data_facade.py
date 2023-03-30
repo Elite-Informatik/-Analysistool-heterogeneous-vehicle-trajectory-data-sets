@@ -1,9 +1,9 @@
 from typing import List
 from typing import Optional
 
-from src.data_transfer.exception import InvalidInput
 from src.data_transfer.content.column import Column
 from src.data_transfer.content.error import ErrorMessage
+from src.data_transfer.exception import InvalidInput
 from src.data_transfer.record import DataRecord
 from src.database.data_facade import DataFacade
 from src.database.sql_querys import SQLQueries

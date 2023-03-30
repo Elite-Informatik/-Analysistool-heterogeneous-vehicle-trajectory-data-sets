@@ -1,37 +1,33 @@
+import math
 import tkinter as tk
-from tkinter.simpledialog import askstring
 from tkinter.messagebox import showerror
-from tktooltip import ToolTip
+from tkinter.simpledialog import askstring
+from typing import Dict, List, Tuple
+from uuid import UUID
 
 from PIL import ImageGrab
 from PIL.Image import Image
 from tkintermapview.canvas_path import CanvasPath
 from tkintermapview.canvas_polygon import CanvasPolygon
 
-from src.data_transfer.content.settings_enum import SettingsEnum
 from src.controller.output_handling.event import PolygonAdded, PolygonDeleted, PolygonChanged, RefreshTrajectoryData, \
     SettingsChanged
-from src.data_transfer.record.file_record_map import FileRecordMap
+from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record import TrajectoryRecord
-from src.view.user_interface.dialogs.export_map import ExportMapDialog
-from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.canvas_point import CanvasPoint
-from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.map_button import MapButton
-from typing import Dict, List, Tuple
-from uuid import UUID
-import math
-
-from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.trajectory import Trajectory
-from src.view.user_interface.static_windows.ui_element import UiElement
-from src.view.user_interface.static_windows.main_window.main_window_factory import MainWindowFactory
-
-from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.map import MapView
-
+from src.data_transfer.record.file_record_map import FileRecordMap
 from src.view.controller_communication.controller_communication import ControllerCommunication
 from src.view.data_request.data_request import DataRequest
-from src.view.event_handler.i_event_hanlder_subscribe import IEventHandlerSubscribe
+from src.view.event_handler.event_consumers.polygon_event_consumer import PolygonEventConsumer
 from src.view.event_handler.event_consumers.settings_event_consumer import SettingsEventConsumer
 from src.view.event_handler.event_consumers.trajectory_event_consumer import TrajectoryEventConsumer
-from src.view.event_handler.event_consumers.polygon_event_consumer import PolygonEventConsumer
+from src.view.event_handler.i_event_hanlder_subscribe import IEventHandlerSubscribe
+from src.view.user_interface.dialogs.export_map import ExportMapDialog
+from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.canvas_point import CanvasPoint
+from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.map import MapView
+from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.map_button import MapButton
+from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.trajectory import Trajectory
+from src.view.user_interface.static_windows.main_window.main_window_factory import MainWindowFactory
+from src.view.user_interface.static_windows.ui_element import UiElement
 
 
 def in_radius(point_a: Tuple, point_b: Tuple, radius: float) -> bool:

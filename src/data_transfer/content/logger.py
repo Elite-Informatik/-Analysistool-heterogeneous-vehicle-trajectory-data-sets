@@ -1,5 +1,6 @@
-from src.data_transfer.record import ErrorRecord
 from threading import Thread, enumerate
+
+from src.data_transfer.record import ErrorRecord
 
 
 class ThreadLogger():

@@ -3,8 +3,8 @@ from tkinter import ttk
 from typing import Dict
 from typing import List
 from uuid import UUID
-from tktooltip import ToolTip
 
+from tktooltip import ToolTip
 
 from src.controller.output_handling.event import FilterAdded
 from src.controller.output_handling.event import FilterChanged
@@ -282,7 +282,7 @@ class FilterSidebar(UiElement, FilterEventConsumer):
         self._controller_communication.delete_filter(filter_component_id=deleted_component_id)
         self._clicked_tree_item = None
 
-    def enable_filter(self, item:str):
+    def enable_filter(self, item: str):
         """
         callback method that is put to the CheckboxTree and called by the CheckboxTree when
         an item is checked.
@@ -297,8 +297,7 @@ class FilterSidebar(UiElement, FilterEventConsumer):
             filter_data = self._data_request.get_filter(filter_id=uuid)
             self._controller_communication.change_filter(filter_id=uuid, filter_data=filter_data.enable())
 
-
-    def disable_filter(self, item:str):
+    def disable_filter(self, item: str):
         """
         callback method that is put to the CheckboxTree and called by the CheckboxTree when
         an item is unchecked.
@@ -313,7 +312,6 @@ class FilterSidebar(UiElement, FilterEventConsumer):
             filter_data = self._data_request.get_filter(filter_id=uuid)
             self._controller_communication.change_filter(filter_id=uuid, filter_data=filter_data.disable())
 
-
     def _filter_group_to_tree(self, filter_group_data: FilterGroupRecord, tree_parent: str) -> str:
         """
         Method that creates a tree item for a filter group and puts it into the tree
@@ -326,7 +324,6 @@ class FilterSidebar(UiElement, FilterEventConsumer):
         else:
             tag = "unchecked"
         return self._filter_tree.insert(tree_parent, "end", text=filter_group_data.__repr__(), tags=tag)
-
 
     def _change_group_entry(self, filter_group_data: FilterGroupRecord, tree_id: str):
         """
@@ -353,7 +350,6 @@ class FilterSidebar(UiElement, FilterEventConsumer):
         else:
             tag = "unchecked"
         return self._filter_tree.insert(tree_parent, "end", text=text, tags=tag)
-
 
     def _change_filter_entry(self, filter_data: FilterRecord, tree_id: str):
         """

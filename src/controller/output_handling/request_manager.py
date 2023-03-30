@@ -1,10 +1,9 @@
 from typing import List
 
-from src.data_transfer.content.type_check import type_check
-
 from src.controller.facade_consumer.user_input_facade_consumer import UserInputRequestFacadeConsumer
 from src.controller.output_handling.irequest_manager import IRequestManager
 from src.data_transfer.content.logger import logging
+from src.data_transfer.content.type_check import type_check
 from src.data_transfer.record import ErrorRecord
 from src.data_transfer.record import SettingRecord
 
@@ -71,4 +70,3 @@ class InputRequestManager(UserInputRequestFacadeConsumer, IRequestManager):
         :return: true if the user accepted
         """
         return self.user_input_request_facade.ask_acceptance(context, accept_msg)
-

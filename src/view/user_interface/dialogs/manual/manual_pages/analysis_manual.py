@@ -1,8 +1,7 @@
-from tkinter import scrolledtext, DISABLED, END
+import tkinter as tk
+from tkinter import DISABLED, END
 
 from src.view.user_interface.dialogs.manual.manual_pages.manual_page import ManPage
-import tkinter as tk
-
 from src.view.user_interface.ui_util.texts import EnglishTexts
 
 
@@ -49,8 +48,8 @@ class AnalysisManual(ManPage):
 introduction: str = "In this section you can find a manual for the different analyses.\n\n"
 creation_heading: str = "How to create a new analysis:\n"
 creation_steps: str = "1. Click on the 'Create' button. \n" \
-                        "2. Select the analysis kind and press ok. \n" \
-                        "3. The new analysis should now be displayed in a new tab. To change the default parameters, click on the 'Change' button.\n\n"
+                      "2. Select the analysis kind and press ok. \n" \
+                      "3. The new analysis should now be displayed in a new tab. To change the default parameters, click on the 'Change' button.\n\n"
 
 kind_description: str = "In the following you can find an explanation for all available analysis kinds: \n\n"
 
@@ -65,7 +64,7 @@ path_daytime_description: str = "This analysis plots time against the distance t
                                 "Here the time is not relative to the start of the analysis but instead the absolute daytime.\n\n"
 
 src_dest_heading: str = "Source Destination Analysis\n"
-src_dest_description: str = "It calculates the time taken from the start polygon to the end polygon, the distance, as well as the average speed. "\
+src_dest_description: str = "It calculates the time taken from the start polygon to the end polygon, the distance, as well as the average speed. " \
                             "It does this for each trajectory individually and also calculates the mean.\n\n"
 
 transmission_heading: str = "Transmission Analysis\n"

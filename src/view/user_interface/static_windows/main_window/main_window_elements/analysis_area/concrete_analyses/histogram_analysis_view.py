@@ -3,7 +3,6 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
-import seaborn
 from matplotlib.figure import Figure
 from pandas import DataFrame
 

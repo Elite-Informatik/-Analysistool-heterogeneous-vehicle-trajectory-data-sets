@@ -1,9 +1,8 @@
 import os.path
-import re
 import tkinter as tk
 from tkinter import filedialog
-from tkinter.simpledialog import Dialog
 from tkinter.messagebox import showerror
+from tkinter.simpledialog import Dialog
 from typing import List
 
 from src.view.user_interface.ui_util.texts import EnglishTexts
@@ -88,7 +87,6 @@ class ImportDatasetDialog(Dialog):
     def select_path(self, string_var):
         string_var.set(filedialog.askopenfilename())
 
-
     def apply(self):
         """
         sets the _name, path and dataformat of the dialog based on the current user input.
@@ -115,7 +113,6 @@ class ImportDatasetDialog(Dialog):
 
         self._valid_input = True
         return True
-
 
     def get_paths(self):
         """

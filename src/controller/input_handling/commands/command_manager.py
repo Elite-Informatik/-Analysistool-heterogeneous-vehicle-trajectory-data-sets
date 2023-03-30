@@ -3,7 +3,6 @@ from abc import abstractmethod
 
 from src.controller.input_handling.commands.command import Command
 from src.controller.input_handling.commands.command_history import CommandHistory
-from src.data_transfer.exception import ExecutionFlowError
 
 
 class ICommandManager(ABC):

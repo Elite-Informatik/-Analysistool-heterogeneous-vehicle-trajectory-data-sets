@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+
 from src.database.query_logging import log_query
 
 

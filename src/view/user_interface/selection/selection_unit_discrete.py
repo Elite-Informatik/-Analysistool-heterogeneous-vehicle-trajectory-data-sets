@@ -3,9 +3,8 @@ from tkinter import LEFT
 from typing import List
 
 from src.data_transfer.record.setting_record import SettingRecord
-from src.view.user_interface.selection.selection_unit import SelectionUnit
-from src.view.user_interface.ui_util.texts import EnglishTexts
 from src.view.user_interface.selection import selection_util
+from src.view.user_interface.selection.selection_unit import SelectionUnit
 
 
 class DiscreteSelectionUnit(SelectionUnit):
@@ -28,7 +27,8 @@ class DiscreteSelectionUnit(SelectionUnit):
         context.pack(side=LEFT, padx=5, pady=5, anchor="nw")
 
         amount_range: range = self._shown_selection.selection.possible_selection_amount
-        instruction = selection_util.create_discrete_instruction_label(self._body_frame, amount_range.start, amount_range.stop)
+        instruction = selection_util.create_discrete_instruction_label(self._body_frame, amount_range.start,
+                                                                       amount_range.stop)
         instruction.pack()
 
         self._options: List = self._shown_selection.selection.option.get_option()

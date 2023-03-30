@@ -1,8 +1,7 @@
+import tkinter as tk
 from tkinter import END, DISABLED
 
 from src.view.user_interface.dialogs.manual.manual_pages.manual_page import ManPage
-import tkinter as tk
-
 from src.view.user_interface.ui_util.texts import EnglishTexts
 
 

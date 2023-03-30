@@ -1,14 +1,13 @@
 import math
-
-from threading import Thread
 from queue import Queue
+from threading import Thread
+from typing import List
 
 from tkintermapview import TkinterMapView
-from tkintermapview.canvas_polygon import CanvasPolygon
 from tkintermapview.canvas_path import CanvasPath
+from tkintermapview.canvas_polygon import CanvasPolygon
 from tkintermapview.canvas_position_marker import CanvasPositionMarker
 from tkintermapview.canvas_tile import CanvasTile
-from typing import List
 
 from src.data_transfer.record import TrajectoryRecord
 from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.canvas_point import \
@@ -19,6 +18,7 @@ from src.view.user_interface.static_windows.main_window.main_window_elements.map
 class MapView(TkinterMapView):
     """
     """
+
     def __init__(self, *args, **kwargs):
         self.canvas_points: List[CanvasPoint] = []
         self.trajectories: List[Trajectory] = []
@@ -131,9 +131,9 @@ class MapView(TkinterMapView):
             self.widget_tile_height = self.lower_right_tile_pos[1] - self.upper_left_tile_pos[1]
 
             self.x_move = ((self.last_upper_left_tile_pos[0] - self.upper_left_tile_pos[0]) /
-                      self.widget_tile_width) * self.width
+                           self.widget_tile_width) * self.width
             self.y_move = ((self.last_upper_left_tile_pos[1] - self.upper_left_tile_pos[1]) /
-                      self.widget_tile_height) * self.height
+                           self.widget_tile_height) * self.height
 
             if not called_after_zoom:
                 self.canvas.move("trajectory", self.x_move, self.y_move)
@@ -142,7 +142,6 @@ class MapView(TkinterMapView):
                 self.clear_render_queue()
                 for trajectory in self.trajectories:
                     self._render_queue.put(trajectory.redraw)
-
 
             # draw other objects on canvas
             for marker in self.canvas_marker_list:
@@ -153,7 +152,6 @@ class MapView(TkinterMapView):
                 polygon.draw(move=not called_after_zoom)
             for point in self.canvas_points:
                 point.draw(move=not called_after_zoom)
-
 
             self.manage_z_order()
             self.last_upper_left_tile_pos = self.upper_left_tile_pos

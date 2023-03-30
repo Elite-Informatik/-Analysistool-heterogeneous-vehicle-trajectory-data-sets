@@ -9,6 +9,7 @@ class SettingsWindowFactory(UiElementFactory):
     It is used to provide the ui elements with the system interfaces.
     The imports are done locally to prevent circular imports.
     """
+
     def create_base_frame(self):
         """
         Creates a new base frame of the settings window

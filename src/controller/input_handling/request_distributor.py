@@ -10,6 +10,7 @@ from src.controller.execution_handling.setting_manager import ISettingGetter
 from src.controller.facade_consumer import FileFacadeConsumer
 from src.controller.idata_request_facade import IDataRequestFacade
 from src.data_transfer.content import Column
+from src.data_transfer.content.logger import logging
 from src.data_transfer.record import AnalysisDataRecord
 from src.data_transfer.record import AnalysisRecord
 from src.data_transfer.record import AnalysisTypeRecord
@@ -21,8 +22,6 @@ from src.data_transfer.record import PolygonRecord
 from src.data_transfer.record import SettingRecord
 from src.data_transfer.record import SettingsRecord
 from src.data_transfer.record import TrajectoryRecord
-
-from src.data_transfer.content.logger import logging
 
 
 class RequestDistributor(IDataRequestFacade, FileFacadeConsumer):

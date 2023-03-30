@@ -75,7 +75,6 @@ class ExportDatasetDialog(Dialog):
         self._valid_input = True
         return True
 
-
     @property
     def selected_path(self) -> str:
         return self._selected_path

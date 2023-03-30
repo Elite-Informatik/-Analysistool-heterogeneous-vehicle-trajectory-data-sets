@@ -3,9 +3,9 @@ from typing import Dict, Optional
 from typing import List
 from uuid import UUID
 
-from src.model.error_handler import ErrorHandler
 from src.data_transfer.record import DataRecord
 from src.data_transfer.record.data_set_record import DatasetRecord
+from src.model.error_handler import ErrorHandler
 
 
 class DatasetFacade(ErrorHandler):

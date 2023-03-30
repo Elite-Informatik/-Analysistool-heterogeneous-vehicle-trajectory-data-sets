@@ -110,7 +110,7 @@ class IVisitor(ABC):
 
     def _create_discrete_filter_str(self, column: str, values: List[str]) -> str:
         value_str = list()
-        for value in values: # TODO: Remove this quick 'n dirty fix
+        for value in values:
             if value in Column.list():
                 value_str.append(str(value))
             else:

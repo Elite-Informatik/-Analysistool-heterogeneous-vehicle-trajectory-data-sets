@@ -3,13 +3,13 @@ interval_filter.py contains IntervalFilter class.
 """
 from uuid import UUID
 
-from src.data_transfer.selection import DateIntervalOption
-from src.data_transfer.selection import TimeIntervalOption
-from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.content import Column
+from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record.filter_record import FilterRecord
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
+from src.data_transfer.selection import DateIntervalOption
+from src.data_transfer.selection import TimeIntervalOption
 from src.data_transfer.selection.discrete_option import DiscreteOption
 from src.data_transfer.selection.number_interval_option import NumberIntervalOption
 from src.model.filter_structure.composite.filters.abstract_filter import Filter

@@ -1,13 +1,12 @@
 from typing import List, Optional
 from typing import Type
 
+from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
 from src.data_transfer.selection.discrete_option import DiscreteOption
 from src.data_transfer.selection.interval_value_option import IntervalValueOption
 from src.data_transfer.selection.string_option import StringOption
-
-from src.data_transfer.content.settings_enum import SettingsEnum
 
 
 class Setting:
@@ -159,9 +158,9 @@ class Setting:
         return SettingRecord(self._name,
                              SelectionRecord(
                                  [self._selected],
-                                  self._options),
-                                  self._identifier,
-                                  _tip=self._tip)
+                                 self._options),
+                             self._identifier,
+                             _tip=self._tip)
 
     def get_identifier(self) -> SettingsEnum:
         """

@@ -3,6 +3,7 @@ from tkinter import ttk
 from typing import Dict
 from typing import List
 from uuid import UUID
+
 from tktooltip import ToolTip
 
 from src.controller.output_handling.event import PolygonAdded

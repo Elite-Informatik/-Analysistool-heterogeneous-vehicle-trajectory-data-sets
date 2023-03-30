@@ -1,11 +1,10 @@
 from re import compile, match
+from typing import Optional
+from uuid import UUID
 
 import pandas
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql import text
-from typing import Optional
-from uuid import UUID
-from uuid import uuid4
 
 from src.data_transfer.content.column import Column
 from src.data_transfer.content.error import ErrorMessage
@@ -66,9 +65,9 @@ class TableAdapter(ErrorHandler):
 
         if add_geometry:
             data[GEOMETRY] = data.apply(lambda row:
-                                                                "LineString(" + str(row['longitude']) +
-                                                                " " +
-                                                                str(row['latitude']) + ")", axis=1)
+                                        "LineString(" + str(row['longitude']) +
+                                        " " +
+                                        str(row['latitude']) + ")", axis=1)
 
         try:
             connection = self.database_connection.get_connection()
@@ -81,7 +80,7 @@ class TableAdapter(ErrorHandler):
             return False
 
         connection = self.database_connection.get_connection()
-        #Get size
+        # Get size
         try:
             query = SQLQueries.TABLE_SIZE.value.format(tablename=self.key) + SQL_SUFFIX
             log_query(query)

@@ -112,7 +112,6 @@ class MainWindowBaseFrame(UiElement):
         """
         self._controller_communication.redo()
 
-
     def destroy(self):
         """
         See documentation of the UiElement class.

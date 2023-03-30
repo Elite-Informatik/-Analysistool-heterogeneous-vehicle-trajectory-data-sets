@@ -1,5 +1,3 @@
-import threading
-
 from src.controller.application_facade import ApplicationFacade
 from src.controller.execution_handling.analysis_manager import IAnalysisManager
 from src.controller.execution_handling.database_manager import IDatabaseManager

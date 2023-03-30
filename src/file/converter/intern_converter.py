@@ -6,6 +6,7 @@ from src.file.converter.data_converter import DataConverter
 
 DEF_VAL = None
 
+
 class InternConverter(DataConverter):
     """
     converts a dataset in the unified dataformat into the unified dataformat (does nothing)

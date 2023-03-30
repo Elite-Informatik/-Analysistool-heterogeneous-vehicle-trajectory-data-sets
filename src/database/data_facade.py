@@ -1,11 +1,10 @@
 from abc import abstractmethod
 from typing import List
 from typing import Optional
-from uuid import UUID
 
-from src.model.error_handler import ErrorHandler
 from src.data_transfer.content import Column
 from src.data_transfer.record import DataRecord
+from src.model.error_handler import ErrorHandler
 
 
 class DataFacade(ErrorHandler):

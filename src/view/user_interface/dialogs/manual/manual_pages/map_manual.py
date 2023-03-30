@@ -1,8 +1,7 @@
+import tkinter as tk
 from tkinter import DISABLED, END
 
 from src.view.user_interface.dialogs.manual.manual_pages.manual_page import ManPage
-import tkinter as tk
-
 from src.view.user_interface.ui_util.texts import EnglishTexts
 
 
@@ -36,9 +35,9 @@ export_steps: str = "1. Right click on the map view.\n" \
                     "3. Enter directory and file name and press ok.\n\n"
 rawdata_heading: str = "How to display the raw data of a datapoint:\n"
 rawdata_steps: str = "1. Left click on a datapoint.\n" \
-                    "2. Click 'show datapoint data'.\n"\
-                    "3. The raw data of the datapoint should now be displayed in a table.\n\n"
+                     "2. Click 'show datapoint data'.\n" \
+                     "3. The raw data of the datapoint should now be displayed in a table.\n\n"
 rawtraj_heading: str = "How to display the raw data of a trajectory:\n"
 rawtraj_steps: str = "1. Left click on a datapoint or line segment.\n" \
-                    "2. Click 'show trajectory data'.\n"\
-                    "3. The raw data of the trajectory should now be displayed in a table.\n\n"
+                     "2. Click 'show trajectory data'.\n" \
+                     "3. The raw data of the trajectory should now be displayed in a table.\n\n"

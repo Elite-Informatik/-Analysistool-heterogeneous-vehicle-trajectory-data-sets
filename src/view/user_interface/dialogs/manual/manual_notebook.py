@@ -1,13 +1,13 @@
+import tkinter as tk
 from tkinter import ttk
 from tkinter.ttk import Notebook
-import tkinter as tk
 
 from src.view.user_interface.dialogs.manual.manual_pages.analysis_manual import AnalysisManual
 from src.view.user_interface.dialogs.manual.manual_pages.dataformat_manual import DataformatManual
+from src.view.user_interface.dialogs.manual.manual_pages.dataset_manual import DatasetManual
 from src.view.user_interface.dialogs.manual.manual_pages.filter_manual import FilterManual
 from src.view.user_interface.dialogs.manual.manual_pages.map_manual import MapManual
 from src.view.user_interface.dialogs.manual.manual_pages.polygon_manual import PolygonManual
-from src.view.user_interface.dialogs.manual.manual_pages.dataset_manual import DatasetManual
 
 
 class ManualNotebook:

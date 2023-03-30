@@ -546,8 +546,10 @@ class AccelerationDirectionCalculator(AbstractFcdUiCalculator):
         temp_df['x1'] = source_df[FcdColumn.SPEED.value] * np.cos(np.radians(source_df[FcdColumn.AZIMUTH.value]))
         temp_df['y1'] = source_df[FcdColumn.SPEED.value] * np.sin(np.radians(source_df[FcdColumn.AZIMUTH.value]))
         # calculate speed vector 2
-        temp_df['x2'] = source_df[FcdColumn.SPEED.value].shift(-1) * np.cos(np.radians(source_df[FcdColumn.AZIMUTH.value].shift(-1)))
-        temp_df['y2'] = source_df[FcdColumn.SPEED.value].shift(-1) * np.sin(np.radians(source_df[FcdColumn.AZIMUTH.value].shift(-1)))
+        temp_df['x2'] = source_df[FcdColumn.SPEED.value].shift(-1) * np.cos(
+            np.radians(source_df[FcdColumn.AZIMUTH.value].shift(-1)))
+        temp_df['y2'] = source_df[FcdColumn.SPEED.value].shift(-1) * np.sin(
+            np.radians(source_df[FcdColumn.AZIMUTH.value].shift(-1)))
         # calculate acceleration vector
         temp_df['x3'] = temp_df['x2'] - temp_df['x1']
         temp_df['y3'] = temp_df['y2'] - temp_df['y1']

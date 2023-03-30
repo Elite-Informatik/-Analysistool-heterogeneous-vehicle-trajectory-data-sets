@@ -6,11 +6,6 @@ import pandas
 from matplotlib import pyplot as plt, dates
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.text import Text
-from pandas import DataFrame, Series
-from pandas.api.types import is_string_dtype, is_numeric_dtype
-
-from src.data_transfer.content import Column
 
 MAX_ROTATE_LABELS = 3
 MAX_LABELS = 15
@@ -57,6 +52,7 @@ def optimize_axes_labels(ax: Axes):
     _optimize_nr_ticks(ax)
     _rotate_axes_labels(ax)
 
+
 def _limit_label_length(ax: Axes):
     """
     limits the length of the labels to 10 characters
@@ -68,6 +64,7 @@ def _limit_label_length(ax: Axes):
     if len(ax.get_yticklabels()[0].get_text()) > MAX_NR_CHARS:
         int_ticks = [str(x) for x in np.arange(1, len(ax.get_yticklabels()) + 1)]
         ax.set_yticklabels(int_ticks)
+
 
 def _optimize_nr_ticks(ax: Axes):
     """

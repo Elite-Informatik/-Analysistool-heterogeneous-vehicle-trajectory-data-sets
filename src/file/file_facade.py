@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from typing import Callable
 from typing import List
-from typing import Optional
 
 from src.data_transfer.record import DataRecord
 from src.data_transfer.record import FileRecord

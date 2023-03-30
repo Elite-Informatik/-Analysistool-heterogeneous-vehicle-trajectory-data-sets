@@ -20,6 +20,7 @@ data_types = {
     "original_order": "INT"
 }
 
+
 class Column(Enum):
     """
     holds all columns in our unified data format
@@ -129,4 +130,3 @@ COLUM_TO_VALUE_RANGE = {
     Column.ACCELERATION: (None, None),
     Column.ACCELERATION_DIRECTION: (None, None),
 }
-

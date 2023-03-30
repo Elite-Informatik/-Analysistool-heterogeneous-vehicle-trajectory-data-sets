@@ -3,17 +3,17 @@ from enum import Enum
 
 class SettingsEnum(Enum):
     """Enum for settings."""
-    #PAGES
+    # PAGES
     PAGE1 = "page1"
     PAGE2 = "page2"
     PAGE3 = "page3"
 
-    #SEGMENTS
+    # SEGMENTS
     SEGMENT1 = "segment1"
     SEGMENT2 = "segment2"
     SEGMENT3 = "segment3"
 
-    #SETTINGS
+    # SETTINGS
     SETTING1 = "setting1"
     SETTING2 = "setting2"
     SETTING3 = "setting3"

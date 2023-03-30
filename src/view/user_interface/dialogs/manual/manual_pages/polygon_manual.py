@@ -1,8 +1,7 @@
+import tkinter as tk
 from tkinter import END, DISABLED
 
 from src.view.user_interface.dialogs.manual.manual_pages.manual_page import ManPage
-import tkinter as tk
-
 from src.view.user_interface.ui_util.texts import EnglishTexts
 
 
@@ -45,5 +44,4 @@ delete_steps: str = "1. Click on the '-P' button in the map.\n" \
 use_heading: str = "How to use a polygon:\n"
 use_steps: str = "Polygons can be used in filters and in analyses. When creating a polygon filter (area- or transit-filter) " \
                  "or a spatial analysis (e.g. path time analysis), you can select the polygons in the according creation menu." \
-                 "If polygons are not used in filters or analyses, they have no effect.\n" \
-
+                 "If polygons are not used in filters or analyses, they have no effect.\n"

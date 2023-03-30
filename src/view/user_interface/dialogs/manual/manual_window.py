@@ -39,8 +39,3 @@ class ManualWindow(Window):
         if self._window is not None:
             self._window.destroy()
         self._window = None
-
-
-
-
-

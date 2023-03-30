@@ -2,8 +2,8 @@ from abc import ABC
 from abc import abstractmethod
 from typing import List
 
-from src.data_transfer.record import SettingRecord
 from src.data_transfer.record import ErrorRecord
+from src.data_transfer.record import SettingRecord
 
 
 class IRequestManager(ABC):

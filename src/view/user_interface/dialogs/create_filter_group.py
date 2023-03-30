@@ -52,7 +52,9 @@ class CreateFilterGroupDialog(Dialog, FilterGroupCreator):
         self._name_var = tk.StringVar()
         self._name_var.set(self._filter_group.name)
 
-        self._enter_name_label = tk.Label(master=master, text="filter group name", anchor="w", width=20).grid(row=0, column=0, sticky="nsew")
+        self._enter_name_label = tk.Label(master=master, text="filter group name", anchor="w", width=20).grid(row=0,
+                                                                                                              column=0,
+                                                                                                              sticky="nsew")
         self._name_entry = tk.Entry(master=master, textvariable=self._name_var)
         self._name_entry.grid(row=0, column=1, sticky="nsew")
 

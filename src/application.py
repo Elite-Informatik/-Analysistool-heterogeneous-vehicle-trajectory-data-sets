@@ -1,8 +1,8 @@
 from typing import List
 
-from src.data_transfer.content.text_provider import TextProvider
 from src.controller.application_facade import ApplicationFacade
 from src.controller.controller import Controller
+from src.data_transfer.content.text_provider import TextProvider
 from src.database import Database
 from src.executable_component import ExecutableComponent
 from src.file.file_facade_manager import FileFacadeManager

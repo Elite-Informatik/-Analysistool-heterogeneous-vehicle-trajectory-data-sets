@@ -7,14 +7,14 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
-from src.model.filter_structure.filter_visitor import IVisitor
 from src.data_transfer.content.settings_enum import SettingsEnum
+from src.data_transfer.exception.custom_exception import UnexpectedArgumentError, ExceptionMessages
 from src.data_transfer.record.filter_record import FilterRecord
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
 from src.model.filter_structure.composite.filter_component import FilterComponent
+from src.model.filter_structure.filter_visitor import IVisitor
 from src.model.polygon_structure.ipolygon_structure import IPolygonStructure
-from src.data_transfer.exception.custom_exception import UnexpectedArgumentError, ExceptionMessages
 
 
 class Filter(FilterComponent, ABC):

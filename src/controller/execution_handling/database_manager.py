@@ -5,7 +5,6 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
-from src.data_transfer.exception import InvalidUUID
 from src.controller.execution_handling.abstract_manager import AbstractManager
 from src.controller.facade_consumer.data_facade_consumer import DataFacadeConsumer
 from src.controller.facade_consumer.dataset_facade_consumer import DatasetFacadeConsumer
@@ -19,6 +18,7 @@ from src.data_transfer.content import Column
 from src.data_transfer.content import type_check
 from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.exception import (InvalidInput)
+from src.data_transfer.exception import InvalidUUID
 from src.data_transfer.record import DataRecord
 from src.data_transfer.record import DatasetRecord
 from src.data_transfer.record import ErrorRecord

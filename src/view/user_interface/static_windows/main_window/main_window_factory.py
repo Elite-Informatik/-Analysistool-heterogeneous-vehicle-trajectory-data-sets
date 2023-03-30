@@ -1,10 +1,6 @@
 import tkinter as tk
 
 from src.data_transfer.content import FilterHandlerNames
-from src.data_transfer.record import TrajectoryRecord
-from src.view.controller_communication.controller_communication import ControllerCommunication
-from src.view.data_request.data_request import DataRequest
-from src.view.event_handler import IEventHandlerSubscribe
 from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.map import MapView
 from src.view.user_interface.static_windows.ui_element_factory import UiElementFactory
 
@@ -14,6 +10,7 @@ class MainWindowFactory(UiElementFactory):
     A Factory that is used to create the MainWindow Elements and provides them with the required interfaces.
     Imports are done locally to prevent circular imports.
     """
+
     def create_main_window_base_frame(self):
         """
         Creates a new base frame of the main window

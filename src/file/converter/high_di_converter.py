@@ -1,5 +1,5 @@
 from enum import Enum
-from re import match, Pattern
+from re import match
 from typing import List
 from typing import Union
 

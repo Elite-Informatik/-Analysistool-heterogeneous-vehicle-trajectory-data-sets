@@ -1,7 +1,5 @@
-import _datetime
 from datetime import datetime
 from datetime import time
-
 from typing import List
 
 from src.data_transfer.selection.option import Option

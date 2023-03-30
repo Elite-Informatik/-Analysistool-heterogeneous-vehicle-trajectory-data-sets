@@ -5,9 +5,8 @@ from typing import List
 from typing import Optional
 
 from src.data_transfer.record.setting_record import SettingRecord
-from src.view.user_interface.selection.selection_unit import SelectionUnit
-from src.view.user_interface.ui_util.texts import EnglishTexts
 from src.view.user_interface.selection import selection_util
+from src.view.user_interface.selection.selection_unit import SelectionUnit
 
 
 class IntervalValueSelectionUnit(SelectionUnit):
@@ -31,7 +30,8 @@ class IntervalValueSelectionUnit(SelectionUnit):
         amount_range: range = self._shown_selection.selection.possible_selection_amount
         interval: List = self._shown_selection.selection.option.get_option()
         # instruction for user: nr of possible entries
-        instruction = selection_util.create_interval_instruction_label(body_frame, amount_range.start, amount_range.stop, interval[0], interval[1])
+        instruction = selection_util.create_interval_instruction_label(body_frame, amount_range.start,
+                                                                       amount_range.stop, interval[0], interval[1])
         instruction.pack()
 
         default_entry = self.SEPARATION.join(map(str, self._shown_selection.selection.selected))

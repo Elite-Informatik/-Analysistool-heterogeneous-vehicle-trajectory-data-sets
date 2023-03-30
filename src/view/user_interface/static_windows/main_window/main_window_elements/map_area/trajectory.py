@@ -1,18 +1,18 @@
 import tkinter as tk
-import pandas as pd
-from pandastable import Table
-
-from src.data_transfer.record import TrajectoryRecord, DataRecord, DataPointRecord
 from typing import TYPE_CHECKING, List
 from uuid import UUID
 
+import pandas as pd
+from pandastable import Table
 from tkintermapview.utility_functions import decimal_to_osm
 
+from src.data_transfer.record import TrajectoryRecord, DataRecord, DataPointRecord
 
 if TYPE_CHECKING:
     from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.map import MapView
 
 GREYED_OUT_COLOR = "grey"
+
 
 class Trajectory:
     """
@@ -74,7 +74,7 @@ class Trajectory:
         for i in range(len(datapoints) - 1):
             # in each iteration the i-th point and the i-th line segment is drawn
             start_point: DataPointRecord = datapoints[i]
-            end_point: DataPointRecord = datapoints[i+1]
+            end_point: DataPointRecord = datapoints[i + 1]
 
             start_position = start_point.get_position_as_tuple()
             end_position = end_point.get_position_as_tuple()
@@ -89,12 +89,12 @@ class Trajectory:
                 round((start_point.visualisation + end_point.visualisation) / 2))
 
             canvas_point = self.map_widget.canvas.create_oval(start_canvas_pos[0] + self.RADIUS,
-                                                                       start_canvas_pos[1] - self.RADIUS,
-                                                                       start_canvas_pos[0] - self.RADIUS,
-                                                                       start_canvas_pos[1] + self.RADIUS,
-                                                                       fill=start_point_color,
-                                                                       width=self.POINT_WIDTH,
-                                                                       tags=["trajectory", "point"])
+                                                              start_canvas_pos[1] - self.RADIUS,
+                                                              start_canvas_pos[0] - self.RADIUS,
+                                                              start_canvas_pos[1] + self.RADIUS,
+                                                              fill=start_point_color,
+                                                              width=self.POINT_WIDTH,
+                                                              tags=["trajectory", "point"])
             self.map_widget.canvas.tag_bind(canvas_point, "<Button-1>",
                                             lambda event: self.datapoint_clicked(event, start_point.id))
             self._points.append(canvas_point)
@@ -173,7 +173,7 @@ class Trajectory:
         """
         gets the data for the trajectory with the uuid of this instance and displays it in a new window
         """
-        trajectory_data_record:DataRecord = self._get_trajectory_data(trajectory_id=self._uuid)
+        trajectory_data_record: DataRecord = self._get_trajectory_data(trajectory_id=self._uuid)
         data = trajectory_data_record.data
         self._display_raw_data(data=data, title="Trajectory Data")
 
@@ -244,7 +244,6 @@ class Trajectory:
         self._points = []
         self._segments = []
 
-
     @staticmethod
     def convert_int_to_hex_color(rgb_int) -> str:
         """
@@ -255,4 +254,3 @@ class Trajectory:
         b = rgb_int & 0xFF
         hex_code = "#{0:02x}{1:02x}{2:02x}".format(r, g, b)
         return hex_code
-

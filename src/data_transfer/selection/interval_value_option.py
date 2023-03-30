@@ -1,5 +1,3 @@
-from typing import List
-
 from src.data_transfer.selection.option import Option
 from src.data_transfer.selection.option_type import OptionType
 

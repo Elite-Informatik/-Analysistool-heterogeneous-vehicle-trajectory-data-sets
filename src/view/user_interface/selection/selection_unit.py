@@ -31,7 +31,7 @@ class SelectionUnit(ABC):
         pass
 
     def _build_context(self, master, text) -> tk.Label:
-        context =  tk.Label(master=master, text=text, width=40, anchor="nw")
+        context = tk.Label(master=master, text=text, width=40, anchor="nw")
         tip = self._shown_selection.tip
         if tip is not None:
             ToolTip(widget=context, msg=tip, delay=0.3)

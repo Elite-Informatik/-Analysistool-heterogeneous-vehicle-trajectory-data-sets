@@ -4,6 +4,7 @@ from typing import List
 from typing import Type
 
 from src.data_transfer.content.column import Column
+from src.data_transfer.content.settings_enum import SettingsEnum
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.settings_record import SettingsRecord
 from src.model.error_handler import ErrorHandler
@@ -12,10 +13,8 @@ from src.model.setting_structure.isetting_structure import ISettingStructure
 from src.model.setting_structure.page import Page
 from src.model.setting_structure.segment import Segment
 from src.model.setting_structure.setting import Setting
-from src.model.setting_structure.setting_type import Color
-from src.data_transfer.content.settings_enum import SettingsEnum
 from src.model.setting_structure.setting_tips import SettingTips
-
+from src.model.setting_structure.setting_type import Color
 
 MIN_COLOR = 0
 MAX_COLOR = sys.maxsize
@@ -50,7 +49,7 @@ class SettingStructure(ErrorHandler, ISettingStructure):
                                                          tip=SettingTips.TRAJECTORY_STEP_SIZE.value)
 
         self._show_line_segments: Setting = Setting.boolean_setting(identifier=SettingsEnum.SHOW_LINE_SEGMENTS,
-                                                              name="Show line segments",
+                                                                    name="Show line segments",
                                                                     tip=SettingTips.SHOW_LINE_SEGMENTS.value)
 
         self._color: Setting = Setting.from_list(identifier=SettingsEnum.COLOR_SETTINGS, name="Trajectory Colors",

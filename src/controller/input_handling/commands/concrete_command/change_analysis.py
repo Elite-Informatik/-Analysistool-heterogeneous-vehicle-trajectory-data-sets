@@ -39,4 +39,5 @@ class ChangeAnalysisCommand(Undoable):
         changes the analysis
         """
         self._old_analysis = self._analysis_getter.get_analysis_settings(self._analysis_id)
-        self._was_successful = self._analysis_manager.edit_analysis_settings(self._analysis_id, self._new_analysis_setting)
+        self._was_successful = self._analysis_manager.edit_analysis_settings(self._analysis_id,
+                                                                             self._new_analysis_setting)
