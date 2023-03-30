@@ -302,7 +302,7 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
         append: bool = False
         for i, imported_data in enumerate(self.file_facade.import_data_files(chunked, inaccuracies)):
             if imported_data is None:
-                self.handle_error([self.file_facade], " at importing dataset in manager")
+                self.handle_error([self.file_facade])
                 return False
 
             if len(inaccuracies) > 0 and not asked_innacuracies:
