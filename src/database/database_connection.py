@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from src.database.query_logging import log_query
 
+
 class DatabaseConnection:
 
     def __init__(self, host: str, user: str, password: str, database: str, port: str):
@@ -48,7 +49,6 @@ class DatabaseConnection:
         self.connection.close()
         log_query("Connection closed.")
 
-
     def recover(self):
         """
         Recovers the connection to the database.
@@ -56,7 +56,6 @@ class DatabaseConnection:
         self.connection.rollback()
         self.connection.commit()
         self.connection.close()
-
 
     def __del__(self):
         """
