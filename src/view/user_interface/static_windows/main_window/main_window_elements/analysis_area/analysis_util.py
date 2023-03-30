@@ -1,9 +1,7 @@
-import re
 from typing import List
 
 import numpy as np
-import pandas
-from matplotlib import pyplot as plt, dates
+from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 

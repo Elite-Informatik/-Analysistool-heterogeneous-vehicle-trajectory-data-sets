@@ -3,9 +3,10 @@ from tkinter import messagebox
 from typing import List
 from uuid import UUID
 
-from src.controller.output_handling.event import AnalysisAdded, AnalysisImported
+from src.controller.output_handling.event import AnalysisAdded
 from src.controller.output_handling.event import AnalysisChanged
 from src.controller.output_handling.event import AnalysisDeleted
+from src.controller.output_handling.event import AnalysisImported
 from src.controller.output_handling.event import AnalysisRefreshed
 from src.data_transfer.record import AnalysisDataRecord
 from src.data_transfer.record import AnalysisRecord

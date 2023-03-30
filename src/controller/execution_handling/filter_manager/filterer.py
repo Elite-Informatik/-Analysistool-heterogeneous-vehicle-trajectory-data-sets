@@ -1,9 +1,13 @@
 import colorsys
 import uuid
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from collections import deque
-from random import randint, Random
-from typing import List, Optional, Tuple
+from random import Random
+from random import randint
+from typing import List
+from typing import Optional
+from typing import Tuple
 from uuid import UUID
 
 import numpy as np

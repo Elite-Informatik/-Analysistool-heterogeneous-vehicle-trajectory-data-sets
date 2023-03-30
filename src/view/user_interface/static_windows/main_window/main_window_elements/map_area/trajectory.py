@@ -1,12 +1,15 @@
 import tkinter as tk
-from typing import TYPE_CHECKING, List
+from typing import List
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 import pandas as pd
 from pandastable import Table
 from tkintermapview.utility_functions import decimal_to_osm
 
-from src.data_transfer.record import TrajectoryRecord, DataRecord, DataPointRecord
+from src.data_transfer.record import DataPointRecord
+from src.data_transfer.record import DataRecord
+from src.data_transfer.record import TrajectoryRecord
 
 if TYPE_CHECKING:
     from src.view.user_interface.static_windows.main_window.main_window_elements.map_area.map import MapView

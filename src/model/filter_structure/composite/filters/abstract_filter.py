@@ -8,7 +8,8 @@ from typing import Optional
 from uuid import UUID
 
 from src.data_transfer.content.settings_enum import SettingsEnum
-from src.data_transfer.exception.custom_exception import UnexpectedArgumentError, ExceptionMessages
+from src.data_transfer.exception.custom_exception import ExceptionMessages
+from src.data_transfer.exception.custom_exception import UnexpectedArgumentError
 from src.data_transfer.record.filter_record import FilterRecord
 from src.data_transfer.record.selection_record import SelectionRecord
 from src.data_transfer.record.setting_record import SettingRecord
