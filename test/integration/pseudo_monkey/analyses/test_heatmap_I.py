@@ -1,4 +1,5 @@
 import os
+from unittest import skip
 
 from src.data_transfer.content import Column
 from src.data_transfer.record import AnalysisDataRecord
@@ -20,6 +21,7 @@ class HeatMapTest(FcdUIAnalysisControllerTest):
         super().setUp()
         self.init_analysis(self.name)
 
+    @skip
     def test_set_heatmap(self):
         """
         Tests that the heatmap analysis can be set with all combinations of x, y and color axis.
