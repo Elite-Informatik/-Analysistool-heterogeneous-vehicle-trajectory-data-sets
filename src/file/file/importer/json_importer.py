@@ -9,6 +9,9 @@ class JSONImporter(DataImporter):
     Class representing a JSONImporter.
     """
 
+    def yield_import_data(self, path: str, sep: str = "") -> DataRecord:
+        raise NotImplemented("Not implemented!")
+
     def fits_file_format(self, name: str) -> bool:
         return name.endswith('.json')
 

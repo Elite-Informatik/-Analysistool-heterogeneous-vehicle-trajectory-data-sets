@@ -9,7 +9,7 @@ from src.data_transfer.exception import ExecutionFlowError
 from src.data_transfer.record import DataRecord
 from src.file.converter.data_converter import DataConverter
 from src.file.converter.fcd_ui_handler.fcd_columns import FcdColumn
-from src.file.converter.fcd_ui_handler.fcd_ui_handler import AbstractFcdUiCalculator
+from src.file.converter.fcd_ui_handler.fcd_ui_handler import AbstractColumnCalculator
 from src.file.converter.fcd_ui_handler.fcd_ui_handler import AccelerationCalculator
 from src.file.converter.fcd_ui_handler.fcd_ui_handler import AccelerationDirectionCalculator
 from src.file.converter.fcd_ui_handler.fcd_ui_handler import DateCalculator
@@ -46,7 +46,7 @@ class FCDUIConverter(DataConverter):
         Constructor for a new FCD UI Converter
         """
         self.is_valid = False
-        self.handler_map: Dict[Column, AbstractFcdUiCalculator] = {
+        self.handler_map: Dict[Column, AbstractColumnCalculator] = {
             Column.ID: IdCalculator(),
             Column.TRAJECTORY_ID: TrajectoryIDCalculator(),
             Column.DATE: DateCalculator(),

@@ -21,7 +21,7 @@ from src.file.converter.util.data_util import repair_string_column
 ms_to_kmh = 3.6
 
 
-class AbstractFcdUiCalculator(ABC):
+class AbstractColumnCalculator(ABC):
     """
     this abstract calculator represents a calculator responsible to calculate one column of our unified dataformat
     """
@@ -73,7 +73,7 @@ class AbstractFcdUiCalculator(ABC):
         raise NotImplementedError
 
 
-class IdCalculator(AbstractFcdUiCalculator):
+class IdCalculator(AbstractColumnCalculator):
     """
     This calculator calculates the datapoint ID
     """
@@ -102,7 +102,7 @@ class IdCalculator(AbstractFcdUiCalculator):
         return True
 
 
-class TrajectoryIDCalculator(AbstractFcdUiCalculator):
+class TrajectoryIDCalculator(AbstractColumnCalculator):
     """
     This calculator calculates the trajectory ID
     """
@@ -156,7 +156,7 @@ class TrajectoryIDCalculator(AbstractFcdUiCalculator):
         return True
 
 
-class DateTimeCalculator(AbstractFcdUiCalculator, ABC):
+class DateTimeCalculator(AbstractColumnCalculator, ABC):
     """
     this calculator calculates the data and the time
     """
@@ -271,7 +271,7 @@ class TimeCalculator(DateTimeCalculator):
         return True
 
 
-class SpeedCalculator(AbstractFcdUiCalculator):
+class SpeedCalculator(AbstractColumnCalculator):
     """
     this calculator calculates the speed
     """
@@ -327,7 +327,7 @@ class SpeedCalculator(AbstractFcdUiCalculator):
         return find_non_numeric_rows(source_df[self.column])
 
 
-class SpeedLimitCalculator(AbstractFcdUiCalculator):
+class SpeedLimitCalculator(AbstractColumnCalculator):
     """
     this calculator calculates the speed limit
     """
@@ -396,7 +396,7 @@ class SpeedLimitCalculator(AbstractFcdUiCalculator):
         return len(valid_limits) > 0
 
 
-class AccelerationCalculator(AbstractFcdUiCalculator):
+class AccelerationCalculator(AbstractColumnCalculator):
     """
     Calculates the Acceleration from the time and the speed column.
     """
@@ -456,7 +456,7 @@ class AccelerationCalculator(AbstractFcdUiCalculator):
         return []
 
 
-class GpsCoordinateCalculator(AbstractFcdUiCalculator):
+class GpsCoordinateCalculator(AbstractColumnCalculator):
     """
     This calculator calculates the GPS coordinates (latitude and longitude)
     """
@@ -488,7 +488,7 @@ class GpsCoordinateCalculator(AbstractFcdUiCalculator):
         return True
 
 
-class SpeedDirectionCalculator(AbstractFcdUiCalculator):
+class SpeedDirectionCalculator(AbstractColumnCalculator):
     """
     This calculator calculates the speed direction
     """
@@ -535,7 +535,7 @@ class SpeedDirectionCalculator(AbstractFcdUiCalculator):
         return True
 
 
-class AccelerationDirectionCalculator(AbstractFcdUiCalculator):
+class AccelerationDirectionCalculator(AbstractColumnCalculator):
     """
     calculates the acceleration direction column
     """
@@ -573,7 +573,7 @@ class AccelerationDirectionCalculator(AbstractFcdUiCalculator):
         return []
 
 
-class RoadTypeCalculator(AbstractFcdUiCalculator):
+class RoadTypeCalculator(AbstractColumnCalculator):
     """
     This calculator calculates the road type
     """
@@ -601,7 +601,7 @@ class RoadTypeCalculator(AbstractFcdUiCalculator):
         return True
 
 
-class OSMRoadIDCalculator(AbstractFcdUiCalculator):
+class OSMRoadIDCalculator(AbstractColumnCalculator):
     """
     This calculator calculates the OSM road ID
     """
@@ -628,7 +628,7 @@ class OSMRoadIDCalculator(AbstractFcdUiCalculator):
         return True
 
 
-class VehicleTypeCalculator(AbstractFcdUiCalculator):
+class VehicleTypeCalculator(AbstractColumnCalculator):
     """
     this calculator calculates the vehicle type
     """
@@ -679,7 +679,7 @@ class VehicleTypeCalculator(AbstractFcdUiCalculator):
         return True
 
 
-class OneWayStreetCalculator(AbstractFcdUiCalculator):
+class OneWayStreetCalculator(AbstractColumnCalculator):
     """
     Transfers the one way column from the FCD UI data to the unified data format.
     """

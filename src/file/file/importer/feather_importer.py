@@ -9,6 +9,9 @@ class FeatherImporter(DataImporter):
     Class representing a FeatherImporter.
     """
 
+    def yield_import_data(self, path: str, sep: str = ",") -> DataRecord:
+        raise NotImplemented("Not implemented!")
+
     def fits_file_format(self, name: str) -> str:
         return name.endswith('.feather')
 

@@ -11,6 +11,7 @@ class DataImporter(ABC):
     Abstract class representing a DataImporter.
     """
 
+    @abstractmethod
     def yield_import_data(self, path: str, sep: str = STANDARD_SEP) -> DataRecord:
         """
         Imports a file as Data from the given path.
@@ -43,6 +44,7 @@ class DataImporter(ABC):
         pass
 
     @property
+    @abstractmethod
     def file_format(self) -> str:
         """
         Returns a regex that can identify a file in the right format

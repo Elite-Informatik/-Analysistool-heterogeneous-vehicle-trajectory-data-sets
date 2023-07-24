@@ -10,6 +10,7 @@ from src.file.converter.dictionary_converter import DictionaryConverter
 from src.file.converter.fcd_ui_converter import FCDUIConverter
 from src.file.converter.high_di_converter import HighDIConverter
 from src.file.converter.intern_converter import InternConverter
+from src.file.converter.simra_bicycle_converter import SimraConverter
 from src.file.file.file_structure import FileStructure
 from src.file.file_facade import FileFacade
 from src.model.error_handler import ErrorMessage
@@ -22,7 +23,7 @@ class FileFacadeManager(FileFacade):
     """
 
     PATH_NOT_FOUND_MESSAGE: str = "The standard path of the program does not exist in the file system"
-    DATA_CONVERTES: List = [InternConverter, HighDIConverter, FCDUIConverter]
+    DATA_CONVERTES: List = [InternConverter, HighDIConverter, FCDUIConverter, SimraConverter]
 
     _analysis_standard_path: str
     _dictionary_standart_path: str

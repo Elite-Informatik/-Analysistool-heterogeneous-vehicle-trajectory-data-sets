@@ -1,6 +1,6 @@
 import math
 import re
-from typing import List
+from typing import List, Tuple
 from typing import Union
 
 import numpy as np
@@ -222,6 +222,18 @@ def find_non_numeric_rows(df: pd.DataFrame) -> List[int]:
     return non_numeric_rows
 
 
+def find_numeric_rows(series: pd.Series, range: Tuple[float, float] = (-np.inf, np.inf)) -> Series:
+    """
+    finds all numeric rows that are in the given range.
+    :param series:  the data to be checked as a series
+    :param range:   the range in which the data should be in
+    :return:    a series where the numeric rows in range are marked as True and the non-numeric rows as False
+    """
+    numeric_rows = series.astype(str).str.match(r'^-?\d+(.\d+)?$')
+    correct_range = series.between(range[0], range[1])
+    return numeric_rows & correct_range
+
+
 def print_non_numeric_rows(df: pd.DataFrame) -> List[str]:
     """
     finds all non-numeric rows
@@ -317,7 +329,7 @@ class DistanceCalculator:
         self.lat_col = lat_col
         self.long_col = long_col
 
-    def get_distance(self, row: Series):
+    def get_distance(self, row: pd.DataFrame):
         """
         Calculates the distance between two coordinates in vectorized form.
         :param  row:    A given row as a series to calculate the distances with.

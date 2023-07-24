@@ -15,13 +15,14 @@ from src.file.file.exporter.feather_exporter import FeatherExporter
 from src.file.file.exporter.json_exporter import JSONExporter
 from src.file.file.importer.csv_importer import CSVImporter
 from src.file.file.importer.data_importer import DataImporter
+from src.file.file.importer.doc_importer import DocImporter
 from src.file.file.importer.feather_importer import FeatherImporter
 from src.file.file.importer.json_importer import JSONImporter
 from src.file.file.unpacker.gz_unpacker import GZUnpacker
 from src.file.file.unpacker.unpacker import Unpacker
 from src.file.file.unpacker.zip_unpacker import ZipUnpacker
 
-DataImporters: List = [CSVImporter, FeatherImporter, JSONImporter]
+DataImporters: List = [CSVImporter, FeatherImporter, JSONImporter, DocImporter]
 DataExporters: List = [CSVExporter, FeatherExporter, JSONExporter]
 DataUnpackers: List = [GZUnpacker, ZipUnpacker]
 

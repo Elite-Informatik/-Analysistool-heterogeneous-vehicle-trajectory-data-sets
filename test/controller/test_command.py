@@ -246,6 +246,14 @@ class StartedStoppedControllerTest(BaseControllerTest):
         """
         self.open_dataset([path], "FCD UI")
 
+    def open_dataset_simra_bicycle(self, path: str):
+        """
+        Opens a dataset of type SimRa Bicycle at the given path.
+        :param path: the path to the dataset
+        :return: None
+        """
+        self.open_dataset([path], "SimRa")
+
     def open_dataset_highD(self, path: [str]) -> None:
         """
         Opens a dataset of type HighD at the given path.
