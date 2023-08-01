@@ -80,9 +80,16 @@ class TableAdapter(ErrorHandler):
             self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(err))
             self.database_connection.recover()
             return False
+        except DatabaseConnectionError as e:
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(e))
+            return False
+        try:
+            connection = self.database_connection.get_connection()
+        except DatabaseConnectionError as e:
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(e))
+            return False
 
-        connection = self.database_connection.get_connection()
-        # Get size
+            # Get size
         try:
             query = SQLQueries.TABLE_SIZE.value.format(tablename=self.key) + SQL_SUFFIX
             log_query(query)
@@ -102,7 +109,11 @@ class TableAdapter(ErrorHandler):
         """
         deletes this table
         """
-        connection = self.database_connection.get_connection()
+        try:
+            connection = self.database_connection.get_connection()
+        except DatabaseConnectionError as e:
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(e))
+            return False
         query = SQLQueries.DROPTABLE.value.format(tablename=self.key)
         log_query(query)
         query = text(query)
