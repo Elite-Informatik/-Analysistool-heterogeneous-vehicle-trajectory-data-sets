@@ -1,8 +1,10 @@
 from enum import Enum
 
 
-class ModelException(Exception):
-    """Raised if an error occurs in the model structure"""
+class CustomException(Exception):
+    """
+    Base class for all custom exceptions
+    """
 
     def __init__(self, message: str):
         self._message = message
@@ -13,6 +15,10 @@ class ModelException(Exception):
         Returns the message of the exception
         """
         return self._message
+
+
+class ModelException(CustomException):
+    """Raised if an error occurs in the model structure"""
 
 
 class InvalidInput(ModelException):
@@ -48,6 +54,14 @@ class StandardPathNotExisting(ModelException):
 
 class DictionaryCorrupted(ModelException):
     """Raised if a dictionary does not match the programs expectations"""
+
+
+class DatabaseException(CustomException):
+    """Raised if an error occurs in the database layer"""
+
+
+class DatabaseConnectionError(DatabaseException):
+    """Raised if the database connection is not working"""
 
 
 class ExceptionMessages(Enum):

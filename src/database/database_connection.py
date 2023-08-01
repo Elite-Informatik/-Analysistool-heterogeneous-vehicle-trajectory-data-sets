@@ -1,5 +1,10 @@
-from sqlalchemy import create_engine
+from typing import Optional
 
+import sqlalchemy.exc
+from sqlalchemy import create_engine
+from sqlalchemy.engine.base import Connection
+
+from src.data_transfer.exception.custom_exception import DatabaseConnectionError
 from src.database.query_logging import log_query
 
 
@@ -22,15 +27,23 @@ class DatabaseConnection:
         # create engine with the given parameters.
         self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}', echo=False,
                                     pool_size=20, max_overflow=30)
-        self.connection = self.engine.connect()
+        # check if the engine is valid.
+        self.connection: Optional[Connection] = None
 
-    def get_connection(self):
+
+
+    def get_connection(self) -> Connection:
         """
         Returns the connection to the database. If the connection is closed or not set, a new connection is created.
         :return: The connection to the database.
         """
-        self.connection = self.engine.connect()
-        if self.connection is None or self.connection.closed:
+        try:
+            self.connection = self.engine.connect()
+        except sqlalchemy.exc.OperationalError as e:
+            self.connection = None
+            raise DatabaseConnectionError(e.args)
+
+        if self.connection.closed:
             self.connection = self.engine.connect()
             log_query("Connection established.")
         else:

@@ -9,6 +9,7 @@ from sqlalchemy.sql import text
 
 from src.data_transfer.content.column import Column
 from src.data_transfer.content.error import ErrorMessage
+from src.data_transfer.exception.custom_exception import DatabaseConnectionError
 from src.data_transfer.record.data_record import DataRecord
 from src.data_transfer.record.data_set_record import DatasetRecord
 from src.database.query_logging import log_query
@@ -128,7 +129,11 @@ class TableAdapter(ErrorHandler):
         :param query:   the sql query
         :return the data
         """
-        connection = self.database_connection.get_connection()
+        try:
+            connection = self.database_connection.get_connection()
+        except DatabaseConnectionError as e:
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(e))
+            return None
         query = query.format(tablename=self.key) + SQL_SUFFIX
         log_query(query)
         query = text(query)

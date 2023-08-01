@@ -12,6 +12,7 @@ from sqlalchemy.sql import text
 
 from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.exception import InvalidUUID
+from src.data_transfer.exception.custom_exception import DatabaseConnectionError
 from src.data_transfer.record import DataRecord
 from src.data_transfer.record import DatasetRecord
 from src.database.database_connection import DatabaseConnection
@@ -143,10 +144,13 @@ class PostgreSQLDatasetFacade(DatasetFacade):
             data_sets[key] = table_adapter_record.size
         return data_sets
 
-    def set_data_sets_as_dict(self) -> List[UUID]:
+    def set_data_sets_as_dict(self) -> Optional[List[UUID]]:
 
         dataset_ids = list()
+
         rows = self.get_tables_from_sql()
+        if rows is None:
+            return None
 
         self.tables_table = TableAdapter(self.database_connection)
         if not self.get_tables_table(rows):
@@ -166,7 +170,8 @@ class PostgreSQLDatasetFacade(DatasetFacade):
                                                                                      tablename="{tablename}"))
 
         if table_data is None:
-            self.throw_error(self.tables_table.get_errors()[0].error_type, self.tables_table.get_errors()[0].args)
+            if len(self.tables_table.get_errors()) > 0:
+                self.throw_error(self.tables_table.get_errors()[0].error_type, self.tables_table.get_errors()[0].args)
             return []
         table_data = table_data.data
 
@@ -188,9 +193,12 @@ class PostgreSQLDatasetFacade(DatasetFacade):
 
         return dataset_ids
 
-    def get_tables_from_sql(self) -> List[Tuple[str, int]]:
-
-        database_connection = self.database_connection.get_connection()
+    def get_tables_from_sql(self) -> Optional[List[Tuple[str, int]]]:
+        try:
+            database_connection = self.database_connection.get_connection()
+        except DatabaseConnectionError as e:
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR, ErrorMessage.DETAIL_MESSAGE.value + str(e.args))
+            return None
         query = SQLQueries.GET_TABLES_WITH_SIZE.value
         log_query(query)
         cursor = database_connection.execute(text(query))
@@ -216,8 +224,12 @@ class PostgreSQLDatasetFacade(DatasetFacade):
         return False
 
     def table_exists(self, table_name: str, all_database: bool = False) -> bool:
+
+        tables = self.get_tables_from_sql()
+
+
         if all_database:
-            return table_name in self.get_tables_from_sql()
+            return table_name in tables
         for key, value in self.table_adapters.items():
             if value.name == table_name:
                 return True

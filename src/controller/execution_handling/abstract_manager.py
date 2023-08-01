@@ -30,7 +30,7 @@ class AbstractManager(ABC):
         The default way of handling an error. The errors are queried from the possible origins. The meta-info
         provides additional information from the concrete respective manager. The errors are directly sent to the
         request_manager without further checking.
-        If a more detailled error analysis is expected, the request_manager can be used in the concrete submanagers.
+        If a more detailed error analysis is expected, the request_manager can be used in the concrete submanagers.
         For example, when dealing with a user request selection.
 
         :param error_origins: The possible origins of the error

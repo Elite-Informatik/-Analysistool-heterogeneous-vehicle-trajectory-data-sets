@@ -10,6 +10,7 @@ class ErrorMessage(Enum):
     INPUT_NONE = "The given input is None"
     INVALID_TYPE = "The input has got an invalid type"
     INVALID_COLUMN_FILTER = "The column does not fit the filter type"
+    DETAIL_MESSAGE = "\n\n Details: \n"
 
     # database
     DATABASE_CONNECTION_IMPOSSIBLE = "The connection to the database is not possible"
@@ -17,6 +18,7 @@ class ErrorMessage(Enum):
     DATASET_NOT_DELETED = "Error occured while deleting a dataset"
     TRAJECTORY_NOT_EXISTING = "There is no trajectory with this id"
     DATASET_NAME_INVALID = "The name of the dataset is invalid"
+    DATABASE_CONNECTION_ERROR = "An error occured while connecting to the database"
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"

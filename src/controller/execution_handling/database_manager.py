@@ -360,6 +360,9 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
     def load_datasets(self, dataset_dict: Dict[str, int]) -> bool:
 
         uuids = self.dataset_facade.set_data_sets_as_dict()
+        if uuids is None:
+            self.handle_error([self.dataset_facade], " at loading datasets in manager")
+            return False
 
         for uuid in uuids:
             self.events.append(DatasetAdded(uuid))
