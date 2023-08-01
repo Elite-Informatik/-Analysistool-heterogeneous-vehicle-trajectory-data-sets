@@ -29,6 +29,8 @@ class ErrorMessage(Enum):
     DICT_NOT_IMPORTABLE = "The dictionary is not convertable"
     DATASET_CORRUPTED = "The dataset contains corruptions. However, they can be repaired"
     SESSION_NOT_OPEN = "The session is not open"
+    PARTIAL_DATASET_NOT_IMPORTABLE = "The selected data is partially not convertable " \
+                                     "(i.e. is contains unrepairable corruptions). All convertable data is imported."
 
     # polygons:
     POLYGON_NOT_CREATED_FROM_RECORD = "The polygon could not be created from the record"

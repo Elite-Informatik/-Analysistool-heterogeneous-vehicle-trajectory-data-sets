@@ -5,6 +5,7 @@ from typing import Union
 
 from pandas import DataFrame
 
+from src.data_transfer.content.data_types import DataTypes
 from src.data_transfer.record import DataRecord
 from src.file.converter.data_converter import DataConverter
 from src.file.converter.highd_handler.concrete_highd_handler import RecordingMetaHandler
@@ -23,7 +24,7 @@ class SubFileTypes(Enum):
 
 
 PREFIX: str = r"\d*_"
-FORMAT: str = "HighD"
+FORMAT: str = DataTypes.HIGH_D.value
 DEF_NAME: str = "HighD Dataset"
 INVALID_FILES_ERROR = "Error, invalid files"
 

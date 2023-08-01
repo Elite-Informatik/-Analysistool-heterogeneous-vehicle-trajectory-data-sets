@@ -3,16 +3,18 @@ from typing import List, Dict, Tuple
 import pandas as pd
 
 from src.data_transfer.content import Column
+from src.data_transfer.content.data_types import DataTypes
 from src.data_transfer.content.road_type import RoadType, VehicleType
 from src.data_transfer.exception import ExecutionFlowError
 from src.data_transfer.record import DataRecord
+from src.file.converter.bicycle_simra.simra_bicycle_columns import SimraColumn
 from src.file.converter.bicycle_simra.simra_bicycle_handler import IDCalculator, TrajectoryIDCalculator, DateCalculator, \
     TimeCalculator, LatitudeCalculator, LongitudeCalculator, ConstantConverter, SpeedCalculator, \
     AccelerationMagnitudeCalculator, AccelerationDirectionCalculator, SpeedDirectionCalculator
 from src.file.converter.data_converter import DataConverter
 from src.file.converter.fcd_ui_handler.fcd_ui_handler import AbstractColumnCalculator
 
-FORMAT: str = "SimRa"
+FORMAT: str = DataTypes.SIMRA.value
 
 
 class SimraConverter(DataConverter):
@@ -20,7 +22,7 @@ class SimraConverter(DataConverter):
     This converter converts datasets of the SimRa project into the unified data format.
     """
     def __init__(self):
-        self.is_valid = False
+        self.verified = False
         self.handler_map: Dict[Column, AbstractColumnCalculator] = {
             Column.ID: IDCalculator(),
             Column.TRAJECTORY_ID: TrajectoryIDCalculator(),
@@ -43,24 +45,42 @@ class SimraConverter(DataConverter):
         self.fatal_corruptions: List[int] = []
 
     def is_convertable(self, data: List[DataRecord]) -> bool:
-        self.is_valid = True
-        return True
+        self.verified = True
+        convertable = True
+        for column, handler in self.handler_map.items():
+            for data_record in data:
+                if not handler.is_repairable(data_record.data):
+                    self.invalid_columns.append(column)
+                    #self.fatal_corruptions.extend(handler.fatal_corruptions)
+                    convertable = False
+
+        return convertable
 
     def search_inaccuracies(self, data: List[DataRecord]) -> List[str]:
-        return []
+        inaccuracies: List[str] = []
+        for data_record in data:
+            for column, handler in self.handler_map.items():
+                error_lines = handler.find_repairable_corruptions(data_record.data)
+                if len(error_lines) == 0:
+                    continue
+                error_string = "Column:" + column.value + ", has errors in the lines: " \
+                                 + str(error_lines)
+                inaccuracies.append(error_string)
+        return inaccuracies
+
 
     def convert_to_data(self, data: List[DataRecord]) -> DataRecord:
         """
         converts the given List of source data records of the simra bicycle data into a DataRecord.
         """
-        if not self.is_valid:
+        if not self.verified:
             raise \
                 ExecutionFlowError(f"The Dataset has not been validated by the {self.is_convertable.__name__} method.")
         destination_df: pd.DataFrame = pd.DataFrame()
         result_df: pd.DataFrame = pd.DataFrame()
 
         for data_record in data:
-            source_df: pd.DataFrame = data_record.data
+            source_df: pd.DataFrame = self.trim_data_set(data_record.data)
         # repair all columns following the dependencies between them
             for column in [column for column in
                            [Column.ID, Column.TRAJECTORY_ID, Column.DATE, Column.TIME, Column.LATITUDE, Column.SPEED_LIMIT,
@@ -92,3 +112,10 @@ class SimraConverter(DataConverter):
 
     def get_data_format(self) -> str:
         return FORMAT
+
+    def trim_data_set(self, data: pd.DataFrame) -> pd.DataFrame:
+        """
+        Deletes all the lines in which the latitude or longitude are not set
+        """
+        return data.dropna(subset=[SimraColumn.LATITUDE.value, SimraColumn.LONGITUDE.value]).reset_index(drop=True)
+

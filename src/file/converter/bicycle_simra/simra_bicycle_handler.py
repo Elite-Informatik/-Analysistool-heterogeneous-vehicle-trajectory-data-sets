@@ -89,6 +89,8 @@ class GPSCalculator(AbstractColumnCalculator, ABC):
         Check if the column is repairable. The column is repairable if it contains at least one
         row that is of type float or double and is in the range of the given range.
         """
+        if self.column.value not in source_df.columns:
+            return False
         return find_numeric_rows(source_df[self.column.value], self.range).any()
 
     def find_fatal_corruptions(self, source_df: DataFrame) -> List[int]:
@@ -130,6 +132,8 @@ class DateTimeCalculator(AbstractColumnCalculator, ABC):
 
     def is_repairable(self, source_df: DataFrame) -> bool:
         """The TimeStamp column is repairable if it contains at least one correct entry."""
+        if SimraColumn.TIME_STAMP.value not in source_df.columns:
+            return False
         return source_df[SimraColumn.TIME_STAMP.value].astype(str).str.isdigit().any()
 
     def find_fatal_corruptions(self, source_df: DataFrame) -> List[int]:
@@ -187,6 +191,7 @@ class SpeedCalculator(AbstractColumnCalculator):
         result_df[Column.SPEED.value] = temp_df["distance"]
         # add value for first row
         result_df[Column.SPEED.value].iloc[0] = 0
+
         return True
 
     def repair_column(self, source_df: DataFrame) -> bool:
@@ -250,6 +255,12 @@ class AccelerationCalculator(AbstractColumnCalculator, ABC):
         filling it with zeros. Invalid values are replaced with zeros.
         """
         # replace all non numeric values with None
+        if SimraColumn.X.value not in source_df.columns:
+            source_df[SimraColumn.X.value] = None
+        if SimraColumn.Y.value not in source_df.columns:
+            source_df[SimraColumn.Y.value] = None
+        if SimraColumn.Z.value not in source_df.columns:
+            source_df[SimraColumn.Z.value] = None
         source_df[SimraColumn.X.value] = repair_number_column(column_frame=source_df[SimraColumn.X.value],
                                                               def_value=0)
         source_df[SimraColumn.Y.value] = repair_number_column(column_frame=source_df[SimraColumn.Y.value],

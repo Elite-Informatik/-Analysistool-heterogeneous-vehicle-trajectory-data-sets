@@ -90,8 +90,9 @@ class FileFacadeManager(FileFacade):
 
         for chunk in self._file_structure.yield_import_data(chucked_path, self.separator):
             if not self.converter.is_convertable(self.data + [chunk]):
-                self.throw_error(ErrorMessage.DATASET_NOT_IMPORTABLE)
-                yield None
+                self.throw_error(ErrorMessage.PARTIAL_DATASET_NOT_IMPORTABLE)
+                continue
+                #yield None
 
             inaccuracies.extend(self.converter.search_inaccuracies(self.data + [chunk]))
             converted_data = self.converter.convert_to_data(self.data + [chunk])

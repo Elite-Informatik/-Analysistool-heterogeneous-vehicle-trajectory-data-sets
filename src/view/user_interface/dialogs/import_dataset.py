@@ -5,6 +5,7 @@ from tkinter.messagebox import showerror
 from tkinter.simpledialog import Dialog
 from typing import List
 
+from src.data_transfer.content.data_types import DataTypes
 from src.view.user_interface.ui_util.texts import EnglishTexts
 
 
@@ -64,28 +65,37 @@ class ImportDatasetDialog(Dialog):
 
         # build path selection entries depending on the selected file format
         file_format = self._format_selector.get()
-        if file_format == "HighD":
+        if file_format == DataTypes.HIGH_D.value:
             self.add_path_selection(master=self._path_selection_frame, row=1, label_name="recording:")
             self.add_path_selection(master=self._path_selection_frame, row=2, label_name="track_meta:")
             self.add_path_selection(master=self._path_selection_frame, row=3, label_name="tracks:")
+        elif file_format == DataTypes.SIMRA.value:
+            self.add_path_selection(master=self._path_selection_frame, row=1, label_name="directory:", directory=True)
         else:
             self.add_path_selection(master=self._path_selection_frame, row=0)
 
         self._path_selection_frame.grid(column=0, columnspan=3, row=2, sticky="nsew")
 
-    def add_path_selection(self, master, row, label_name="path"):
+    def add_path_selection(self, master, row, label_name="path", directory=False):
         path_label = tk.Label(master=master, text=label_name, anchor="w", width=15)
         path_label.grid(row=row, column=0, sticky="nsew")
         path_selector = tk.StringVar()
         self._path_selectors.append(path_selector)
         path_entry = tk.Entry(master=master, textvariable=path_selector, width=20)
         path_entry.grid(column=1, row=row, sticky="nsew")
-        path_select_button = tk.Button(master=master, text="Select",
-                                       command=lambda: self.select_path(string_var=path_selector))
+        if directory:
+            path_select_button = tk.Button(master=master, text="Select",
+                                           command=lambda: self.select_path_directory(string_var=path_selector))
+        else:
+            path_select_button = tk.Button(master=master, text="Select",
+                                           command=lambda: self.select_path(string_var=path_selector))
         path_select_button.grid(column=2, row=row, sticky="nsew")
 
     def select_path(self, string_var):
         string_var.set(filedialog.askopenfilename())
+
+    def select_path_directory(self, string_var):
+        string_var.set(filedialog.askdirectory())
 
     def apply(self):
         """

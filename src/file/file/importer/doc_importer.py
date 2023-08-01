@@ -19,7 +19,19 @@ class DocImporter(DataImporter):
     """
 
     def yield_import_data(self, path: str, sep: str = STANDARD_SEP) -> DataRecord:
-        yield self.import_data(path, sep)
+        """
+        Imports each doc file from the given path and yields the imported data after each file.
+        """
+        for file in os.listdir(path):
+            if self.fits_file_format(file):
+                data = self.import_data(os.path.join(path, file), sep)
+                # checks if the data is empty
+                # todo: remove
+                print("current_file: ", file)
+                if data.data.empty:
+                    continue
+                print("\tnot empty")
+                yield data
 
     def import_data(self, path: str, sep: str = STANDARD_SEP) -> DataRecord:
         """
@@ -46,6 +58,9 @@ class DocImporter(DataImporter):
         csv_file = StringIO("\n".join(csv_lines))
 
         dataframe = pd.read_csv(csv_file, delimiter=sep)
+
+        if dataframe.empty:
+            return DataRecord(file_name[0], (), pd.DataFrame())
 
         return DataRecord(file_name[0], dataframe.columns, dataframe)
     def fits_file_format(self, name: str) -> bool:

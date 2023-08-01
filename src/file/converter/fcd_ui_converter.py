@@ -5,6 +5,7 @@ from typing import Tuple
 import pandas as pd
 
 from src.data_transfer.content import Column
+from src.data_transfer.content.data_types import DataTypes
 from src.data_transfer.exception import ExecutionFlowError
 from src.data_transfer.record import DataRecord
 from src.file.converter.data_converter import DataConverter
@@ -35,7 +36,7 @@ class FCDUIConverter(DataConverter):
     OPT_COLUMNS: List[str] = [FcdColumn.SPEED.value, FcdColumn.MAX_SPEED.value, FcdColumn.AZIMUTH.value,
                               FcdColumn.ROAD_TYPE.value, FcdColumn.ROAD_OSM_TYPE.value, FcdColumn.ONE_WAY_STREET.value]
 
-    NAME: str = "FCD UI"
+    NAME: str = DataTypes.FCD_UI.value
     SEPARATOR: str = ", "
     INVALID_COLUMN_STR: str = "The following Columns are invalid: "
     REPAIRABLE_CORRUPTIONS_STR: str = "The following rows are corrupted but repairable: "
