@@ -6,7 +6,9 @@ class SQLQueries(Enum):
     holds all sql queries
     """
 
-    CREATETABLE = "CREATE TABLE {tablename} ({columns})"
+    CREATETABLE = """
+                    CREATE TABLE "{tablename}" ({columns})
+                    """
     DROPTABLE = "DROP TABLE {tablename};"
     SELECT = "SELECT {columns}"
     FROM = " FROM {tablename} AS t"
@@ -20,17 +22,22 @@ class SQLQueries(Enum):
     SELECTINFILTERED = "SELECT {columns} FROM {tablename} WHERE {data} IN ({values}) AND {filter}"
     INSERT = "INSERT INTO {tablename} VALUES {values}"
     GET_COLUMNS = "SELECT column_name FROM information_schema.columns WHERE table_name = '{tablename}'"
-    GET_TABLES_WITH_SIZE = """
-                            SELECT 
-                                table_name, 
-                                pg_total_relation_size(quote_ident(table_name)) / 1024 / 1024 AS size_in_mb 
-                            FROM 
-                                information_schema.tables 
-                            WHERE 
-                                table_schema = 'public'
-                            ORDER BY
-                                size_in_mb DESC;
+    GET_ALL_TABLES = """
+                            SELECT
+                                table_name
+                            FROM
+                                information_schema.tables
+                            WHERE
+                                table_schema = 'public';
                             """
+    GET_TABLES_FROM_TABLE_WITH_SIZE = """
+                            SELECT name, size
+                            FROM "{tablename}"
+                            """
+    GET_TABLES_FROM_TABLE = """
+                            SELECT DISTINCT name 
+                            FROM "{tablename}"
+                """
     TABLE_SIZE = """SELECT
                         pg_total_relation_size(quote_ident(table_name)) / 1024 / 1024 AS size_in_mb
                     FROM
@@ -44,3 +51,4 @@ class SQLQueries(Enum):
                 WHERE {key_column}"""
     DELETE = """DELETE FROM {tablename}
                 WHERE {key_column}"""
+    SELECT_UUID_FROM_TABLE = """SELECT uuid FROM "{meta_table_name}" WHERE name='{tablename}'"""

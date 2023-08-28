@@ -19,6 +19,7 @@ class ErrorMessage(Enum):
     TRAJECTORY_NOT_EXISTING = "There is no trajectory with this id"
     DATASET_NAME_INVALID = "The name of the dataset is invalid"
     DATABASE_CONNECTION_ERROR = "An error occured while connecting to the database"
+    DATABASE_QUERY_ERROR = "An error occured while querying the database with query: "
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"

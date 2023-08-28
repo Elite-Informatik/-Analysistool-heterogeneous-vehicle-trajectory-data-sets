@@ -10,7 +10,7 @@ from src.database.query_logging import log_query
 
 class DatabaseConnection:
 
-    def __init__(self, host: str, user: str, password: str, database: str, port: str):
+    def __init__(self, host: str, user: str, password: str, database: str, port: str, data_table: str, meta_table: str):
         """
         Sets the connection parameters for the database.
         :param host: the host of the database
@@ -24,6 +24,8 @@ class DatabaseConnection:
         self.password: str = password
         self.database: str = database
         self.port: str = port
+        self.data_table: str = data_table
+        self.meta_table: str = meta_table
         # create engine with the given parameters.
         self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}', echo=False,
                                     pool_size=20, max_overflow=30)

@@ -4,6 +4,9 @@ from typing import Optional
 from uuid import UUID
 
 import pandas
+import pandas as pd
+from pandas import DataFrame
+from sqlalchemy import Connection
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql import text
 
@@ -12,6 +15,7 @@ from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.exception.custom_exception import DatabaseConnectionError
 from src.data_transfer.record.data_record import DataRecord
 from src.data_transfer.record.data_set_record import DatasetRecord
+from src.database.database_connection import DatabaseConnection
 from src.database.query_logging import log_query
 from src.database.sql_querys import SQLQueries
 from src.model.error_handler import ErrorHandler
@@ -22,6 +26,8 @@ SQL_SUFFIX = ";"
 
 APPEND: dict = {True: "append", False: "replace"}
 
+META_TABLE_COLUMNS: list = ["name", "uuid", "size"]
+
 
 class TableAdapter(ErrorHandler):
     """
@@ -30,39 +36,26 @@ class TableAdapter(ErrorHandler):
 
     def __init__(self, database_connection):
         super().__init__()
-        self.database_connection = database_connection
+        self.database_connection: DatabaseConnection = database_connection
         self.key = None
         self.size = None
         self.uuid = None
         self.db_key = None
+        self.name = None
 
-    def from_existing_table(self, name: str, key: str, uuid: UUID, size: int = 0):
+    def from_existing_table(self, name: str, uuid: UUID, size: int = 0):
         """
         creates a table adapter from an existing table
         """
         self.name = name
-        self.key = key
         self.uuid = uuid
         self.size = size
 
-    def insert_data(self, data: pandas.DataFrame, append=False, add_geometry: bool = True) -> bool:
+    def insert_data(self, data: pandas.DataFrame, add_geometry: bool = True) -> bool:
         """
         inserts the given data into the table
         :param append: if true, the data will be appended to the table, otherwise the table will be replaced
         :param data: the data
-        """
-        if match(REGEX, self.key) is None:
-            self.throw_error(ErrorMessage.DATASET_NAME_INVALID, msg=f"Dataset name '{self.key}' is not valid!")
-            return False
-
-        """# Aggregate longitude and latitude
-        stack_lonlat = data_record.data.agg({'longitude': np.stack, 'latitude': np.stack})
-        # Create the LineString using aggregate values
-        line_str_objects = list()
-        for o in list(zip(*stack_lonlat)):
-            line_str_objects.append("LineString(" + str(o[0]) + " " + str(o[1]) + ")")
-
-        data_record.data["geometry"] = line_str_objects
         """
 
         if add_geometry:
@@ -70,38 +63,33 @@ class TableAdapter(ErrorHandler):
                                         "LineString(" + str(row['longitude']) +
                                         " " +
                                         str(row['latitude']) + ")", axis=1)
-
+        dataset_table_name: str = self.database_connection.data_table
+        metadata_table_name: str = self.database_connection.meta_table
         try:
-            connection = self.database_connection.get_connection()
-            log_query("Creating table " + self.key)
-            data.to_sql(name=self.key, con=connection, if_exists=APPEND[append], index=False)
+            connection: Connection = self.database_connection.get_connection()
+            if not isinstance(connection, Connection):
+                raise DatabaseConnectionError("SQLAlchemy returned non connection object!")
+            data["Dataset_ID"] = self.uuid
+            data.to_sql(name=dataset_table_name, con=connection.engine, if_exists=APPEND[True], index=False)
+            DataFrame(data={META_TABLE_COLUMNS[0]: [self.name], META_TABLE_COLUMNS[1]: [self.uuid],
+                            META_TABLE_COLUMNS[2]: [self.size]}).to_sql(
+                name=metadata_table_name,
+                con=connection.engine,
+                if_exists=APPEND[True],
+                index=False)
             self.database_connection.post_connection()
-        except SQLAlchemyError as err:
-            self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(err))
-            self.database_connection.recover()
-            return False
+
         except DatabaseConnectionError as e:
             self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(e))
             return False
-        try:
-            connection = self.database_connection.get_connection()
-        except DatabaseConnectionError as e:
-            self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(e))
-            return False
 
-            # Get size
-        try:
-            query = SQLQueries.TABLE_SIZE.value.format(tablename=self.key) + SQL_SUFFIX
-            log_query(query)
-            query = text(query)
-            size_cursor = connection.execute(query)
-            self.size = size_cursor.fetchone()[0]
-            size_cursor.close()
-            self.database_connection.post_connection()
-        except SQLAlchemyError as err:
+        """      except SQLAlchemyError as err:
             self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(err))
             self.database_connection.recover()
-            return False
+            return False"""
+
+        #self.size = 0  # size_cursor.fetchone()[0] todo: add size calculation
+
 
         return True
 
@@ -156,7 +144,7 @@ class TableAdapter(ErrorHandler):
                 result = None
             self.database_connection.post_connection()
         except SQLAlchemyError as err:
-            self.throw_error(ErrorMessage.DATABASE_CONNECTION_IMPOSSIBLE, str(err))
+            self.throw_error(ErrorMessage.DATABASE_QUERY_ERROR, str(err))
             self.database_connection.recover()
             return None
 
