@@ -11,15 +11,21 @@ class ErrorMessage(Enum):
     INVALID_TYPE = "The input has got an invalid type"
     INVALID_COLUMN_FILTER = "The column does not fit the filter type"
     DETAIL_MESSAGE = "\n\n Details: \n"
+    INVALID_UUID = "The {uuid} does not seem to be a valid uuid."
 
     # database
     DATABASE_CONNECTION_IMPOSSIBLE = "The connection to the database is not possible"
-    DATASET_NOT_EXISTING = "There is no dataset with this idea"
+    DATASET_NOT_EXISTING = "No dataset with this uuid seems to exist."
     DATASET_NOT_DELETED = "Error occured while deleting a dataset"
     TRAJECTORY_NOT_EXISTING = "There is no trajectory with this id"
     DATASET_NAME_INVALID = "The name of the dataset is invalid"
-    DATABASE_CONNECTION_ERROR = "An error occured while connecting to the database"
+    DATABASE_CONNECTION_ERROR = "An error occurred while connecting to the database"
     DATABASE_QUERY_ERROR = "An error occured while querying the database with query: "
+    META_TABLE_NOT_EXISTING = "The meta table does not seem to exist. "
+    DATASET_ADD_ERROR = "An error occurred while adding a dataset to the database."
+    DATABASE_MULTIPLE_DATASETS_WITH_SAME_UUID = "There are multiple datasets with the same uuid in the meta table."
+    DATABASE_WRONG_COLUMN_NAMES = "The column names of the meta table are not correct."
+    DATASET_LOAD_ERROR = "An error occurred while loading a dataset from the database."
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"

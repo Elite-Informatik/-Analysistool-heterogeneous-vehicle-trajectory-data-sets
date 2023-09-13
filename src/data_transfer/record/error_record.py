@@ -22,3 +22,4 @@ class ErrorRecord:
         Returns the error type of the error record
         """
         return self._error_type
+

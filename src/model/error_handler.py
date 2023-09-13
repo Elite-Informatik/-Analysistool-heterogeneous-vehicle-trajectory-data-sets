@@ -39,7 +39,7 @@ class ErrorHandler(IErrorHandler, ABC):
         for handler in self._error_handlers:
             errors.extend(handler.get_errors())
 
-        return errors
+        return list(set(errors))
 
     def throw_error(self, error: ErrorMessage, msg: str = DEF_MSG) -> None:
         """

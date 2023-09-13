@@ -9,7 +9,9 @@ from src.database.query_logging import log_query
 
 
 class DatabaseConnection:
-
+    """
+    Represents a connection to the database.
+    """
     def __init__(self, host: str, user: str, password: str, database: str, port: str, data_table: str, meta_table: str):
         """
         Sets the connection parameters for the database.
@@ -32,8 +34,6 @@ class DatabaseConnection:
         # check if the engine is valid.
         self.connection: Optional[Connection] = None
 
-
-
     def get_connection(self) -> Connection:
         """
         Returns the connection to the database. If the connection is closed or not set, a new connection is created.
@@ -43,13 +43,18 @@ class DatabaseConnection:
             self.connection = self.engine.connect()
         except sqlalchemy.exc.OperationalError as e:
             self.connection = None
-            raise DatabaseConnectionError(e.args)
+            raise DatabaseConnectionError("A SQLAlchemy error occurred: " + str(e))
 
         if self.connection.closed:
             self.connection = self.engine.connect()
             log_query("Connection established.")
         else:
             log_query("Connection already established.")
+
+        if not isinstance(self.connection, Connection):
+            raise DatabaseConnectionError("SQLAlchemy returned non connection object!"
+                                          "There is something wrong with the connection.")
+
         return self.connection
 
     def post_connection(self):
