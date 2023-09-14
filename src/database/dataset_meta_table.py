@@ -23,8 +23,8 @@ class DatasetMetaTable(DatabaseComponent):
         super().__init__()
         self.database_connection: DatabaseConnection = connection
         self.name = connection.meta_table
-        if not self._table_exists and not self._exists():
-            self._table_exists = self._create_table()
+        if not DatasetMetaTable._table_exists and not self._exists():
+            DatasetMetaTable._table_exists = self._create_table()
 
     def _exists(self) -> bool:
         """
@@ -115,7 +115,10 @@ class DatasetMetaTable(DatabaseComponent):
         connection: Connection = self._get_connection()
         if connection is None:
             return None
-        query: str = SQLQueries.SELECT_DATASET_METADATA.value.format(uuid=dataset_uuid,
+        query: str = SQLQueries.SELECT_DATASET_METADATA.value.format(columns=f"{META_TABLE_COLUMNS[0]}, "
+                                                                             f"{META_TABLE_COLUMNS[1]}, "
+                                                                             f"{META_TABLE_COLUMNS[2]}",
+                                                                     uuid=dataset_uuid,
                                                                      meta_table_name=self.name)
 
         dataset_meta_data: DataFrame = self.query_sql(sql_query=query, connection=connection)
@@ -143,6 +146,7 @@ class DatasetMetaTable(DatabaseComponent):
         """
         connection: Connection = self._assert_table_exists_get_connection()
         if connection is None:
+            self.throw_error(ErrorMessage.DATASET_NOT_DELETED)
             return False
 
         query: str = SQLQueries.DELETE_DATASET.value.format(uuid=dataset_uuid,
@@ -152,6 +156,32 @@ class DatasetMetaTable(DatabaseComponent):
         self.query_sql(sql_query=query, connection=connection, read=False)
 
         return True
+
+    def get_all_datasets(self) -> List[UUID]:
+        """
+        Gets the uuids of every dataset referenced the meta table.
+        :returns: A list of UUIDs corresponding to the datasets in the meta table.
+        """
+        connection: Connection = self._assert_table_exists_get_connection()
+        if connection is None:
+            self.throw_error(ErrorMessage.ALL_DATASETS_LOAD_ERROR)
+            return []
+        query: str = SQLQueries.GET_COLUMN_FROM_TABLE.value.format(column=META_TABLE_COLUMNS[1],
+                                                                   table_name=self.name)
+
+        uuid_dataframe: DataFrame = self.query_sql(sql_query=query, connection=connection)
+
+        if uuid_dataframe is None:
+            self.throw_error(ErrorMessage.ALL_DATASETS_LOAD_ERROR)
+            return []
+
+        columns: List[str] = list(uuid_dataframe.columns)
+        # raises a RuntimeError as this should not be possible
+        if len(columns) != 1 or META_TABLE_COLUMNS[1] not in columns:
+            raise RuntimeError(f"The data loaded from the Database is not in the correct format. Expected: "
+                               f"[{META_TABLE_COLUMNS[1]}], but got: {columns}")
+
+        return uuid_dataframe[META_TABLE_COLUMNS[1]].to_list()
 
     def _assert_table_exists_get_connection(self) -> Optional[Connection]:
         """

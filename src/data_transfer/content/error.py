@@ -16,7 +16,7 @@ class ErrorMessage(Enum):
     # database
     DATABASE_CONNECTION_IMPOSSIBLE = "The connection to the database is not possible"
     DATASET_NOT_EXISTING = "No dataset with this uuid seems to exist."
-    DATASET_NOT_DELETED = "Error occured while deleting a dataset"
+    DATASET_NOT_DELETED = "An error occurred while deleting a dataset."
     TRAJECTORY_NOT_EXISTING = "There is no trajectory with this id"
     DATASET_NAME_INVALID = "The name of the dataset is invalid"
     DATABASE_CONNECTION_ERROR = "An error occurred while connecting to the database"
@@ -26,6 +26,8 @@ class ErrorMessage(Enum):
     DATABASE_MULTIPLE_DATASETS_WITH_SAME_UUID = "There are multiple datasets with the same uuid in the meta table."
     DATABASE_WRONG_COLUMN_NAMES = "The column names of the meta table are not correct."
     DATASET_LOAD_ERROR = "An error occurred while loading a dataset from the database."
+    ALL_DATASETS_LOAD_ERROR = "An error occurred while loading a list of all the existing datasets."
+    DATASET_DATA_ERROR = "An error occurred while loading data of the dataset from the database."
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"

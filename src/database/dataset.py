@@ -23,15 +23,17 @@ class Dataset(DatabaseComponent):
     It represents a dataset in the database. It contains the metadata of the dataset and the connection to the database.
     """
 
-    def __init__(self, name: str, size: int, connection: DatabaseConnection, uuid: UUID = uuid4()):
+    def __init__(self, name: str, size: int, connection: DatabaseConnection, meta_table: DatasetMetaTable,
+                 uuid: UUID = uuid4()):
         super().__init__()
         self._name: str = name
         self._size: int = size
         self._uuid: UUID = uuid
         self.connection: DatabaseConnection = connection
         self.data_table_name: str = connection.data_table
-        self.meta_table = DatasetMetaTable(connection=connection)
+        self.meta_table = meta_table
         self.add_error_handler(self.meta_table)
+        meta_table.add_table(dataset_name=name, dataset_uuid=uuid, dataset_size=size)
 
     def to_dataset_record(self) -> DatasetRecord:
         """
@@ -46,9 +48,10 @@ class Dataset(DatabaseComponent):
         """
         connection: Connection = self._get_connection()
         if connection is None:
+            self.throw_error(ErrorMessage.DATASET_DATA_ERROR, "uuid: " + str(self._uuid))
             return DataRecord(_name=self._name, _data=DataFrame(), _column_names=())
 
-        query: str = SQLQueries.GET_DATASET.value.format(table_name = self.data_table_name,
+        query: str = SQLQueries.GET_DATASET.value.format(table_name=self.data_table_name,
                                                          column=UUID_COLUMN_NAME,
                                                          uuid=self._uuid)
 
@@ -76,15 +79,36 @@ class Dataset(DatabaseComponent):
         dataframe.to_sql(name=self._name, con=connection, if_exists="append", index=False)
         return True
 
+    def delete_dataset(self) -> bool:
+        """
+        Deletes the dataset from the database.
+        """
+        connection: Connection = self._get_connection()
+        if connection is None:
+            return False
+
+        query: str = SQLQueries.DELETE_DATASET.value.format(table_name=self.data_table_name,
+                                                            column=UUID_COLUMN_NAME,
+                                                            uuid=self._uuid)
+
+        query_successful: bool = self.query_sql(sql_query=query, connection=connection, read=False) is not None
+        if not query_successful:
+            return False
+        delete_successful: bool = self.meta_table.remove_dataset(dataset_uuid=self._uuid)
+        return delete_successful
+
     @classmethod
-    def load_from_database(cls, database_connection: DatabaseConnection, uuid: UUID) -> "Dataset":
+    def load_from_database(cls, database_connection: DatabaseConnection, meta_table: DatasetMetaTable,
+                           uuid: UUID) -> "Dataset":
         """
         Loads a dataset from the database with the given uuid.
         :param database_connection: the database connection as a DatabaseConnection object
+        :param meta_table: the meta table as a DatasetMetaTable object.
         :param uuid: the uuid of the dataset that will be loaded
         :return: the loaded dataset. If the dataset does not exist, an invalid dataset will be returned.
         """
-        dataset: Dataset = cls(name="invalid", size=-1, connection=database_connection, uuid=uuid)
+        dataset: Dataset = cls(name="invalid", size=-1, connection=database_connection, meta_table=meta_table,
+                               uuid=uuid)
 
         meta_data: DataFrame = dataset.meta_table.get_meta_data(dataset_uuid=uuid)
 
@@ -109,7 +133,6 @@ class Dataset(DatabaseComponent):
             self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR, str(e))
             return None
         return connection
-
 
     @property
     def uuid(self) -> UUID:

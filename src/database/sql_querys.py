@@ -54,13 +54,13 @@ class SQLQueries(Enum):
     # SELECT_UUID_FROM_TABLE = """SELECT uuid FROM "{meta_table_name}" WHERE name='{tablename}'"""
 
     SELECT_DATASET_METADATA = """
-                                SELECT name, uuid, size
+                                SELECT {columns}
                                 FROM "{meta_table_name}"
                                 WHERE uuid='{uuid}'
                                 """
     GET_ALL_TABLES = """
                                  SELECT
-                                     table_name
+                                     '{table_name}'
                                  FROM
                                      information_schema.tables
                                  WHERE
@@ -69,11 +69,11 @@ class SQLQueries(Enum):
     CREATE_TABLE = """
                          CREATE TABLE "{table_name}" ({columns})
                          """
-    DELETE_DATASET = """
-                        DELETE FROM {table_name} 
-                        WHERE {column}='{uuid}'
-                        """
+    DELETE_DATASET = """DELETE FROM '{table_name}' WHERE {column}='{uuid}'"""
     GET_DATASET = """
-                    SELECT * FROM {table_name}
+                    SELECT * FROM '{table_name}'
                     WHERE {column}='{uuid}'
                     """
+    GET_COLUMN_FROM_TABLE = """
+                            SELECT {column} FROM '{table_name}'
+                            """

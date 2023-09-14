@@ -12,26 +12,19 @@ from src.database import dataset
 from src.database.database_connection import DatabaseConnection
 from src.database.dataset import Dataset
 from src.database.dataset_meta_table import META_TABLE_COLUMNS
+from test.database.test_database import TestDatabase
 
 
-class TestDataset(unittest.TestCase):
+class TestDataset(TestDatabase):
 
     def setUp(self):
-        # Create a mock connection object
-        self.mock_connection = Mock(spec=DatabaseConnection)
-        # Set the meta_table and data_table attributes to dummy names
-        self.mock_connection.meta_table = "meta_table"
-        self.mock_connection.data_table = "data_table"
+        """
+        Sets up the dataset tests by creating an example dataset.
+        """
+        super().setUp()
 
-        self.mock_sql_connection = Mock()
-        self.mock_cursor = Mock()
-
-        self.mock_connection.get_connection.return_value = self.mock_sql_connection
-        self.mock_sql_connection.cursor.return_value = self.mock_cursor
-        self.mock_cursor.description = [[column] for column in META_TABLE_COLUMNS]
-        self.mock_cursor.fetchall.return_value = [("test_dataset", "id1", 10)]
-
-        self.dataset = Dataset(name="test_dataset", size=10, connection=self.mock_connection, uuid="id1")
+        self.dataset = Dataset(name="test_dataset", size=10, connection=self.mock_connection,
+                               meta_table=self.dataset_meta_table, uuid="id1")
         # Create a Dataset instance with a mock connection and some dummy attributes
 
     def test_to_dataset_record(self):
@@ -53,7 +46,14 @@ class TestDataset(unittest.TestCase):
         self.dataset.query_sql = Mock(return_value=mock_data)
         # Call the method and get the result
         result = self.dataset.get_data()
-        # Assert that the result is a DataRecord instance with the same name as the dataset and the expected data and column names
+
+        self.dataset.query_sql.assert_called_with(sql_query=dataset.SQLQueries.GET_DATASET.value.format(
+            table_name=self.dataset.data_table_name, column=dataset.UUID_COLUMN_NAME, uuid=self.dataset._uuid),
+            connection="connection"
+        )
+
+        # Assert that the result is a DataRecord instance with the same name as the dataset and the expected data and
+        # column names
         self.assertIsInstance(result, DataRecord)
         self.assertEqual(result._name, self.dataset._name)
         expected_data = DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
@@ -64,10 +64,13 @@ class TestDataset(unittest.TestCase):
     def test_get_data_failure(self):
         # Test the get_data method when an error occurs while getting the connection or executing the query
         # Mock the _get_connection method to return None
-        self.dataset._get_connection = mock.Mock(return_value=None)
+        self.dataset._get_connection = Mock(return_value=None)
         # Call the method and get the result
         result = self.dataset.get_data()
-        # Assert that the result is a DataRecord instance with the same name as the dataset and an empty data and column names
+        errors = [record.error_type for record in self.dataset.get_errors()]
+        self.assertTrue(ErrorMessage.DATASET_DATA_ERROR in errors)
+        # Assert that the result is a DataRecord instance with the same name as the dataset and an empty data and
+        # column names
         self.assertIsInstance(result, DataRecord)
         self.assertEqual(result._name, self.dataset._name)
         expected_data = DataFrame()
@@ -82,7 +85,6 @@ class TestDataset(unittest.TestCase):
         # Mock the to_sql method of the dataframe object to return None
         mock_dataframe = Mock(spec=DataFrame)
         mock_dataframe.__setitem__ = Mock()
-        mock_dataframe.to_sql.return_value = None
         # Create a DataRecord instance with some dummy data and column names
         data_record = DataRecord(_data=mock_dataframe, _column_names=("col1", "col2"), _name="test")
         # Call the method and get the result
@@ -106,8 +108,8 @@ class TestDataset(unittest.TestCase):
         mock_dataframe.to_sql.assert_not_called()
 
     def test_load_from_database_success(self):
-
-        result = Dataset.load_from_database(database_connection=self.mock_connection, uuid=self.dataset.uuid)
+        result = Dataset.load_from_database(database_connection=self.mock_connection,
+                                            meta_table=self.dataset_meta_table, uuid=self.dataset.uuid)
         # Assert that the result is a Dataset instance with the same attributes as the dataset
         self.assertIsInstance(obj=result, cls=Dataset)
         self.assertEqual(result._name, self.dataset.name)
@@ -117,12 +119,12 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(result.data_table_name, self.dataset.data_table_name)
 
     def test_load_from_database_failure(self):
-
         self.mock_connection.get_connection.side_effect = DatabaseConnectionError("error")
         # Create a random uuid
         random_uuid = uuid4()
         # Call the class method with the mock connection and the random uuid and get the result
-        result = Dataset.load_from_database(database_connection=self.mock_connection, uuid=random_uuid)
+        result = Dataset.load_from_database(database_connection=self.mock_connection,
+                                            meta_table=self.dataset_meta_table, uuid=random_uuid)
         # Assert that the result is None
         # print([(record.error_type, record.args) for record in result.get_errors()])
         errors = [record.error_type for record in result.get_errors()]
@@ -137,11 +139,44 @@ class TestDataset(unittest.TestCase):
         """
         self.mock_cursor.fetchall.return_value = []
         random_uuid = uuid4()
-        result = Dataset.load_from_database(database_connection=self.mock_connection, uuid=random_uuid)
+        result = Dataset.load_from_database(database_connection=self.mock_connection,
+                                            meta_table=self.dataset_meta_table, uuid=random_uuid)
 
-        expected_errors = [ErrorMessage.DATASET_LOAD_ERROR, ErrorMessage.DATASET_NOT_EXISTING]
+        expected_errors = {ErrorMessage.DATASET_LOAD_ERROR, ErrorMessage.DATASET_NOT_EXISTING}
+        result_errors = result.get_errors()
 
-        self.assertListEqual(expected_errors, [record.error_type for record in result.get_errors()])
+        self.assertSetEqual(expected_errors, set([record.error_type for record in result_errors]))
 
-        for record in result.get_errors():
+        for record in result_errors:
             self.assertTrue(str(random_uuid) in record.args)
+
+    def test_create_meta_entry_when_created(self):
+        """
+        Tests if an entry in the meta table is created when a dataset is created.
+        """
+        self.dataset_meta_table.add_table = Mock(return_value=True)
+        dataset = Dataset(name="test_dataset", size=10, connection=self.mock_connection,
+                          meta_table=self.dataset_meta_table, uuid="id1")
+        self.dataset_meta_table.add_table.assert_called_with(dataset_name=dataset.name, dataset_uuid=dataset.uuid,
+                                                             dataset_size=dataset.size)
+
+    def test_delete_dataset(self):
+        """
+        Tests if the delete_dataset method works correctly.
+        """
+        # Mock the _get_connection method to return a dummy connection object
+        self.dataset._get_connection = Mock(return_value="connection")
+        # Mock the query_sql method to return a dummy dataframe mock the meta_table
+        self.dataset.query_sql = Mock(return_value=DataFrame())
+        self.dataset.meta_table = Mock()
+        # Call the method and get the result
+        result = self.dataset.delete_dataset()
+        # Assert that the result is True and that the query_sql method was called with the expected arguments
+        self.assertTrue(result)
+        self.dataset.query_sql.assert_called_with(sql_query=dataset.SQLQueries.DELETE_DATASET.value.format(
+            table_name=self.dataset.data_table_name, column=dataset.UUID_COLUMN_NAME, uuid=self.dataset._uuid),
+            connection="connection", read=False
+        )
+        self.dataset.meta_table.remove_dataset.assert_called_with(dataset_uuid=self.dataset._uuid)
+
+
