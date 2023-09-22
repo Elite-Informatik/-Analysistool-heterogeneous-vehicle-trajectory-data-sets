@@ -11,6 +11,9 @@ from src.database.database_component import DatabaseComponent
 from src.database.sql_querys import SQLQueries
 
 META_TABLE_COLUMNS: list = ["name", "dataset_id", "size"]
+META_TABLE_NAME = 0
+META_TABLE_UUID = 1
+META_TABLE_SIZE = 2
 
 
 class DatasetMetaTable(DatabaseComponent):
@@ -20,8 +23,7 @@ class DatasetMetaTable(DatabaseComponent):
     _table_exists: bool = False
 
     def __init__(self, connection: DatabaseConnection):
-        super().__init__()
-        self.database_connection: DatabaseConnection = connection
+        super().__init__(database_connection=connection)
         self.name = connection.meta_table
         if not DatasetMetaTable._table_exists and not self._exists():
             DatasetMetaTable._table_exists = self._create_table()
@@ -31,7 +33,7 @@ class DatasetMetaTable(DatabaseComponent):
         Checks if the meta_table already exists in the database.
         :return: True if the Table exists and False if it doesn't or an error occurred.
         """
-        connection: Connection = self._get_connection()
+        connection: Connection = self.get_connection()
         if connection is None:
             return False
 
@@ -46,32 +48,20 @@ class DatasetMetaTable(DatabaseComponent):
         Creates the meta_table in the database.
         :return: True if the table was created successfully and False if an error occurred.
         """
-        connection: Connection = self._get_connection()
+        connection: Connection = self.get_connection()
         if connection is None:
             return False
 
         query: str = SQLQueries.CREATE_TABLE.value.format(table_name=text(self.name),
-                                                          columns=META_TABLE_COLUMNS[0] + " TEXT, "
-                                                                  + META_TABLE_COLUMNS[1] + " TEXT, "
-                                                                  + META_TABLE_COLUMNS[2] + " DOUBLE "
-                                                                                            "PRECISION")
+                                                          columns=META_TABLE_COLUMNS[META_TABLE_NAME] + " TEXT, "
+                                                                  + META_TABLE_COLUMNS[META_TABLE_UUID] + " TEXT, "
+                                                                  + META_TABLE_COLUMNS[META_TABLE_SIZE] + " DOUBLE "
+                                                                                                          "PRECISION")
 
         self.query_sql(sql_query=query, connection=connection, read=False)
+        self.database_connection.post_connection()
 
         return True
-
-    def _get_connection(self) -> Optional[Connection]:
-        """
-        Gets the connection to the database.
-        :return: The connection to the database.
-        """
-        try:
-            connection = self.database_connection.get_connection()
-        except DatabaseConnectionError as e:
-            self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR, str(e))
-            return None
-
-        return connection
 
     def add_table(self, dataset_name: str, dataset_uuid: UUID, dataset_size: int) -> bool:
         """
@@ -84,11 +74,32 @@ class DatasetMetaTable(DatabaseComponent):
         if connection is None:
             return False
 
-        dataset_meta_data: DataFrame = DataFrame(data={META_TABLE_COLUMNS[0]: [dataset_name],
-                                                       META_TABLE_COLUMNS[1]: [dataset_uuid],
-                                                       META_TABLE_COLUMNS[2]: [dataset_size]})
+        dataset_meta_data: DataFrame = DataFrame(data={META_TABLE_COLUMNS[META_TABLE_NAME]: [dataset_name],
+                                                       META_TABLE_COLUMNS[META_TABLE_UUID]: [dataset_uuid],
+                                                       META_TABLE_COLUMNS[META_TABLE_SIZE]: [dataset_size]})
 
         dataset_meta_data.to_sql(name=self.name, con=connection.engine, if_exists="append", index=False)
+        self.database_connection.post_connection()
+
+    def adjust_size(self, dataset_uuid: UUID, new_size: int) -> bool:
+        """
+        Adjusts the size of a dataset in the meta_table.
+        :param dataset_uuid: The uuid of the dataset.
+        :param new_size: The new size of the dataset.
+        """
+        connection: Connection = self._assert_table_exists_get_connection()
+        if connection is None:
+            return False
+
+        query: str = SQLQueries.UPDATE_DATASET_SIZE.value.format(meta_table_name=self.name,
+                                                                 column=META_TABLE_COLUMNS[META_TABLE_SIZE],
+                                                                 uuid=dataset_uuid,
+                                                                 new_size=new_size)
+
+        self.query_sql(sql_query=query, connection=connection, read=False)
+        self.database_connection.post_connection()
+
+        return True
 
     def contains(self, dataset_uuid: UUID) -> bool:
         """
@@ -112,12 +123,12 @@ class DatasetMetaTable(DatabaseComponent):
         This would indicate a change in the database or an error in the code.
         """
 
-        connection: Connection = self._get_connection()
+        connection: Connection = self.get_connection()
         if connection is None:
             return None
-        query: str = SQLQueries.SELECT_DATASET_METADATA.value.format(columns=f"{META_TABLE_COLUMNS[0]}, "
-                                                                             f"{META_TABLE_COLUMNS[1]}, "
-                                                                             f"{META_TABLE_COLUMNS[2]}",
+        query: str = SQLQueries.SELECT_DATASET_METADATA.value.format(columns=f"{META_TABLE_COLUMNS[META_TABLE_NAME]}, "
+                                                                             f"{META_TABLE_COLUMNS[META_TABLE_UUID]}, "
+                                                                             f"{META_TABLE_COLUMNS[META_TABLE_SIZE]}",
                                                                      uuid=dataset_uuid,
                                                                      meta_table_name=self.name)
 
@@ -138,6 +149,8 @@ class DatasetMetaTable(DatabaseComponent):
             raise RuntimeError(ErrorMessage.DATABASE_WRONG_COLUMN_NAMES.value + "expected: " + str(
                 META_TABLE_COLUMNS) + " got: " + str(dataset_columns))
 
+        self.database_connection.post_connection()
+
         return dataset_meta_data
 
     def remove_dataset(self, dataset_uuid: UUID) -> bool:
@@ -151,9 +164,10 @@ class DatasetMetaTable(DatabaseComponent):
 
         query: str = SQLQueries.DELETE_DATASET.value.format(uuid=dataset_uuid,
                                                             table_name=self.name,
-                                                            column=META_TABLE_COLUMNS[1])
+                                                            column=META_TABLE_COLUMNS[META_TABLE_UUID])
 
         self.query_sql(sql_query=query, connection=connection, read=False)
+        self.database_connection.post_connection()
 
         return True
 
@@ -166,7 +180,7 @@ class DatasetMetaTable(DatabaseComponent):
         if connection is None:
             self.throw_error(ErrorMessage.ALL_DATASETS_LOAD_ERROR)
             return []
-        query: str = SQLQueries.GET_COLUMN_FROM_TABLE.value.format(column=META_TABLE_COLUMNS[1],
+        query: str = SQLQueries.GET_COLUMN_FROM_TABLE.value.format(column=META_TABLE_COLUMNS[META_TABLE_UUID],
                                                                    table_name=self.name)
 
         uuid_dataframe: DataFrame = self.query_sql(sql_query=query, connection=connection)
@@ -191,7 +205,7 @@ class DatasetMetaTable(DatabaseComponent):
             self.throw_error(ErrorMessage.META_TABLE_NOT_EXISTING, "There might be a problem with the database.")
             return None
 
-        connection: Connection = self._get_connection()
+        connection: Connection = self.get_connection()
         if connection is None:
             return None
 

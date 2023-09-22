@@ -31,10 +31,10 @@ class DataFacade(ErrorHandler):
         pass
 
     @abstractmethod
-    def get_data(self, returned_columns: List[Column]) -> DataRecord:
+    def get_data(self, columns: List[Column]) -> DataRecord:
         """
         Gets the data with specified columns.
-        :param returned_columns: List of Column objects specifying the columns to return.
+        :param columns: List of Column objects specifying the columns to return.
         :return: DataRecord object with the requested data.
         """
         pass
@@ -49,21 +49,22 @@ class DataFacade(ErrorHandler):
         pass
 
     @abstractmethod
-    def get_data_of_column_selection(self, returned_columns: List[Column], chosen_elements: List,
-                                     chosen_column: Column, usefilter: bool = True) -> Optional[DataRecord]:
+    def get_data_of_column_selection(self, columns: List[Column], filter_elements: List,
+                                     filter_column: Column, use_filter: bool = True) -> Optional[DataRecord]:
         """
         Gets data with specified columns filtered by chosen elements in a specified data.
-        :param returned_columns: List of Column objects specifying the columns to return.
-        :param chosen_elements: List of UUIDs specifying the elements to filter by.
-        :param chosen_column: Column object specifying the data to filter on.
+        :param columns: List of Column objects specifying the columns to return.
+        :param filter_elements: List of UUIDs specifying the elements to filter by.
+        :param filter_column: Column object specifying the data to filter on.
+        :param use_filter: Boolean indicating if the filter should be used.
         :return: DataRecord object with the requested data.
         """
         pass
 
     @abstractmethod
-    def get_trajectory_ids(self) -> DataRecord:
+    def get_trajectory_ids(self) -> Optional[DataRecord]:
         """
         Getter for all UUIDs in the Dataset.
-        :return: all UUIDs in the Dataset.
+        :return: an optional Datarecord with the ids of all trajectories. None if an error occurred
         """
         pass

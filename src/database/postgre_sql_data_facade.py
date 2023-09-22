@@ -91,25 +91,25 @@ class PostgreSQLDataFacade(DataFacade):
             return None
         return data
 
-    def get_data_of_column_selection(self, returned_columns: List[Column], chosen_elements: List,
-                                     chosen_column: Column, usefilter: bool = True) -> Optional[DataRecord]:
-        if len(chosen_elements) == 0 or chosen_column is None:
+    def get_data_of_column_selection(self, columns: List[Column], filter_elements: List,
+                                     filter_column: Column, use_filter: bool = True) -> Optional[DataRecord]:
+        if len(filter_elements) == 0 or filter_column is None:
             raise InvalidInput("No elements selected")
 
         self.check_table_adapter()
         str_columns: List[str] = list()
-        for column in returned_columns:
+        for column in columns:
             str_columns.append(column.value)
 
         query = SQLQueries.SELECT.value.format(columns=", ".join(str_columns))
         query += SQLQueries.FROM.value
         str_values: List[str] = list()
-        for value in chosen_elements:
+        for value in filter_elements:
             str_values.append("'" + value.__str__() + "'")
 
-        query += SQLQueries.WHEREIN.value.format(column=chosen_column.value, values=", ".join(str_values))
+        query += SQLQueries.WHEREIN.value.format(column=filter_column.value, values=", ".join(str_values))
 
-        if usefilter is True and self.filter is not None:
+        if use_filter is True and self.filter is not None:
             query += " and " + self.filter
 
         data: DataRecord = self.table_adapter.query_sql(query)

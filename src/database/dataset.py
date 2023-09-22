@@ -10,12 +10,11 @@ from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.exception.custom_exception import DatabaseConnectionError, InvalidUUID
 from src.data_transfer.record import DatasetRecord, DataRecord, ErrorRecord
 from src.database import dataset_meta_table
+from src.database.data_provider import DataProvider
 from src.database.database_connection import DatabaseConnection
-from src.database.database_component import DatabaseComponent
+from src.database.database_component import DatabaseComponent, UUID_COLUMN_NAME
 from src.database.dataset_meta_table import DatasetMetaTable, META_TABLE_COLUMNS
 from src.database.sql_querys import SQLQueries
-
-UUID_COLUMN_NAME: str = "dataset_id"
 
 
 class Dataset(DatabaseComponent):
@@ -25,11 +24,10 @@ class Dataset(DatabaseComponent):
 
     def __init__(self, name: str, size: int, connection: DatabaseConnection, meta_table: DatasetMetaTable,
                  uuid: UUID = uuid4()):
-        super().__init__()
+        super().__init__(database_connection=connection)
         self._name: str = name
         self._size: int = size
         self._uuid: UUID = uuid
-        self.connection: DatabaseConnection = connection
         self.data_table_name: str = connection.data_table
         self.meta_table = meta_table
         self.add_error_handler(self.meta_table)
@@ -42,34 +40,19 @@ class Dataset(DatabaseComponent):
         """
         return DatasetRecord(self._name, self._size)
 
-    def get_data(self) -> DataRecord:
+    def get_data_provider(self) -> DataProvider:
         """
-        Gets the data of the dataset associated with this class.
+        Gets the DataProvider instance initialized with the connection to the database and set to the current dataset.
         """
-        connection: Connection = self._get_connection()
-        if connection is None:
-            self.throw_error(ErrorMessage.DATASET_DATA_ERROR, "uuid: " + str(self._uuid))
-            return DataRecord(_name=self._name, _data=DataFrame(), _column_names=())
 
-        query: str = SQLQueries.GET_DATASET.value.format(table_name=self.data_table_name,
-                                                         column=UUID_COLUMN_NAME,
-                                                         uuid=self._uuid)
-
-        data: DataFrame = self.query_sql(sql_query=query, connection=connection)
-        # remove the uuid column from the data as it is not part of the data itself
-        if data is None:
-            data = DataFrame()
-
-        data.drop(columns=[UUID_COLUMN_NAME], inplace=True)
-
-        return DataRecord(_data=data, _column_names=data.columns, _name=self._name)
+        return DataProvider(dataset_uuids=[self._uuid], connection=self.database_connection)
 
     def add_data(self, data: DataRecord) -> bool:
         """
         Adds the given data to the dataset.
         :param data: the data that will be added to the dataset as a DataRecord.
         """
-        connection: Connection = self._get_connection()
+        connection: Connection = self.get_connection()
         if connection is None:
             return False
 
@@ -77,13 +60,14 @@ class Dataset(DatabaseComponent):
         dataframe[UUID_COLUMN_NAME] = self._uuid
 
         dataframe.to_sql(name=self._name, con=connection, if_exists="append", index=False)
+        self.database_connection.post_connection()
         return True
 
     def delete_dataset(self) -> bool:
         """
         Deletes the dataset from the database.
         """
-        connection: Connection = self._get_connection()
+        connection: Connection = self.get_connection()
         if connection is None:
             return False
 
@@ -92,6 +76,7 @@ class Dataset(DatabaseComponent):
                                                             uuid=self._uuid)
 
         query_successful: bool = self.query_sql(sql_query=query, connection=connection, read=False) is not None
+        self.database_connection.post_connection()
         if not query_successful:
             return False
         delete_successful: bool = self.meta_table.remove_dataset(dataset_uuid=self._uuid)
@@ -121,18 +106,6 @@ class Dataset(DatabaseComponent):
         dataset._uuid = meta_data[META_TABLE_COLUMNS[1]][0]
 
         return dataset
-
-    def _get_connection(self) -> Optional[Connection]:
-        """
-        Gets the connection to the database.
-        :return: The connection to the database.
-        """
-        try:
-            connection = self.connection.get_connection()
-        except DatabaseConnectionError as e:
-            self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR, str(e))
-            return None
-        return connection
 
     @property
     def uuid(self) -> UUID:

@@ -6,13 +6,26 @@ from sqlalchemy import Connection
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.data_transfer.content.error import ErrorMessage
+from src.data_transfer.exception.custom_exception import DatabaseConnectionError
+from src.database.database_connection import DatabaseConnection
 from src.model.error_handler import ErrorHandler
+
+UUID_COLUMN_NAME: str = "dataset_id"
 
 
 class DatabaseComponent(ErrorHandler):
     """
     Represents an abstract component of the database that allows querying.
     """
+
+    def __init__(self, database_connection: DatabaseConnection):
+        """
+        Sets the connection to the database.
+        :param database_connection: the connection to the database as a DatabaseConnection object
+        """
+        super().__init__()
+        self.database_connection: DatabaseConnection = database_connection
+
 
     def query_sql(self, sql_query: str, connection: Connection, read: bool = True) -> Optional[DataFrame]:
         """
@@ -54,3 +67,16 @@ class DatabaseComponent(ErrorHandler):
         except SQLAlchemyError as err:
             self.throw_error(ErrorMessage.DATABASE_QUERY_ERROR, str(err))
             return False
+
+    def get_connection(self) -> Optional[Connection]:
+        """
+        Gets the connection to the database.
+        :return: The connection to the database.
+        """
+        try:
+            connection = self.database_connection.get_connection()
+        except DatabaseConnectionError as e:
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR, str(e))
+            return None
+
+        return connection

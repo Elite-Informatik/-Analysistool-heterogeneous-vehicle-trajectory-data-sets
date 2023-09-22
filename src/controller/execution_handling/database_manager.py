@@ -207,7 +207,10 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
                                                           " discrete column was expected")])
             return None
 
-        data_record: DataRecord = self.data_facade.get_distinct_data_from_column(column)
+        data_record: Optional[DataRecord] = self.data_facade.get_distinct_data_from_column(column)
+        if data_record is None:
+            self.handle_error([self.data_facade], " at getting discrete selection column in manager")
+            return None
         distinct_values: List = data_record.data[column.value].to_list()
 
         return SettingRecord.discrete_setting(setting_context=SettingContext.DISCRETE.name,

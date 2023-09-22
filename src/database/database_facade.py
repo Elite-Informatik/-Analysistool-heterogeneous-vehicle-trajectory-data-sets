@@ -60,10 +60,10 @@ class DatabaseFacade(DatasetFacade, DataFacade):
     def get_distinct_data_from_column(self, returned_column: Column) -> Optional[DataRecord]:
         return self.data_facade.get_distinct_data_from_column(returned_column)
 
-    def get_data_of_column_selection(self, returned_columns: List[Column], chosen_elements: List,
-                                     chosen_column: Column, usefilter: bool = True) -> Optional[DataRecord]:
-        return self.data_facade.get_data_of_column_selection(returned_columns, chosen_elements,
-                                                             chosen_column, usefilter)
+    def get_data_of_column_selection(self, columns: List[Column], filter_elements: List,
+                                     filter_column: Column, use_filter: bool = True) -> Optional[DataRecord]:
+        return self.data_facade.get_data_of_column_selection(columns, filter_elements,
+                                                             filter_column, use_filter)
 
     def get_trajectory_ids(self) -> DataRecord:
         return self.data_facade.get_trajectory_ids()

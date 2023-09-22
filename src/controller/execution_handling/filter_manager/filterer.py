@@ -187,7 +187,7 @@ class Filterer(IFilterer, DataFacadeConsumer, DatasetFacadeConsumer, SettingFaca
         data = self.data_facade.get_data_of_column_selection(
             columns_to_load,
             self.current_trajectories,
-            Column.TRAJECTORY_ID, usefilter=False)
+            Column.TRAJECTORY_ID, use_filter=False)
 
         if data is None:
             self.handle_error([self._data_facade, self._dataset_facade])
