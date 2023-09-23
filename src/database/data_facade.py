@@ -31,7 +31,7 @@ class DataFacade(ErrorHandler):
         pass
 
     @abstractmethod
-    def get_data(self, columns: List[Column]) -> DataRecord:
+    def get_data(self, columns: List[Column]) -> Optional[DataRecord]:
         """
         Gets the data with specified columns.
         :param columns: List of Column objects specifying the columns to return.

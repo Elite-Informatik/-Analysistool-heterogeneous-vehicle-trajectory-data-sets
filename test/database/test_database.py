@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
+from uuid import uuid4
+
 from src.database.database import Database
 from src.database.dataset_meta_table import META_TABLE_COLUMNS, DatasetMetaTable
 
@@ -21,11 +23,15 @@ class TestDatabase(TestCase):
         self.mock_sql_connection.cursor.return_value = self.mock_cursor
         self.mock_sql_connection.engine = self.mock_engine
 
+        self.dataset_id = uuid4()
+        self.other_dataset_id = uuid4()
 
         # The description is the columns that will be returned by the
         self.mock_cursor.description = [[column] for column in META_TABLE_COLUMNS]
-        self.mock_cursor.fetchall.return_value = [("test_dataset", "id1", 10)]
+        self.mock_cursor.fetchall.return_value = [("test_dataset", self.dataset_id, 10),
+                                                  ("other_dataset", self.other_dataset_id, 20)]
 
         self.mock_connection.meta_table = "meta_table"
+        self.mock_connection.data_table = "data_table"
         self.dataset_meta_table = DatasetMetaTable(self.mock_connection)
 

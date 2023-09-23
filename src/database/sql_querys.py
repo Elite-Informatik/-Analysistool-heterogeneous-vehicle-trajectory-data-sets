@@ -78,9 +78,9 @@ class SQLQueries(Enum):
                             SELECT {column} FROM '{table_name}'
                             """
     NOT = "NOT({filter})"
-    SELECT_FROM_DATASET = "SELECT {columns} FROM {tablename} WHERE {dataset_column} in ({dataset_uuids})"
+    SELECT_FROM_DATASET = "SELECT {columns} FROM {tablename} WHERE {dataset_column} IN ({dataset_uuids})"
     SELECT_DISTINCT_FROM_DATASET = "SELECT DISTINCT {columns} FROM {tablename} WHERE {dataset_column} " \
-                                   "in ({dataset_uuids})"
+                                   "IN ({dataset_uuids})"
     WHERE = " WHERE {filter}"
     AND_IN = " AND {column} IN ({values})"
     AND = " AND {filter}"

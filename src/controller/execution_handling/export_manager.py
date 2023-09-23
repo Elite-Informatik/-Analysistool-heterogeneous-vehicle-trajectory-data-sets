@@ -45,6 +45,9 @@ class ExportManager(AbstractManager, DataFacadeConsumer, IExportManager, Dataset
     @type_check(str, str)
     def export_dataset(self, path: str, file_format: str) -> bool:
         dataset: DataRecord = self._data_facade.get_data(Column.list())
+        if dataset is None:
+            self.handle_error([self._data_facade])
+            return False
 
         if self.file_facade.export_data_file(path, dataset, file_format):
             self.events.append(DatasetExported())

@@ -42,7 +42,7 @@ class DatabaseComponent(ErrorHandler):
 
         return DataFrame() if self.write_to_sql(sql_query, connection) else None
 
-    def read_from_sql(self, sql_query: str, connection: Connection) -> DataFrame:
+    def read_from_sql(self, sql_query: str, connection: Connection) -> Optional[DataFrame]:
         """
         queries the database with the given sql query with pandas and returns the result as a dataframe.
         :param sql_query: the sql query
@@ -53,7 +53,7 @@ class DatabaseComponent(ErrorHandler):
             return pandas.read_sql_query(sql_query, connection)
         except SQLAlchemyError as err:
             self.throw_error(ErrorMessage.DATABASE_QUERY_ERROR, str(err))
-            return DataFrame()
+            return None
 
     def write_to_sql(self, sql_query, connection: Connection) -> bool:
         """

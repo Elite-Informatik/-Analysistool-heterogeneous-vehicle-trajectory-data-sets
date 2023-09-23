@@ -27,7 +27,9 @@ class ErrorMessage(Enum):
     DATABASE_WRONG_COLUMN_NAMES = "The column names of the meta table are not correct."
     DATASET_LOAD_ERROR = "An error occurred while loading a dataset from the database."
     ALL_DATASETS_LOAD_ERROR = "An error occurred while loading a list of all the existing datasets."
-    DATASET_DATA_ERROR = "An error occurred while loading data of the dataset from the database."
+    DATASET_DATA_ERROR = "An error occurred while loading the dataset data from the database."
+    DATABASE_DATASET_UUID_MISSING_ERROR = "The data from the database is in the from format." \
+                                          " Expected: {expected} to be in the columns, got: {got}"
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"

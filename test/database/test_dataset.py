@@ -25,7 +25,7 @@ class TestDataset(TestDatabase):
         super().setUp()
 
         self.dataset = Dataset(name="test_dataset", size=10, connection=self.mock_connection,
-                               meta_table=self.dataset_meta_table, uuid="id1")
+                               meta_table=self.dataset_meta_table, uuid=self.dataset_id)
         # Create a Dataset instance with a mock connection and some dummy attributes
 
     def test_to_dataset_record(self):
@@ -78,6 +78,7 @@ class TestDataset(TestDatabase):
         mock_dataframe.to_sql.assert_not_called()
 
     def test_load_from_database_success(self):
+        self.mock_cursor.fetchall.return_value = [("test_dataset", self.dataset_id, 10)]
         result = Dataset.load_from_database(database_connection=self.mock_connection,
                                             meta_table=self.dataset_meta_table, uuid=self.dataset.uuid)
         # Assert that the result is a Dataset instance with the same attributes as the dataset

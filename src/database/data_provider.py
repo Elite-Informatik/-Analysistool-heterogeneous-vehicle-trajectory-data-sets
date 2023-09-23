@@ -17,7 +17,6 @@ from src.database.dataset_meta_table import DatasetMetaTable
 from src.database.sql_querys import SQLQueries
 
 
-
 class DataProvider(DatabaseComponent, DataFacade):
     """
     This class represents the data provider. It is created by a dataset to allow filtered access to the data.
@@ -36,7 +35,7 @@ class DataProvider(DatabaseComponent, DataFacade):
         self.point_filter: Optional[str] = None
         self.trajectory_filter: Optional[str] = None
         self.trajectory_filter_active: bool = False
-        self.meta_table: Optional[DatasetMetaTable] = meta_table # for future use of filtering by metadata
+        self.meta_table: Optional[DatasetMetaTable] = meta_table  # for future use of filtering by metadata
 
     def set_point_filter(self, filter_str: str, use_filter: bool, negate_filter: bool) -> None:
         """
@@ -75,26 +74,20 @@ class DataProvider(DatabaseComponent, DataFacade):
         :return: DataRecord object with the requested data.
         """
         str_columns: List[str] = [column.value for column in columns]
+        str_uuids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
 
-        query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=str_columns,
-                                                                 table_name=self.database_connection.data_table,
+        query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
+                                                                 tablename=self.database_connection.data_table,
                                                                  dataset_column=UUID_COLUMN_NAME,
-                                                                 dataset_uuids=self.dataset_uuids)
+                                                                 dataset_uuids=", ".join(str_uuids))
 
         if self.point_filter is not None:
-            query += SQLQueries.WHERE.value.format(filter=self.point_filter)
+            query += SQLQueries.AND.value.format(filter=self.point_filter)
 
-        connection = self.get_connection()
-        if connection is None:
-            self.throw_error(ErrorMessage.DATASET_DATA_ERROR)
-            return None
-
-        data: Optional[DataFrame] = self.query_sql(sql_query=query, connection=connection)
-        self.database_connection.post_connection()
+        data = self._get_data_from_query(query)
 
         if data is None:
-            self.throw_error(ErrorMessage.DATASET_DATA_ERROR)
-            data = DataFrame()
+            return None
 
         return DataRecord(_data=data, _column_names=data.columns, _name=self.database_connection.data_table)
 
@@ -103,10 +96,11 @@ class DataProvider(DatabaseComponent, DataFacade):
         Gets the unique values from the specified column. The previously set filters are not applied.
         :param column: Column object specifying the column to return the distinct data from.
         """
-        query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(column=column.value,
+        str_uuids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
+        query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=column.value,
                                                                           tablename=self.database_connection.data_table,
                                                                           dataset_column=UUID_COLUMN_NAME,
-                                                                          dataset_uuids=self.dataset_uuids)
+                                                                          dataset_uuids=", ".join(str_uuids))
 
         data = self._get_data_from_query(query)
         if data is None:
@@ -129,12 +123,15 @@ class DataProvider(DatabaseComponent, DataFacade):
         """
 
         str_columns: List[str] = [column.value for column in columns]
-        query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=str_columns,
+        str_ids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
+        str_filter_elements: List[str] = [str(element) for element in filter_elements]
+
+        query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
                                                                  tablename=self.database_connection.data_table,
                                                                  dataset_column=UUID_COLUMN_NAME,
-                                                                 dataset_uuids=self.dataset_uuids)
+                                                                 dataset_uuids=", ".join(str_ids))
         query += SQLQueries.AND_IN.value.format(column=filter_column.value,
-                                                values=filter_column.value)
+                                                values=", ".join(str_filter_elements))
 
         if use_filter and self.point_filter is not None:
             query += SQLQueries.AND.value.format(filter=self.point_filter)
@@ -150,10 +147,11 @@ class DataProvider(DatabaseComponent, DataFacade):
         Gets the ids of all unique trajectory ids in the selected datasets.
         :return: Optional DataRecord object with the requested data. Returns None if an error occurred.
         """
-        query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(column=Column.TRAJECTORY_ID.value,
+        str_ids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
+        query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=Column.TRAJECTORY_ID.value,
                                                                           tablename=self.database_connection.data_table,
                                                                           dataset_column=UUID_COLUMN_NAME,
-                                                                          dataset_uuids=self.dataset_uuids)
+                                                                          dataset_uuids=", ".join(str_ids))
         if self.trajectory_filter_active and self.trajectory_filter is not None:
             query += SQLQueries.AND.value.format(filter=self.trajectory_filter)
 
@@ -183,7 +181,8 @@ class DataProvider(DatabaseComponent, DataFacade):
             return None
 
         if UUID_COLUMN_NAME not in data.columns:
-            raise DatabaseException("The data loaded from the Database is not in the correct format. Expected: "
-                                    f"[{UUID_COLUMN_NAME}] in columns, but got: {data.columns}")
+            raise DatabaseException(ErrorMessage.DATABASE_DATASET_UUID_MISSING_ERROR
+                                    .value.format(expected=UUID_COLUMN_NAME,
+                                                  got=data.columns.to_list()))
 
         return data.drop(columns=[UUID_COLUMN_NAME])
