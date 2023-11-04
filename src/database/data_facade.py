@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import List
 from typing import Optional
+from uuid import UUID
 
 from src.data_transfer.content import Column
 from src.data_transfer.record import DataRecord
@@ -68,3 +69,4 @@ class DataFacade(ErrorHandler):
         :return: an optional Datarecord with the ids of all trajectories. None if an error occurred
         """
         pass
+

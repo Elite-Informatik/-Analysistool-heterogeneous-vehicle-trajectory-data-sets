@@ -30,6 +30,7 @@ class DatasetFacade(ErrorHandler):
         """
         Setter for all datasets that are already in the system
         """
+        #todo: remove
         pass
 
     @abstractmethod
@@ -60,15 +61,6 @@ class DatasetFacade(ErrorHandler):
         pass
 
     @abstractmethod
-    def set_current_dataset(self, dataset_uuid: UUID) -> bool:
-        """
-        Sets the current data set.
-        :param dataset_uuid: UUID of the data set to set as current.
-        :return: Boolean indicating success of setting the current data set.
-        """
-        pass
-
-    @abstractmethod
     def add_dataset(self, data: DataRecord, append: bool = False) -> Optional[UUID]:
         """
         Adds a new data set.
@@ -84,5 +76,34 @@ class DatasetFacade(ErrorHandler):
         Checks if a table exists in the database.
         :param table_name: Name of the table.
         :return: Boolean indicating if the table exists.
+        """
+        pass
+
+    @abstractmethod
+    def load_dataset(self, dataset_uuid: UUID) -> bool:
+        """
+        The dataset with the given id will be added to the currently active datasets. If the dataset is already active
+        nothing will happen. Active means that when data is requested it will be requested from all active datasets.
+        :param dataset_uuid: UUID of the dataset to load.
+        :return: Boolean indicating if the dataset was loaded successfully.
+        """
+        pass
+
+    @abstractmethod
+    def unload_dataset(self, dataset_uuid: UUID) -> bool:
+        """
+        The dataset with the given id will be removed from the currently active datasets. If the dataset is not active
+        nothing will happen.
+        :param dataset_uuid: UUID of the dataset to unload.
+        :return: Boolean indicating if the dataset was unloaded successfully.
+        """
+
+        pass
+
+    @abstractmethod
+    def get_active_datasets(self) -> List[UUID]:
+        """
+        Returns a list of the currently active datasets.
+        :return: List of UUIDs of the currently active datasets.
         """
         pass

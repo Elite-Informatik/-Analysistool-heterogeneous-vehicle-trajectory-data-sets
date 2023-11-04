@@ -1,7 +1,9 @@
 from abc import ABC
 from abc import abstractmethod
 
+from src.database.data_facade import DataFacade
 from src.database.database_facade import DatabaseFacade
+from src.database.dataset_facade import DatasetFacade
 
 
 class IDatabase(ABC):
@@ -11,8 +13,16 @@ class IDatabase(ABC):
 
     @property
     @abstractmethod
-    def database_facade(self) -> DatabaseFacade:
+    def dataset_facade(self) -> DatasetFacade:
         """
-        the database facade
+        the dataset facade
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def data_facade(self) -> DataFacade:
+        """
+        the dataset facade
         """
         pass

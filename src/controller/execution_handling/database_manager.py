@@ -176,8 +176,9 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
     @type_check(str)
     def initialize_datasets(self, data_set_dict_path: str) -> bool:
         """
-        Loads the saved datasets into the current state
+        Loads the saved datasets into the current state.
         """
+        #todo: remove
         dataset_dict: Dict[str, int] = self.file_facade.import_dictionary_from_standard_path(
             data_set_dict_path)
 
@@ -269,7 +270,7 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
     @type_check(UUID)
     def open_dataset(self, uuid: UUID) -> bool:
 
-        if self._dataset_facade.set_current_dataset(uuid) is None:
+        if self._dataset_facade.load_dataset(uuid) is None:
             self.handle_error([self._dataset_facade], " at opening dataset in manager")
             return False
 
@@ -280,7 +281,10 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
 
     @type_check(str)
     def save_datasets(self, dict_name: str) -> bool:
-        dataset_dict = self.dataset_facade.get_data_sets_as_dict()
+        """
+        Currently not used.
+        """
+        """dataset_dict = self.dataset_facade.get_data_sets_as_dict()
 
         if dataset_dict is None:
             self.handle_error([self.dataset_facade], " at exporting datasets in manager")
@@ -288,7 +292,7 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
 
         if not self.file_facade.export_dictionary_to_standard_path(dict_name, dataset_dict):
             self.handle_error([self.file_facade], " at exporting datasets in manager")
-            return False
+            return False"""
 
         return True
 

@@ -28,3 +28,11 @@ class IErrorHandler(ABC):
         errors: List = self.errors.copy()
         self.errors.clear()
         return errors
+
+    def error_occured(self) -> bool:
+        """
+        Returns whether an error has occurred.
+
+        :return: Whether an error has occurred. True if it has, False otherwise.
+        """
+        return len(self.errors) > 0

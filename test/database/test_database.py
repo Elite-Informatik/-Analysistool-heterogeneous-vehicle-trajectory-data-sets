@@ -25,10 +25,11 @@ class TestDatabase(TestCase):
 
         self.dataset_id = uuid4()
         self.other_dataset_id = uuid4()
+        self.dataset_size = 10
 
         # The description is the columns that will be returned by the
         self.mock_cursor.description = [[column] for column in META_TABLE_COLUMNS]
-        self.mock_cursor.fetchall.return_value = [("test_dataset", self.dataset_id, 10),
+        self.mock_cursor.fetchall.return_value = [("test_dataset", self.dataset_id, self.dataset_size),
                                                   ("other_dataset", self.other_dataset_id, 20)]
 
         self.mock_connection.meta_table = "meta_table"

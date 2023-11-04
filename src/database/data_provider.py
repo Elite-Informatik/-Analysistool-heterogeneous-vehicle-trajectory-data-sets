@@ -13,6 +13,7 @@ from src.data_transfer.record import DataRecord
 from src.database.data_facade import DataFacade
 from src.database.database_component import DatabaseComponent, UUID_COLUMN_NAME
 from src.database.database_connection import DatabaseConnection
+from src.database.dataset_facade import DatasetFacade
 from src.database.dataset_meta_table import DatasetMetaTable
 from src.database.sql_querys import SQLQueries
 
@@ -23,19 +24,20 @@ class DataProvider(DatabaseComponent, DataFacade):
     It filters the data according to the filter string set and filters the data in the database using sql.
     """
 
-    def __init__(self, dataset_uuids: List[UUID], connection: DatabaseConnection,
-                 meta_table: Optional[DatasetMetaTable] = None):
+    def __init__(self, connection: DatabaseConnection, dataset_facade: DatasetFacade,
+                 meta_table: DatasetMetaTable):
         """
         Constructor for the data provider.
         :param dataset_uuids: A list of uuids of the datasets that should be used to get the data from.
         :param connection: The connection to the database as a DatabaseComponent.
+        :param dataset_facade: The facade to the datasets so that the data provider can get the active datasets.
         """
         super().__init__(database_connection=connection)
-        self.dataset_uuids: List[UUID] = dataset_uuids
         self.point_filter: Optional[str] = None
         self.trajectory_filter: Optional[str] = None
         self.trajectory_filter_active: bool = False
-        self.meta_table: Optional[DatasetMetaTable] = meta_table  # for future use of filtering by metadata
+        self.dataset_facade: DatasetFacade = dataset_facade
+        self.meta_table: DatasetMetaTable = meta_table  # for future use of filtering by metadata
 
     def set_point_filter(self, filter_str: str, use_filter: bool, negate_filter: bool) -> None:
         """
@@ -71,10 +73,12 @@ class DataProvider(DatabaseComponent, DataFacade):
         Gets the data with the specified columns. The data is filtered according to the filters set before.
         :param columns: List of Column objects specifying the columns to return. I.e. the columns the returned dataframe
         should have.
+        :param dataset_uuids: List of uuids of the datasets to get the data from.
         :return: DataRecord object with the requested data.
         """
+        dataset_uuids: List[UUID] = self._get_dataset_uuids()
         str_columns: List[str] = [column.value for column in columns]
-        str_uuids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
+        str_uuids: List[str] = [str(uuid) for uuid in dataset_uuids]
 
         query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
                                                                  tablename=self.database_connection.data_table,
@@ -96,7 +100,8 @@ class DataProvider(DatabaseComponent, DataFacade):
         Gets the unique values from the specified column. The previously set filters are not applied.
         :param column: Column object specifying the column to return the distinct data from.
         """
-        str_uuids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
+        dataset_uuids: List[UUID] = self._get_dataset_uuids()
+        str_uuids: List[str] = [str(uuid) for uuid in dataset_uuids]
         query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=column.value,
                                                                           tablename=self.database_connection.data_table,
                                                                           dataset_column=UUID_COLUMN_NAME,
@@ -122,8 +127,9 @@ class DataProvider(DatabaseComponent, DataFacade):
         :return: Optional DataRecord object with the requested data. Returns None if an error occurred.
         """
 
+        dataset_uuids: List[UUID] = self._get_dataset_uuids()
         str_columns: List[str] = [column.value for column in columns]
-        str_ids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
+        str_ids: List[str] = [str(uuid) for uuid in dataset_uuids]
         str_filter_elements: List[str] = [str(element) for element in filter_elements]
 
         query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
@@ -147,7 +153,8 @@ class DataProvider(DatabaseComponent, DataFacade):
         Gets the ids of all unique trajectory ids in the selected datasets.
         :return: Optional DataRecord object with the requested data. Returns None if an error occurred.
         """
-        str_ids: List[str] = [str(uuid) for uuid in self.dataset_uuids]
+        dataset_uuids: List[UUID] = self._get_dataset_uuids()
+        str_ids: List[str] = [str(uuid) for uuid in dataset_uuids]
         query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=Column.TRAJECTORY_ID.value,
                                                                           tablename=self.database_connection.data_table,
                                                                           dataset_column=UUID_COLUMN_NAME,
@@ -186,3 +193,8 @@ class DataProvider(DatabaseComponent, DataFacade):
                                                   got=data.columns.to_list()))
 
         return data.drop(columns=[UUID_COLUMN_NAME])
+
+    def _get_dataset_uuids(self) -> List[UUID]:
+        return self.dataset_facade.get_active_datasets()
+
+

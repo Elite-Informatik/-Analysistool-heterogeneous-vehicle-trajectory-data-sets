@@ -32,7 +32,7 @@ class DatabaseConnection:
         self.engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{database}', echo=False,
                                     pool_size=20, max_overflow=30)
         # check if the engine is valid.
-        self.connection: Optional[Connection] = None
+        self.connection: Optional[Connection] = self.get_connection()
 
     def get_connection(self) -> Connection:
         """

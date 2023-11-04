@@ -182,10 +182,13 @@ class Controller(IController):
         """
         self._database = database
         for data_facade_consumer in self._data_facade_consumers:
-            data_facade_consumer.set_data_facade(database.database_facade)
+            #data_facade_consumer.set_data_facade(database.database_facade)
+            data_facade_consumer.set_data_facase(database.data_facade)
 
         for dataset_facade_consumer in self._dataset_facade_consumers:
-            dataset_facade_consumer.set_dataset_facade(database.database_facade)
+            #dataset_facade_consumer.set_dataset_facade(database.database_facade)
+            dataset_facade_consumer.set_dataset_facade(database.dataset_facade)
+
 
     def set_model(self, model: IModel):
         """

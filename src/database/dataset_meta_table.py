@@ -6,6 +6,7 @@ from uuid import UUID
 
 from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.exception.custom_exception import DatabaseConnectionError
+from src.data_transfer.record import DatasetRecord
 from src.database.database_connection import DatabaseConnection
 from src.database.database_component import DatabaseComponent
 from src.database.sql_querys import SQLQueries
@@ -72,13 +73,18 @@ class DatasetMetaTable(DatabaseComponent):
         """
         connection: Connection = self._assert_table_exists_get_connection()
         if connection is None:
+            self.throw_error(ErrorMessage.DATASET_ADD_META_ERROR, "uuid: " + str(dataset_uuid))
             return False
 
         dataset_meta_data: DataFrame = DataFrame(data={META_TABLE_COLUMNS[META_TABLE_NAME]: [dataset_name],
                                                        META_TABLE_COLUMNS[META_TABLE_UUID]: [dataset_uuid],
                                                        META_TABLE_COLUMNS[META_TABLE_SIZE]: [dataset_size]})
-
-        dataset_meta_data.to_sql(name=self.name, con=connection.engine, if_exists="append", index=False)
+        try:
+            dataset_meta_data.to_sql(name=self.name, con=connection.engine, if_exists="append", index=False)
+        except ValueError as e:
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR, "uuid: " + str(dataset_uuid))
+            self.throw_error(ErrorMessage.DATASET_ADD_META_ERROR, "uuid: " + str(dataset_uuid))
+            return False
         self.database_connection.post_connection()
 
     def adjust_size(self, dataset_uuid: UUID, new_size: int) -> bool:
@@ -89,17 +95,48 @@ class DatasetMetaTable(DatabaseComponent):
         """
         connection: Connection = self._assert_table_exists_get_connection()
         if connection is None:
+            self.throw_error(ErrorMessage.DATASET_SIZE_NOT_UPDATED, "uuid: " + str(dataset_uuid))
             return False
 
         query: str = SQLQueries.UPDATE_DATASET_SIZE.value.format(meta_table_name=self.name,
                                                                  column=META_TABLE_COLUMNS[META_TABLE_SIZE],
-                                                                 uuid=dataset_uuid,
-                                                                 new_size=new_size)
+                                                                 dataset_uuid=dataset_uuid,
+                                                                 new_size=new_size,
+                                                                 uuid_column=META_TABLE_COLUMNS[META_TABLE_UUID])
 
-        self.query_sql(sql_query=query, connection=connection, read=False)
+        query_success_dataframe: Optional[DataFrame] = self.query_sql(sql_query=query, connection=connection,
+                                                                      read=False)
         self.database_connection.post_connection()
 
+        if query_success_dataframe is None:
+            self.throw_error(ErrorMessage.DATASET_SIZE_NOT_UPDATED, "uuid: " + str(dataset_uuid))
+            return False
+
         return True
+
+    def increase_size(self, dataset_uuid: UUID, size_increase: int) -> bool:
+        """
+        Increases the size of a dataset in the meta_table by the given size_increase.
+        :param dataset_uuid: The uuid of the dataset.
+        :param size_increase: The size increase of the dataset.
+        :return: True if the size was increased successfully and False if an error occurred.
+        """
+        size: Optional[int] = self.get_size(dataset_uuid=dataset_uuid)
+        if size is None:
+            self.throw_error(ErrorMessage.DATASET_SIZE_NOT_UPDATED, "uuid: " + str(dataset_uuid))
+            return False
+        return self.adjust_size(dataset_uuid=dataset_uuid, new_size=size + size_increase)
+
+    def get_size(self, dataset_uuid: UUID) -> Optional[int]:
+        """
+        Gets the size of a dataset in the meta_table.
+        :param dataset_uuid: The uuid of the dataset of the size to be determined.
+        """
+        meta_data: Optional[DataFrame] = self.get_meta_data(dataset_uuid=dataset_uuid)
+        if meta_data is None:
+            return None
+        size: int = meta_data[META_TABLE_COLUMNS[META_TABLE_SIZE]].iloc[0]
+        return size
 
     def contains(self, dataset_uuid: UUID) -> bool:
         """
@@ -152,6 +189,18 @@ class DatasetMetaTable(DatabaseComponent):
         self.database_connection.post_connection()
 
         return dataset_meta_data
+
+    def get_meta_data_as_record(self, dataset_uuid: UUID) -> Optional[DatasetRecord]:
+        """
+        Gets the metadata of a dataset as a DatasetRecord. Returns None if the connection to the database failed or if
+        no dataset with the given uuid exists.
+        """
+        dataframe: Optional[DataFrame] = self.get_meta_data(dataset_uuid)
+        if dataframe is None:
+            return None
+        name: str = dataframe[META_TABLE_COLUMNS[META_TABLE_NAME]].iloc[0]
+        size: int = dataframe[META_TABLE_COLUMNS[META_TABLE_SIZE]].iloc[0]
+        return DatasetRecord(_name=name, _size=size)
 
     def remove_dataset(self, dataset_uuid: UUID) -> bool:
         """

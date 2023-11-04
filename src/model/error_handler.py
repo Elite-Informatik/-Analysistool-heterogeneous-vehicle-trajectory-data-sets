@@ -29,6 +29,14 @@ class ErrorHandler(IErrorHandler, ABC):
         assert issubclass(handler.__class__, ErrorHandler)
         self._error_handlers.append(handler)
 
+    def remove_error_handler(self, handler: 'ErrorHandler') -> None:
+        """
+        Removes error handler from the composite.
+        :param handler: the handler to be removed.
+        """
+        assert issubclass(handler.__class__, ErrorHandler)
+        self._error_handlers.remove(handler)
+
     def get_errors(self) -> List[ErrorRecord]:
         """
         Gets all errors from the composite.

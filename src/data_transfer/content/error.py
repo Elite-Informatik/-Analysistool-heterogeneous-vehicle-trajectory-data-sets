@@ -23,6 +23,8 @@ class ErrorMessage(Enum):
     DATABASE_QUERY_ERROR = "An error occured while querying the database with query: "
     META_TABLE_NOT_EXISTING = "The meta table does not seem to exist. "
     DATASET_ADD_ERROR = "An error occurred while adding a dataset to the database."
+    DATASET_ADD_META_ERROR = "An error occurred while adding the meta data of the dataset to the meta table in the " \
+                             "database."
     DATABASE_MULTIPLE_DATASETS_WITH_SAME_UUID = "There are multiple datasets with the same uuid in the meta table."
     DATABASE_WRONG_COLUMN_NAMES = "The column names of the meta table are not correct."
     DATASET_LOAD_ERROR = "An error occurred while loading a dataset from the database."
@@ -30,6 +32,11 @@ class ErrorMessage(Enum):
     DATASET_DATA_ERROR = "An error occurred while loading the dataset data from the database."
     DATABASE_DATASET_UUID_MISSING_ERROR = "The data from the database is in the from format." \
                                           " Expected: {expected} to be in the columns, got: {got}"
+    MISSING_CONNECTION_PARAMETER = "The keys of the database connection given in the sql_connections are not as " \
+                                   "required. Expected: {expected} got: {got}"
+    DATABASE_ACCESS_BEFORE_CONNECTION = "The database was accessed before the connection was set."
+    DATABASE_APPEND_TO_EMPTY = "The data could not be appended to the first dataset, because there is no dataset yet."
+    DATASET_SIZE_NOT_UPDATED = "The dataset size could not be updated. The size might be wrong now."
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"

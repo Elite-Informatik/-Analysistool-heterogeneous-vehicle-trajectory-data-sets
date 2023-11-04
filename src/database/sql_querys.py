@@ -85,4 +85,4 @@ class SQLQueries(Enum):
     AND_IN = " AND {column} IN ({values})"
     AND = " AND {filter}"
     WHERE_FROM_DATASET = "WHERE {dataset_column} in ({dataset_uuids})"
-    UPDATE_DATASET_SIZE = "UPDATE '{meta_table_name}' SET {column}={new_size} WHERE uuid='{dataset_uuid}'"
+    UPDATE_DATASET_SIZE = "UPDATE '{meta_table_name}' SET {column} = {new_size} WHERE {uuid_column} = '{dataset_uuid}'"

@@ -16,6 +16,8 @@ from src.database.database_component import DatabaseComponent, UUID_COLUMN_NAME
 from src.database.dataset_meta_table import DatasetMetaTable, META_TABLE_COLUMNS
 from src.database.sql_querys import SQLQueries
 
+INVALID_NAME = "invalid_dataset_name"
+
 
 class Dataset(DatabaseComponent):
     """
@@ -40,20 +42,15 @@ class Dataset(DatabaseComponent):
         """
         return DatasetRecord(self._name, self._size)
 
-    def get_data_provider(self) -> DataProvider:
-        """
-        Gets the DataProvider instance initialized with the connection to the database and set to the current dataset.
-        """
-
-        return DataProvider(dataset_uuids=[self._uuid], connection=self.database_connection)
-
     def add_data(self, data: DataRecord) -> bool:
         """
         Adds the given data to the dataset.
         :param data: the data that will be added to the dataset as a DataRecord.
+        :return: True if the data was added successfully, otherwise False.
         """
         connection: Connection = self.get_connection()
         if connection is None:
+            self.thow_error(ErrorMessage.DATABASE_CONNECTION_ERROR)
             return False
 
         dataframe: DataFrame = data.data
@@ -61,7 +58,10 @@ class Dataset(DatabaseComponent):
 
         dataframe.to_sql(name=self._name, con=connection, if_exists="append", index=False)
         self.database_connection.post_connection()
-        return True
+
+        size: int = dataframe.memory_usage(index=True).sum()
+        meta_updated: bool = self.meta_table.increase_size(dataset_uuid=self._uuid, size_increase=size)
+        return meta_updated
 
     def delete_dataset(self) -> bool:
         """
@@ -92,7 +92,7 @@ class Dataset(DatabaseComponent):
         :param uuid: the uuid of the dataset that will be loaded
         :return: the loaded dataset. If the dataset does not exist, an invalid dataset will be returned.
         """
-        dataset: Dataset = cls(name="invalid", size=-1, connection=database_connection, meta_table=meta_table,
+        dataset: Dataset = cls(name=INVALID_NAME, size=-1, connection=database_connection, meta_table=meta_table,
                                uuid=uuid)
 
         meta_data: DataFrame = dataset.meta_table.get_meta_data(dataset_uuid=uuid)
