@@ -50,7 +50,7 @@ class Dataset(DatabaseComponent):
         """
         connection: Connection = self.get_connection()
         if connection is None:
-            self.thow_error(ErrorMessage.DATABASE_CONNECTION_ERROR)
+            self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR)
             return False
 
         dataframe: DataFrame = data.data

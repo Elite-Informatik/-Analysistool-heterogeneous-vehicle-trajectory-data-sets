@@ -1,4 +1,5 @@
 from typing import List
+from unittest.mock import Mock
 
 from src.data_transfer.content import Column
 from src.data_transfer.content.error import ErrorMessage
@@ -21,7 +22,10 @@ class DataProviderTest(TestDatabase):
         """
         super().setUp()
         # Create a DataProvider instance with a mock connection and some dummy attributes
-        self.data_provider = DataProvider(dataset_uuids=[self.dataset_id], connection=self.mock_connection)
+        self.dataset_facade_mock = Mock()
+        self.dataset_facade_mock.get_active_datasets.return_value = [self.dataset_id]
+        self.data_provider = DataProvider(connection=self.mock_connection, dataset_facade=self.dataset_facade_mock,
+                                          meta_table=self.dataset_meta_table)
 
     def test_set_point_filter(self):
         """

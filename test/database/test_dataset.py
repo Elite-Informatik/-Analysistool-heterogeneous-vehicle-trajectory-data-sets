@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 from unittest.mock import Mock
 
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from uuid import UUID, uuid4
 
 from src.data_transfer.content.error import ErrorMessage
@@ -41,8 +41,11 @@ class TestDataset(TestDatabase):
         # Test the add_data method when the data is successfully added to the database
         # Mock the _get_connection method to return a dummy connection object
         self.dataset.get_connection = Mock(return_value="connection")
+        self.mock_cursor.fetchall.return_value = [("test_dataset", self.dataset_id, self.dataset_size)]
+
         # Mock the to_sql method of the dataframe object to return None
         mock_dataframe = Mock(spec=DataFrame)
+        mock_dataframe.memory_usage.return_value = Series([1, 2, 3])
         mock_dataframe.__setitem__ = Mock()
         # Create a DataRecord instance with some dummy data and column names
         data_record = DataRecord(_data=mock_dataframe, _column_names=("col1", "col2"), _name="test")
@@ -52,17 +55,6 @@ class TestDataset(TestDatabase):
         self.assertTrue(result)
         mock_dataframe.to_sql.assert_called_with(name=self.dataset._name, con="connection", if_exists="append",
                                                  index=False)
-
-    def test_get_data_provider(self):
-        """
-        Tests if the get_data_provider method works correctly.
-        """
-        # Call the method and get the result
-        result: DataProvider = self.dataset.get_data_provider()
-        # Assert that the result is a DataProvider instance with the expected attributes
-        self.assertIsInstance(result, DataProvider)
-        self.assertEqual(result.dataset_uuids, [self.dataset._uuid])
-        self.assertEqual(result.database_connection, self.mock_connection)
 
     def test_add_data_failure(self):
         # Test the add_data method when an error occurs while getting the connection or executing the query
