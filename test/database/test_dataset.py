@@ -13,10 +13,10 @@ from src.database.data_provider import DataProvider
 from src.database.database_connection import DatabaseConnection
 from src.database.dataset import Dataset
 from src.database.dataset_meta_table import META_TABLE_COLUMNS
-from test.database.test_database import TestDatabase
+from test.database.test_database_setup import AbstractTestDatabase
 
 
-class TestDataset(TestDatabase):
+class TestDataset(AbstractTestDatabase):
 
     def setUp(self):
         """

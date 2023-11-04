@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from src.data_transfer.record import ErrorRecord
@@ -19,20 +19,20 @@ class IErrorHandler(ABC):
         """
         self.errors: List[ErrorRecord] = []
 
+    @abstractmethod
     def get_errors(self) -> List[ErrorRecord]:
         """
         Returns a list of all errors encountered by the implementing object and all its underlying objects.
 
         :return: A list of all errors encountered by the implementing object and all its underlying objects.
         """
-        errors: List = self.errors.copy()
-        self.errors.clear()
-        return errors
+        pass
 
-    def error_occured(self) -> bool:
+    @abstractmethod
+    def error_occurred(self) -> bool:
         """
         Returns whether an error has occurred.
 
         :return: Whether an error has occurred. True if it has, False otherwise.
         """
-        return len(self.errors) > 0
+        pass

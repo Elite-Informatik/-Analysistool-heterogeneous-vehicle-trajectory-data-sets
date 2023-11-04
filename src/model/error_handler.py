@@ -37,17 +37,25 @@ class ErrorHandler(IErrorHandler, ABC):
         assert issubclass(handler.__class__, ErrorHandler)
         self._error_handlers.remove(handler)
 
-    def get_errors(self) -> List[ErrorRecord]:
+    def get_errors(self, clear: bool = True) -> List[ErrorRecord]:
         """
         Gets all errors from the composite.
         :return: All errors from the object and all underlying objects.
         """
         errors: List[ErrorRecord] = self._errors
-        self._errors = list()
+        if clear:
+            self._errors = list()
         for handler in self._error_handlers:
             errors.extend(handler.get_errors())
 
         return list(set(errors))
+
+    def error_occurred(self) -> bool:
+        """
+        Returns whether an error has occurred.
+        :return: Whether an error has occurred. True if it has, False otherwise.
+        """
+        return len(self.get_errors(clear=False)) > 0
 
     def throw_error(self, error: ErrorMessage, msg: str = DEF_MSG) -> None:
         """

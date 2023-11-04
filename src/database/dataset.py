@@ -80,7 +80,13 @@ class Dataset(DatabaseComponent):
         if not query_successful:
             return False
         delete_successful: bool = self.meta_table.remove_dataset(dataset_uuid=self._uuid)
-        return delete_successful
+        if not delete_successful:
+            self.throw_error(ErrorMessage.DATASET_NOT_DELETED, "The dataset was not deleted from the meta table, "
+                                                               "but it was deleted from the database."
+                                                               "This may cause problems in the future. uuid: " +
+                             str(self._uuid))
+            return False
+        return True
 
     @classmethod
     def load_from_database(cls, database_connection: DatabaseConnection, meta_table: DatasetMetaTable,

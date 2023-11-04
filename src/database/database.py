@@ -23,6 +23,13 @@ REQUIRED_CONNECTION_KEYS = ["host",
                             "port",
                             "data_table",
                             "meta_table"]
+HOST = 0
+USER = 1
+PASSWORD = 2
+DATABASE = 3
+PORT = 4
+DATA_TABLE = 5
+META_TABLE = 6
 
 
 class Database(IDatabase, DatasetFacade):
@@ -48,14 +55,18 @@ class Database(IDatabase, DatasetFacade):
                                                       meta_table=self.meta_table, uuid=dataset_uuid)
 
         if dataset.name == INVALID_NAME:
-            for error in dataset.errors:
+            for error in dataset.get_errors():
                 self.throw_error(error.error_type, error.args)
             return False
 
         self.add_error_handler(dataset)
+        self.active_datasets.append(dataset)
 
     def get_active_datasets(self) -> List[UUID]:
-        pass
+        """
+        Returns a list of all active datasets.
+        """
+        return [dataset.uuid for dataset in self.active_datasets]
 
     def get_data_sets_as_dict(self) -> Dict[str, int]:
         """
@@ -71,20 +82,21 @@ class Database(IDatabase, DatasetFacade):
     def set_connection(self, connection: Dict[str, str]) -> bool:
         """
         Sets the connection to the database using the given connection dict. Also creates the meta table.
+        :param connection: A dictionary with the connection parameters of the database.
         """
-        assert self.connection is not None
+        assert connection is not None
         # assert that all necessary parameters are given in the connection dict
         if not all(key in connection.keys() for key in REQUIRED_CONNECTION_KEYS):
             raise KeyError(ErrorMessage.MISSING_CONNECTION_PARAMETER.value.format(expected=REQUIRED_CONNECTION_KEYS,
                                                                                   got=connection.keys()))
         try:
-            self.connection = DatabaseConnection(host=connection["host"],
-                                                 user=connection["user"],
-                                                 password=connection["password"],
-                                                 database=connection["database"],
-                                                 port=connection["port"],
-                                                 data_table=connection["data_table"],
-                                                 meta_table=connection["meta_table"])
+            self.connection = DatabaseConnection(host=connection[REQUIRED_CONNECTION_KEYS[HOST]],
+                                                 user=connection[REQUIRED_CONNECTION_KEYS[USER]],
+                                                 password=connection[REQUIRED_CONNECTION_KEYS[PASSWORD]],
+                                                 database=connection[REQUIRED_CONNECTION_KEYS[DATABASE]],
+                                                 port=connection[REQUIRED_CONNECTION_KEYS[PORT]],
+                                                 data_table=connection[REQUIRED_CONNECTION_KEYS[DATA_TABLE]],
+                                                 meta_table=connection[REQUIRED_CONNECTION_KEYS[META_TABLE]])
         except DatabaseConnectionError as e:
             self.throw_error(ErrorMessage.DATABASE_CONNECTION_ERROR, e.args[0])
             return False
@@ -95,19 +107,32 @@ class Database(IDatabase, DatasetFacade):
         return True
 
     def get_data_set_meta(self, dataset_uuid: UUID) -> Optional[DatasetRecord]:
+        """
+        Returns the metadata of the dataset with the given uuid as an optional DatasetRecord object.
+        :param dataset_uuid: the uuid of the dataset as a UUID object
+        :return: the metadata of the dataset as a DatasetRecord object if the dataset exists, otherwise None
+        """
         return self.meta_table.get_meta_data_as_record(dataset_uuid)
 
     def delete_dataset(self, dataset_uuid: UUID) -> bool:
-        pass
-
-    def set_current_dataset(self, dataset_uuid: UUID, replace: bool = True) -> bool:
         """
-        Sets the current dataset to the dataset with the given uuid.
+        Deletes the dataset with the given uuid from the database.
         :param dataset_uuid: the uuid of the dataset as a UUID object
-        :param replace: If the currently selected dataset should be replaced. Default is True
-        :return: True if the dataset was set successfully, otherwise False
-        :raises RuntimeError: if the connection to the database was not set before
+        :return: True if the dataset was deleted successfully, otherwise False
         """
+        self._assert_database_configured()
+
+        for dataset in self.active_datasets:
+            if dataset.uuid == dataset_uuid:
+                self.active_datasets.remove(dataset)
+                self.remove_error_handler(dataset)
+                dataset.delete_dataset()
+                return True
+        if not self.meta_table.contains(dataset_uuid):
+            raise RuntimeError(ErrorMessage.DATASET_NOT_EXISTING.value + str(dataset_uuid))
+        dataset: Dataset = Dataset.load_from_database(database_connection=self.connection,
+                                                      meta_table=self.meta_table, uuid=dataset_uuid)
+        return dataset.delete_dataset()
 
     def add_dataset(self, data: DataRecord, append: bool = False) -> Optional[UUID]:
         """
@@ -129,7 +154,7 @@ class Database(IDatabase, DatasetFacade):
                                        connection=self.connection, meta_table=self.meta_table)
 
         added_success: bool = dataset.add_data(data=data)
-        if dataset.error_occured() or not added_success:
+        if dataset.error_occurred() or not added_success:
             errors = dataset.get_errors()
             for error in errors:
                 self.throw_error(error.error_type, error.args)
@@ -165,6 +190,9 @@ class Database(IDatabase, DatasetFacade):
 
     @property
     def dataset_facade(self) -> DatasetFacade:
+        """
+        Returns the dataset facade used for accessing the datasets.
+        """
         return self
 
     @property

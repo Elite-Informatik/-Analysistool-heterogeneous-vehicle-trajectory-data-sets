@@ -140,7 +140,7 @@ class DatasetMetaTable(DatabaseComponent):
 
     def contains(self, dataset_uuid: UUID) -> bool:
         """
-        Checks if the meta_table contains the meta dataset.
+        Checks if the meta_table contains the dataset.
         :param dataset_uuid: The uuid of the dataset to check.
         """
 
@@ -216,6 +216,7 @@ class DatasetMetaTable(DatabaseComponent):
                                                             column=META_TABLE_COLUMNS[META_TABLE_UUID])
 
         self.query_sql(sql_query=query, connection=connection, read=False)
+
         self.database_connection.post_connection()
 
         return True

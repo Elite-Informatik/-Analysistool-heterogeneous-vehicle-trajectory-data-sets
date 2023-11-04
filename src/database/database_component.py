@@ -26,7 +26,6 @@ class DatabaseComponent(ErrorHandler):
         super().__init__()
         self.database_connection: DatabaseConnection = database_connection
 
-
     def query_sql(self, sql_query: str, connection: Connection, read: bool = True) -> Optional[DataFrame]:
         """
         queries the database with the given sql query. If pandas_query is true, the query will be executed with pandas,

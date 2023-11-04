@@ -11,10 +11,10 @@ from src.data_transfer.exception.custom_exception import DatabaseConnectionError
 from src.database.dataset_meta_table import DatasetMetaTable, META_TABLE_COLUMNS, META_TABLE_NAME, META_TABLE_UUID, \
     META_TABLE_SIZE
 from src.database.sql_querys import SQLQueries
-from test.database.test_database import TestDatabase
+from test.database.test_database_setup import AbstractTestDatabase
 
 
-class DatasetMetaTableTest(TestDatabase):
+class DatasetMetaTableTest(AbstractTestDatabase):
     """
     Tests the DatasetMetaTable class using mocks
     """

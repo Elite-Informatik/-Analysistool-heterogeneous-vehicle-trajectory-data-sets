@@ -7,11 +7,11 @@ from src.data_transfer.exception.custom_exception import DatabaseException
 from src.data_transfer.record import DataRecord
 from src.database.data_provider import DataProvider
 from src.database.sql_querys import SQLQueries
-from test.database.test_database import TestDatabase
+from test.database.test_database_setup import AbstractTestDatabase
 from src.database.database_component import UUID_COLUMN_NAME
 
 
-class DataProviderTest(TestDatabase):
+class DataProviderTest(AbstractTestDatabase):
     """
     Tests the DataProvider class using mocks.
     """
