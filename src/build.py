@@ -5,8 +5,8 @@ from src.controller.execution_handling.analysis_manager import AnalysisManager
 from src.controller.execution_handling.database_manager import DatabaseManager
 from src.controller.execution_handling.setting_manager import SettingManager
 from src.controller.input_handling.application_manager import ApplicationManager
-from src.database.postgre_sql_data_facade import PostgreSQLDataFacade
-from src.database.postgre_sql_dataset_facade import PostgreSQLDatasetFacade
+from src.database import Database
+from src.database.dataset_facade import DatasetFacade
 from src.file.file_facade_manager import FileFacadeManager
 from src.model.model_facade import ModelFacade
 from src.model.setting_structure.setting_structure import SettingStructure
@@ -58,10 +58,13 @@ if __name__ == "__main__":
     setting.set_file_facade(file)
     data = DatabaseManager()
     data.set_file_facade(file)
-    data.set_dataset_facade(PostgreSQLDatasetFacade(PostgreSQLDataFacade()))
+
+    dataset_facade: DatasetFacade = Database()
+    data.set_dataset_facade(dataset_facade=dataset_facade)
     app = ApplicationManager(AnalysisManager(), setting, data)
     app.set_file_facade(file)
-    app.set_dataset_facade(PostgreSQLDatasetFacade(PostgreSQLDataFacade()))
+
+    app.set_dataset_facade(dataset_facade=dataset_facade)
     app.set_paths()
     app.save_datasets()
 
