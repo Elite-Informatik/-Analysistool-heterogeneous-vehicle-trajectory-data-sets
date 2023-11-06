@@ -40,7 +40,14 @@ class DatasetMetaTable(DatabaseComponent):
 
         query: str = SQLQueries.GET_ALL_TABLES.value
 
-        tables: DataFrame = self.query_sql(sql_query=query, connection=connection)
+        tables: DataFrame = self.query_sql(sql_query=query, connection=connection, read=True)
+
+        if tables is None:
+            raise DatabaseConnectionError(ErrorMessage.DATABASE_QUERY_ERROR.value + query + "\n while checking if "
+                                                                                            "the meta_table table "
+                                                                                            "exists in the database."
+                                                                                            " with errors: " + str(
+                [error.args for error in self.get_errors()]))
 
         return tables.isin([self.name]).any().any()
 

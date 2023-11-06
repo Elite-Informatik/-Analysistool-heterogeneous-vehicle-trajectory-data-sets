@@ -2,7 +2,7 @@ from typing import Optional
 
 import pandas
 from pandas import DataFrame
-from sqlalchemy import Connection
+from sqlalchemy import Connection, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.data_transfer.content.error import ErrorMessage
@@ -49,19 +49,19 @@ class DatabaseComponent(ErrorHandler):
         :return: the result of the query
         """
         try:
-            return pandas.read_sql_query(sql_query, connection)
+            return pandas.read_sql_query(text(sql_query), connection)
         except SQLAlchemyError as err:
             self.throw_error(ErrorMessage.DATABASE_QUERY_ERROR, str(err))
             return None
 
-    def write_to_sql(self, sql_query, connection: Connection) -> bool:
+    def write_to_sql(self, sql_query: str, connection: Connection) -> bool:
         """
         Queries the database with the given sql query with sqlalchemy.
         :param sql_query: the sql query
         :param connection: the connection as a sqlalchemy connection
         """
         try:
-            connection.execute(sql_query)
+            connection.execute(text(sql_query))
             return True
         except SQLAlchemyError as err:
             self.throw_error(ErrorMessage.DATABASE_QUERY_ERROR, str(err))

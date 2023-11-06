@@ -3,7 +3,7 @@ from enum import Enum
 
 class SQLQueries(Enum):
     """
-    holds all sql queries
+    holds all sql queries information_schema.tables
     """
 
     SELECT_DATASET_METADATA = """
@@ -13,11 +13,11 @@ class SQLQueries(Enum):
                                 """
     GET_ALL_TABLES = """
                                  SELECT
-                                     '{table_name}'
+                                     tablename
                                  FROM
-                                     information_schema.tables
-                                 WHERE
-                                     table_schema = 'public';
+                                     pg_catalog.pg_tables
+                                WHERE
+                                    schemaname = 'public'
                     """
     CREATE_TABLE = """
                          CREATE TABLE "{table_name}" ({columns})
