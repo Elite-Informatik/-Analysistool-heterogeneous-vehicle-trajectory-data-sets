@@ -25,7 +25,7 @@ class Dataset(DatabaseComponent):
     """
 
     def __init__(self, name: str, size: int, connection: DatabaseConnection, meta_table: DatasetMetaTable,
-                 uuid: UUID = uuid4()):
+                 uuid: UUID = uuid4(), new_dataset: bool = True):
         super().__init__(database_connection=connection)
         self._name: str = name
         self._size: int = size
@@ -33,7 +33,8 @@ class Dataset(DatabaseComponent):
         self.data_table_name: str = connection.data_table
         self.meta_table = meta_table
         self.add_error_handler(self.meta_table)
-        meta_table.add_table(dataset_name=name, dataset_uuid=uuid, dataset_size=size)
+        if new_dataset:
+            meta_table.add_table(dataset_name=name, dataset_uuid=uuid, dataset_size=size)
 
     def to_dataset_record(self) -> DatasetRecord:
         """
@@ -56,7 +57,11 @@ class Dataset(DatabaseComponent):
         dataframe: DataFrame = data.data
         dataframe[UUID_COLUMN_NAME] = self._uuid
 
-        dataframe.to_sql(name=self._name, con=connection, if_exists="append", index=False)
+        rows_affected: Optional[int] = dataframe.to_sql(name=self.data_table_name, con=connection, if_exists="append",
+                                                        index=False)
+        if rows_affected is None or rows_affected == 0:
+            self.throw_error(ErrorMessage.DATASET_ADD_ERROR, "No rows were affected by the add operation.")
+            return False
         self.database_connection.post_connection()
 
         size: int = dataframe.memory_usage(index=True).sum()
@@ -99,7 +104,7 @@ class Dataset(DatabaseComponent):
         :return: the loaded dataset. If the dataset does not exist, an invalid dataset will be returned.
         """
         dataset: Dataset = cls(name=INVALID_NAME, size=-1, connection=database_connection, meta_table=meta_table,
-                               uuid=uuid)
+                               uuid=uuid, new_dataset=False)
 
         meta_data: DataFrame = dataset.meta_table.get_meta_data(dataset_uuid=uuid)
 

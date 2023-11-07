@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Set
 
 from pandas import DataFrame, Series
 from sqlalchemy import text, TextClause, Connection
@@ -8,7 +8,7 @@ from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.exception.custom_exception import DatabaseConnectionError
 from src.data_transfer.record import DatasetRecord
 from src.database.database_connection import DatabaseConnection
-from src.database.database_component import DatabaseComponent
+from src.database.database_component import DatabaseComponent, UUID_COLUMN_NAME
 from src.database.sql_querys import SQLQueries
 
 META_TABLE_COLUMNS: list = ["name", "dataset_id", "size"]
@@ -26,10 +26,14 @@ class DatasetMetaTable(DatabaseComponent):
     def __init__(self, connection: DatabaseConnection):
         super().__init__(database_connection=connection)
         self.name = connection.meta_table
-        if not DatasetMetaTable._table_exists and not self._exists():
-            DatasetMetaTable._table_exists = self._create_table()
+        if not DatasetMetaTable._table_exists and not self._exists(self.name):
+            table_created: bool = self._create_table()
+            DatasetMetaTable._table_exists = table_created
+        else:
+            DatasetMetaTable._table_exists = True
+        self.check_meta_table_is_valid()
 
-    def _exists(self) -> bool:
+    def _exists(self, table_name: str) -> bool:
         """
         Checks if the meta_table already exists in the database.
         :return: True if the Table exists and False if it doesn't or an error occurred.
@@ -49,7 +53,7 @@ class DatasetMetaTable(DatabaseComponent):
                                                                                             " with errors: " + str(
                 [error.args for error in self.get_errors()]))
 
-        return tables.isin([self.name]).any().any()
+        return tables.isin([table_name]).any().any()
 
     def _create_table(self) -> bool:
         """
@@ -76,8 +80,12 @@ class DatasetMetaTable(DatabaseComponent):
         Adds a table to the meta_table.
         :param dataset_name: The name of the dataset.
         :param dataset_uuid: The uuid of the dataset.
-        :param dataset_size: The size of the dataset.
+        :param dataset_size: The size of the dataset. -1 is the default value for an illegal size.
         """
+        if dataset_size == -1:
+            raise ValueError(ErrorMessage.DATASET_ILLEGAL_DATASET_ADD.value)
+        if self.contains(dataset_uuid=dataset_uuid):
+            raise ValueError(ErrorMessage.DATASET_UUID_COLLISION.value)
         connection: Connection = self._assert_table_exists_get_connection()
         if connection is None:
             self.throw_error(ErrorMessage.DATASET_ADD_META_ERROR, "uuid: " + str(dataset_uuid))
@@ -174,6 +182,7 @@ class DatasetMetaTable(DatabaseComponent):
                                                                              f"{META_TABLE_COLUMNS[META_TABLE_UUID]}, "
                                                                              f"{META_TABLE_COLUMNS[META_TABLE_SIZE]}",
                                                                      uuid=dataset_uuid,
+                                                                     uuid_column=META_TABLE_COLUMNS[META_TABLE_UUID],
                                                                      meta_table_name=self.name)
 
         dataset_meta_data: DataFrame = self.query_sql(sql_query=query, connection=connection)
@@ -252,7 +261,8 @@ class DatasetMetaTable(DatabaseComponent):
             raise RuntimeError(f"The data loaded from the Database is not in the correct format. Expected: "
                                f"[{META_TABLE_COLUMNS[1]}], but got: {columns}")
 
-        return uuid_dataframe[META_TABLE_COLUMNS[1]].to_list()
+        uuids = uuid_dataframe[META_TABLE_COLUMNS[1]].to_list()
+        return [UUID(uuid) for uuid in uuids]
 
     def _assert_table_exists_get_connection(self) -> Optional[Connection]:
         """
@@ -267,3 +277,43 @@ class DatasetMetaTable(DatabaseComponent):
             return None
 
         return connection
+
+    def check_meta_table_is_valid(self):
+        """
+        A private method to check if the meta table is synced with the main table.
+        It checks if the meta table and the main table contain the same ids.
+        """
+        meta_ids: List[UUID] = self.get_all_datasets()
+        data_table_name: str = self.database_connection.data_table
+        query: str = SQLQueries.GET_DISTINCT_VALUES.value.format(column=UUID_COLUMN_NAME,
+                                                                 table_name=data_table_name)
+        connection: Connection = self._assert_table_exists_get_connection()
+
+        # first startup of the program
+        if len(meta_ids) == 0 and not self._exists(data_table_name):
+            return
+
+        id_df: DataFrame = self.query_sql(sql_query=query, connection=connection)
+        if id_df is None:
+            raise RuntimeError("Could not check if the meta table is synced with the main table.")
+
+        table_ids: List[UUID] = [UUID(uuid_str) for uuid_str in id_df[UUID_COLUMN_NAME].to_list()]
+
+        # both tables should have the same amount of ids.
+        if len(meta_ids) != len(table_ids):
+            self.throw_error(ErrorMessage.META_TABLE_NOT_SYNCED,
+                             "meta_ids: " + str(meta_ids) + " table_ids: " + str(table_ids))
+            return
+
+        # the meta table should not contain any duplicate ids.
+        id_set: Set[UUID] = set(meta_ids)
+        if len(id_set) != len(meta_ids):
+            self.throw_error(ErrorMessage.META_TABLE_DUPLICATE_UUIDS)
+            return
+
+        # the meta table and the main table should contain the same ids.
+        if id_set != set(table_ids):
+            self.throw_error(ErrorMessage.META_TABLE_NOT_SYNCED,
+                             "meta_ids: " + str(meta_ids) + " table_ids: " + str(table_ids))
+            return
+

@@ -26,11 +26,10 @@ class DatasetFacade(ErrorHandler):
         pass
 
     @abstractmethod
-    def set_data_sets_as_dict(self) -> List[UUID]:
+    def get_all_dataset_ids(self) -> List[UUID]:
         """
         Setter for all datasets that are already in the system
         """
-        #todo: remove
         pass
 
     @abstractmethod

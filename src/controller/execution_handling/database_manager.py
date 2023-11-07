@@ -94,7 +94,7 @@ class IDatabaseManager(ABC):
         pass
 
     @abstractmethod
-    def load_datasets(self, dataset_dict: Dict[str, int]) -> bool:
+    def load_datasets(self) -> bool:
         """
         loads the datasets from a given dictionary
         :param dataset_dict:    the dictionary
@@ -186,7 +186,7 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
             self.handle_error([self.file_facade])
             return False
 
-        self.load_datasets(dataset_dict=dataset_dict)
+        self.load_datasets()
         return True
 
     @type_check(str)
@@ -350,6 +350,9 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
                 append = True
 
             uuid = self.dataset_facade.add_dataset(imported_data, append)
+            if uuid is None and i == 0:
+                self.handle_error([self.dataset_facade], " at importing dataset in manager")
+                return False
 
         self.file_facade.close_session()
 
@@ -363,13 +366,10 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
         self.handle_event()
         return True
 
-    @type_check(Dict)
-    def load_datasets(self, dataset_dict: Dict[str, int]) -> bool:
 
-        uuids = self.dataset_facade.set_data_sets_as_dict()
-        if uuids is None:
-            self.handle_error([self.dataset_facade], " at loading datasets in manager")
-            return False
+    def load_datasets(self) -> bool:
+
+        uuids: List[UUID] = self.dataset_facade.get_all_dataset_ids()
 
         for uuid in uuids:
             self.events.append(DatasetAdded(uuid))

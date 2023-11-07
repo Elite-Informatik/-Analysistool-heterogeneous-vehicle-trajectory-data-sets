@@ -75,9 +75,12 @@ class Database(IDatabase, DatasetFacade):
         # todo: remove code. This method is not needed anymore.
         pass
 
-    def set_data_sets_as_dict(self) -> List[UUID]:
-        # todo: remove this method
-        pass
+    def get_all_dataset_ids(self) -> List[UUID]:
+        """
+        Returns a list of all datasets in the database.
+        :return: List of all datasets in the database.
+        """
+        return self.meta_table.get_all_datasets()
 
     def set_connection(self, connection: Dict[str, str]) -> bool:
         """

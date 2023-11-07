@@ -3,7 +3,7 @@ pyarrow==11.0.0
 sqlalchemy==2.0.2
 psycopg2
 
-pandas~=1.5.3
+pandas==2.1.2
 setuptools~=66.0.0
 
 tkintermapview~=1.18

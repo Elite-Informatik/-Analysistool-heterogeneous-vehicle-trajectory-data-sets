@@ -351,7 +351,7 @@ class SpeedLimitCalculator(AbstractColumnCalculator):
         :param source_df: The FCD UI Dataframe to check.
         :return: List[int] of the rows that need to be deleted.
         """
-        source_df['valid_group'] = source_df.groupby(FcdColumn.ROAD_TYPE.value)[self.column].apply(
+        source_df['valid_group'] = source_df.groupby(FcdColumn.ROAD_TYPE.value, group_keys=False)[self.column].apply(
             self.contains_number)
         source_df.replace(to_replace=False, value=None, inplace=True)
         source_df['valid_group'] = source_df.groupby(FcdColumn.ROAD_TYPE.value)['valid_group'] \

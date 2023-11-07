@@ -9,7 +9,7 @@ class SQLQueries(Enum):
     SELECT_DATASET_METADATA = """
                                 SELECT {columns}
                                 FROM "{meta_table_name}"
-                                WHERE uuid='{uuid}'
+                                WHERE {uuid_column}='{uuid}'
                                 """
     GET_ALL_TABLES = """
                                  SELECT
@@ -19,20 +19,23 @@ class SQLQueries(Enum):
                                 WHERE
                                     schemaname = 'public'
                     """
+    GET_DISTINCT_VALUES = """
+                            SELECT DISTINCT {column} FROM "{table_name}"
+                            """
     CREATE_TABLE = """
                          CREATE TABLE "{table_name}" ({columns})
                          """
-    DELETE_DATASET = """DELETE FROM '{table_name}' WHERE {column}='{uuid}'"""
+    DELETE_DATASET = """DELETE FROM "{table_name}" WHERE {column}='{uuid}'"""
     GET_DATASET = """
-                    SELECT * FROM '{table_name}'
+                    SELECT * FROM "{table_name}"
                     WHERE {column}='{uuid}'
                     """
     GET_COLUMN_FROM_TABLE = """
-                            SELECT {column} FROM '{table_name}'
+                            SELECT {column} FROM "{table_name}"
                             """
     NOT = "NOT({filter})"
-    SELECT_FROM_DATASET = "SELECT {columns} FROM {tablename} WHERE {dataset_column} IN ({dataset_uuids})"
-    SELECT_DISTINCT_FROM_DATASET = "SELECT DISTINCT {columns} FROM {tablename} WHERE {dataset_column} " \
+    SELECT_FROM_DATASET = "SELECT {columns} FROM \"{tablename}\" WHERE {dataset_column} IN ({dataset_uuids})"
+    SELECT_DISTINCT_FROM_DATASET = "SELECT DISTINCT {columns} FROM \"{tablename}\" WHERE {dataset_column} " \
                                    "IN ({dataset_uuids})"
     WHERE = " WHERE {filter}"
     AND_IN = " AND {column} IN ({values})"

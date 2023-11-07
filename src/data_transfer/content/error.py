@@ -37,6 +37,10 @@ class ErrorMessage(Enum):
     DATABASE_ACCESS_BEFORE_CONNECTION = "The database was accessed before the connection was set."
     DATABASE_APPEND_TO_EMPTY = "The data could not be appended to the first dataset, because there is no dataset yet."
     DATASET_SIZE_NOT_UPDATED = "The dataset size could not be updated. The size might be wrong now."
+    DATASET_ILLEGAL_DATASET_ADD = "There was an attempt to add an illegal dataset to the database."
+    DATASET_UUID_COLLISION = "There was an attempt to add a dataset with an already existing uuid to the database."
+    META_TABLE_NOT_SYNCED = "The meta table is not synced with the database."
+    META_TABLE_DUPLICATE_UUIDS = "The meta table contains duplicate uuids."
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"
