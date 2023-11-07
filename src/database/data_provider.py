@@ -24,20 +24,30 @@ class DataProvider(DatabaseComponent, DataFacade):
     It filters the data according to the filter string set and filters the data in the database using sql.
     """
 
-    def __init__(self, connection: DatabaseConnection, dataset_facade: DatasetFacade,
-                 meta_table: DatasetMetaTable):
+    def __init__(self):
         """
         Constructor for the data provider.
         :param dataset_uuids: A list of uuids of the datasets that should be used to get the data from.
         :param connection: The connection to the database as a DatabaseComponent.
         :param dataset_facade: The facade to the datasets so that the data provider can get the active datasets.
         """
-        super().__init__(database_connection=connection)
+        super().__init__(database_connection=None)
         self.point_filter: Optional[str] = None
         self.trajectory_filter: Optional[str] = None
         self.trajectory_filter_active: bool = False
-        self.dataset_facade: DatasetFacade = dataset_facade
-        self.meta_table: DatasetMetaTable = meta_table  # for future use of filtering by metadata
+        self.dataset_facade: Optional[DatasetFacade] = None
+        self.meta_table: Optional[DatasetMetaTable] = None  # for future use of filtering by metadata
+
+    def setParameters(self, connection: DatabaseConnection, dataset_facade: DatasetFacade,
+                      meta_table: DatasetMetaTable):
+        """
+        Sets the parameters for the data provider. This is done this way and not in the constructor as on program start
+        the data provider instance needs to be passed as the datafacade to the rest of the program. At that point the
+        connection and the dataset facade are not yet available.
+        """
+        self.dataset_facade = dataset_facade
+        self.meta_table = meta_table  # for future use of filtering by metadata
+        self.database_connection = connection
 
     def set_point_filter(self, filter_str: str, use_filter: bool, negate_filter: bool) -> None:
         """
@@ -78,7 +88,7 @@ class DataProvider(DatabaseComponent, DataFacade):
         """
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
         str_columns: List[str] = [column.value for column in columns]
-        str_uuids: List[str] = [str(uuid) for uuid in dataset_uuids]
+        str_uuids: List[str] = ["'"+str(uuid)+"'" for uuid in dataset_uuids]
 
         query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
                                                                  tablename=self.database_connection.data_table,
@@ -101,7 +111,7 @@ class DataProvider(DatabaseComponent, DataFacade):
         :param column: Column object specifying the column to return the distinct data from.
         """
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
-        str_uuids: List[str] = [str(uuid) for uuid in dataset_uuids]
+        str_uuids: List[str] = ["'"+str(uuid)+"'" for uuid in dataset_uuids]
         query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=column.value,
                                                                           tablename=self.database_connection.data_table,
                                                                           dataset_column=UUID_COLUMN_NAME,
@@ -120,7 +130,7 @@ class DataProvider(DatabaseComponent, DataFacade):
         the returned dataframe will only contain data from the specified trajectories.
         :param columns: List of Column objects specifying the columns to return. I.e. the columns the returned dataframe
         should have.
-        :param filter_elements: List of elements specifying the elements to filter by.
+        :param filter_elements: List of elements specifying the elements to filter by in the column.
         :param filter_column: Column object specifying the column to filter on.
         :param use_filter: Boolean indicating if the potentially previously defined filter should be applied when
         getting the data.
@@ -129,8 +139,8 @@ class DataProvider(DatabaseComponent, DataFacade):
 
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
         str_columns: List[str] = [column.value for column in columns]
-        str_ids: List[str] = [str(uuid) for uuid in dataset_uuids]
-        str_filter_elements: List[str] = [str(element) for element in filter_elements]
+        str_ids: List[str] = ["'"+str(uuid) + "'" for uuid in dataset_uuids]
+        str_filter_elements: List[str] = ["'" + str(element) + "'" for element in filter_elements]
 
         query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
                                                                  tablename=self.database_connection.data_table,
@@ -154,7 +164,7 @@ class DataProvider(DatabaseComponent, DataFacade):
         :return: Optional DataRecord object with the requested data. Returns None if an error occurred.
         """
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
-        str_ids: List[str] = [str(uuid) for uuid in dataset_uuids]
+        str_ids: List[str] = ["'"+str(uuid)+"'" for uuid in dataset_uuids]
         query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=Column.TRAJECTORY_ID.value,
                                                                           tablename=self.database_connection.data_table,
                                                                           dataset_column=UUID_COLUMN_NAME,
@@ -187,14 +197,7 @@ class DataProvider(DatabaseComponent, DataFacade):
             self.throw_error(ErrorMessage.DATASET_DATA_ERROR, "while querying the database with: " + query)
             return None
 
-        if UUID_COLUMN_NAME not in data.columns:
-            raise DatabaseException(ErrorMessage.DATABASE_DATASET_UUID_MISSING_ERROR
-                                    .value.format(expected=UUID_COLUMN_NAME,
-                                                  got=data.columns.to_list()))
-
-        return data.drop(columns=[UUID_COLUMN_NAME])
+        return data
 
     def _get_dataset_uuids(self) -> List[UUID]:
         return self.dataset_facade.get_active_datasets()
-
-

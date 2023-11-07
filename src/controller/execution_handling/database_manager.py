@@ -270,7 +270,8 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
     @type_check(UUID)
     def open_dataset(self, uuid: UUID) -> bool:
 
-        if self._dataset_facade.load_dataset(uuid) is None:
+        load_success: bool = self._dataset_facade.load_dataset(uuid)
+        if self._dataset_facade.error_occurred() or not load_success:
             self.handle_error([self._dataset_facade], " at opening dataset in manager")
             return False
 
@@ -356,7 +357,7 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
 
         self.file_facade.close_session()
 
-        if uuid is None:
+        if uuid is None or self.dataset_facade.error_occurred():
             self.handle_error([self.dataset_facade], " at importing dataset in manager")
             return False
 

@@ -18,13 +18,13 @@ class DatabaseComponent(ErrorHandler):
     Represents an abstract component of the database that allows querying.
     """
 
-    def __init__(self, database_connection: DatabaseConnection):
+    def __init__(self, database_connection: Optional[DatabaseConnection]):
         """
         Sets the connection to the database.
         :param database_connection: the connection to the database as a DatabaseConnection object
         """
         super().__init__()
-        self.database_connection: DatabaseConnection = database_connection
+        self.database_connection: Optional[DatabaseConnection] = database_connection
 
     def query_sql(self, sql_query: str, connection: Connection, read: bool = True) -> Optional[DataFrame]:
         """

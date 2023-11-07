@@ -40,7 +40,7 @@ class Database(IDatabase, DatasetFacade):
     def __init__(self):
         super().__init__()
         self.meta_table: Optional[DatasetMetaTable] = None
-        self.data_provider: Optional[DataProvider] = None
+        self.data_provider: Optional[DataProvider] = DataProvider()
         self.active_datasets: List[Dataset] = []
         self.connection: Optional[DatabaseConnection] = None
 
@@ -61,6 +61,7 @@ class Database(IDatabase, DatasetFacade):
 
         self.add_error_handler(dataset)
         self.active_datasets.append(dataset)
+        return True
 
     def get_active_datasets(self) -> List[UUID]:
         """
@@ -105,7 +106,7 @@ class Database(IDatabase, DatasetFacade):
             return False
         self.meta_table = DatasetMetaTable(self.connection)
         self.add_error_handler(self.meta_table)
-        self.data_provider = DataProvider(connection=self.connection, dataset_facade=self, meta_table=self.meta_table)
+        self.data_provider.setParameters(connection=self.connection, dataset_facade=self, meta_table=self.meta_table)
         self.add_error_handler(self.data_provider)
         return True
 

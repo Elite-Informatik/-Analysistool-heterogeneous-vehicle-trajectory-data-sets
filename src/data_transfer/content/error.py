@@ -30,7 +30,7 @@ class ErrorMessage(Enum):
     DATASET_LOAD_ERROR = "An error occurred while loading a dataset from the database."
     ALL_DATASETS_LOAD_ERROR = "An error occurred while loading a list of all the existing datasets."
     DATASET_DATA_ERROR = "An error occurred while loading the dataset data from the database."
-    DATABASE_DATASET_UUID_MISSING_ERROR = "The data from the database is in the from format." \
+    DATABASE_DATASET_UUID_MISSING_ERROR = "The data from the database is in the wrong format." \
                                           " Expected: {expected} to be in the columns, got: {got}"
     MISSING_CONNECTION_PARAMETER = "The keys of the database connection given in the sql_connections are not as " \
                                    "required. Expected: {expected} got: {got}"
