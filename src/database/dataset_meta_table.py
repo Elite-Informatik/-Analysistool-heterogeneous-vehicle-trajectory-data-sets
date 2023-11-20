@@ -159,9 +159,10 @@ class DatasetMetaTable(DatabaseComponent):
         :param dataset_uuid: The uuid of the dataset to check.
         """
 
-        dataset_meta_data: Optional[DataFrame] = self.get_meta_data(dataset_uuid=dataset_uuid)
-
-        return dataset_meta_data is not None
+        dataset_meta_data: Optional[DataFrame] = self._get_meta_data_df(dataset_uuid=dataset_uuid)
+        if dataset_meta_data is None:
+            return False
+        return not dataset_meta_data.empty
 
     def get_meta_data(self, dataset_uuid: UUID) -> Optional[DataFrame]:
         """
@@ -175,17 +176,7 @@ class DatasetMetaTable(DatabaseComponent):
         This would indicate a change in the database or an error in the code.
         """
 
-        connection: Connection = self.get_connection()
-        if connection is None:
-            return None
-        query: str = SQLQueries.SELECT_DATASET_METADATA.value.format(columns=f"{META_TABLE_COLUMNS[META_TABLE_NAME]}, "
-                                                                             f"{META_TABLE_COLUMNS[META_TABLE_UUID]}, "
-                                                                             f"{META_TABLE_COLUMNS[META_TABLE_SIZE]}",
-                                                                     uuid=dataset_uuid,
-                                                                     uuid_column=META_TABLE_COLUMNS[META_TABLE_UUID],
-                                                                     meta_table_name=self.name)
-
-        dataset_meta_data: DataFrame = self.query_sql(sql_query=query, connection=connection)
+        dataset_meta_data: Optional[DataFrame] = self._get_meta_data_df(dataset_uuid=dataset_uuid)
 
         if dataset_meta_data is None or dataset_meta_data.empty:
             self.throw_error(ErrorMessage.DATASET_NOT_EXISTING, "uuid: " + str(dataset_uuid))
@@ -205,6 +196,26 @@ class DatasetMetaTable(DatabaseComponent):
         self.database_connection.post_connection()
 
         return dataset_meta_data
+
+    def _get_meta_data_df(self, dataset_uuid: UUID) -> Optional[DataFrame]:
+        """
+        Helper method to get the metadata as a dataframe of a given dataset specified by its uuid.
+        :returns None if an error occurs, an empty dataframe if the dataset does not exist and a dataframe with the
+        metadata of the dataset if it exists. The name of the columns of the dataframe are the same as the ones in the
+        request below.
+        """
+        connection: Connection = self.get_connection()
+        if connection is None:
+            return None
+        query: str = SQLQueries.SELECT_DATASET_METADATA.value.format(columns=f"{META_TABLE_COLUMNS[META_TABLE_NAME]}, "
+                                                                             f"{META_TABLE_COLUMNS[META_TABLE_UUID]}, "
+                                                                             f"{META_TABLE_COLUMNS[META_TABLE_SIZE]}",
+                                                                     uuid=dataset_uuid,
+                                                                     uuid_column=META_TABLE_COLUMNS[META_TABLE_UUID],
+                                                                     meta_table_name=self.name)
+
+        return self.query_sql(sql_query=query, connection=connection)
+
 
     def get_meta_data_as_record(self, dataset_uuid: UUID) -> Optional[DatasetRecord]:
         """

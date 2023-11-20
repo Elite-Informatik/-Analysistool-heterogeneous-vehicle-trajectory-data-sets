@@ -57,4 +57,11 @@ class TrajectoryFilterVisitor(IVisitor):
 
     def _append_in_exists(self, filter_str: str) -> None:
         self._current_filters.append(
-            "EXISTS(SELECT 1 FROM {tablename} as p WHERE " + filter_str + " AND t.trajectory_id = p.trajectory_id)")
+            #todo: a better solution needed. Magic string hidden in model for database access is not good.
+            "EXISTS(SELECT 1 FROM \"{table_name}\" as p WHERE " + filter_str + " AND t.trajectory_id = p.trajectory_id)")
+        # todo: error occurs at t.trajectory_id = p.trajectory_id. (missing FROM-clause entry for table "t"
+        # LINE 1: ...093867661)')), ST_POINT(latitude, longitude)) AND t.trajecto...
+        #                                                              ^
+        #
+        # [SQL: SELECT DISTINCT trajectory_id FROM "FCD_Data" WHERE dataset_id IN ('246f25d5-068b-4d47-a5f5-c3959805c088') AND ((EXISTS(SELECT 1 FROM "FCD_Data" as p WHERE ST_Contains(ST_MakePolygon(ST_GeomFromText('LINESTRING(50.250572018241705 8.607836093867661, 50.20400864744147 8.599596347773911, 50.22070640429974 8.710832920039536, 50.250572018241705 8.607836093867661)')), ST_POINT(latitude, longitude)) AND t.trajectory_id = p.trajectory_id) and EXISTS(SELECT 1 FROM "FCD_Data" as p WHERE ST_Contains(ST_MakePolygon(ST_GeomFromText('LINESTRING(50.03318121215975 8.551531162227036, 50.042883607518114 8.710832920039536, 50.11074548419942 8.558397617305161, 50.03318121215975 8.551531162227036)')), ST_POINT(latitude, longitude)) AND t.trajectory_id = p.trajectory_id)))]
+        # (Background on this error at: https://sqlalche.me/e/20/f405))

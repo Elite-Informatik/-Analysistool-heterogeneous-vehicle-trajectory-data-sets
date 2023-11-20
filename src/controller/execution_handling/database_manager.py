@@ -359,10 +359,11 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
 
         if uuid is None or self.dataset_facade.error_occurred():
             self.handle_error([self.dataset_facade], " at importing dataset in manager")
+        if uuid is None:
             return False
 
         if not mask_msg:
-            self.request_manager.send_messages(["Import successful"])
+            self.request_manager.send_messages(["Import successful"]) # todo: why does this message not appear?
         self.events.append(DatasetAdded(uuid))
         self.handle_event()
         return True

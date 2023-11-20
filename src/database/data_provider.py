@@ -88,12 +88,12 @@ class DataProvider(DatabaseComponent, DataFacade):
         """
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
         str_columns: List[str] = [column.value for column in columns]
-        str_uuids: List[str] = ["'"+str(uuid)+"'" for uuid in dataset_uuids]
+        str_uuids: List[str] = ["'" + str(uuid) + "'" for uuid in dataset_uuids]
 
         query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
-                                                                 tablename=self.database_connection.data_table,
                                                                  dataset_column=UUID_COLUMN_NAME,
-                                                                 dataset_uuids=", ".join(str_uuids))
+                                                                 dataset_uuids=", ".join(str_uuids),
+                                                                 table_name=self.database_connection.data_table)
 
         if self.point_filter is not None:
             query += SQLQueries.AND.value.format(filter=self.point_filter)
@@ -111,9 +111,9 @@ class DataProvider(DatabaseComponent, DataFacade):
         :param column: Column object specifying the column to return the distinct data from.
         """
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
-        str_uuids: List[str] = ["'"+str(uuid)+"'" for uuid in dataset_uuids]
+        str_uuids: List[str] = ["'" + str(uuid) + "'" for uuid in dataset_uuids]
         query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=column.value,
-                                                                          tablename=self.database_connection.data_table,
+                                                                          table_name=self.database_connection.data_table,
                                                                           dataset_column=UUID_COLUMN_NAME,
                                                                           dataset_uuids=", ".join(str_uuids))
 
@@ -139,18 +139,21 @@ class DataProvider(DatabaseComponent, DataFacade):
 
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
         str_columns: List[str] = [column.value for column in columns]
-        str_ids: List[str] = ["'"+str(uuid) + "'" for uuid in dataset_uuids]
+        str_ids: List[str] = ["'" + str(uuid) + "'" for uuid in dataset_uuids]
         str_filter_elements: List[str] = ["'" + str(element) + "'" for element in filter_elements]
 
-        query: str = SQLQueries.SELECT_FROM_DATASET.value.format(columns=", ".join(str_columns),
-                                                                 tablename=self.database_connection.data_table,
-                                                                 dataset_column=UUID_COLUMN_NAME,
-                                                                 dataset_uuids=", ".join(str_ids))
+        query: str = SQLQueries.SELECT_FROM_DATASET.value
         query += SQLQueries.AND_IN.value.format(column=filter_column.value,
                                                 values=", ".join(str_filter_elements))
 
         if use_filter and self.point_filter is not None:
             query += SQLQueries.AND.value.format(filter=self.point_filter)
+
+        # this is a workaround for the generic table name being added by the filterer visitor.
+        query = query.format(columns=", ".join(str_columns),
+                             dataset_column=UUID_COLUMN_NAME,
+                             table_name=self.database_connection.data_table,
+                             dataset_uuids=", ".join(str_ids))
 
         data = self._get_data_from_query(query)
         if data is None:
@@ -164,13 +167,18 @@ class DataProvider(DatabaseComponent, DataFacade):
         :return: Optional DataRecord object with the requested data. Returns None if an error occurred.
         """
         dataset_uuids: List[UUID] = self._get_dataset_uuids()
-        str_ids: List[str] = ["'"+str(uuid)+"'" for uuid in dataset_uuids]
-        query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value.format(columns=Column.TRAJECTORY_ID.value,
-                                                                          tablename=self.database_connection.data_table,
-                                                                          dataset_column=UUID_COLUMN_NAME,
-                                                                          dataset_uuids=", ".join(str_ids))
+        str_ids: List[str] = ["'" + str(uuid) + "'" for uuid in dataset_uuids]
+        query: str = SQLQueries.SELECT_DISTINCT_FROM_DATASET.value
+
         if self.trajectory_filter_active and self.trajectory_filter is not None:
             query += SQLQueries.AND.value.format(filter=self.trajectory_filter)
+
+        # This is due to table_name being a string in the query added in the filterer component of the model.
+        # This is a hacky fix. A todo was added at the corresponding location in the model.
+        query = query.format(columns=Column.TRAJECTORY_ID.value,
+                             dataset_column=UUID_COLUMN_NAME,
+                             table_name=self.database_connection.data_table,
+                             dataset_uuids=", ".join(str_ids))
 
         data = self._get_data_from_query(query)
         if data is None:

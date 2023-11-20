@@ -30,7 +30,7 @@ class UserInputRequestFacade:
         :param message: message which is displayed in the error window
         """
         message = self._cut_message(message)
-        showerror(message=message)
+        showerror(message=message) #todo: check this method. Causes segfault on macos, but only in production mode.
 
     def send_message(self, message: str):
         """

@@ -34,11 +34,13 @@ class SQLQueries(Enum):
                             SELECT {column} FROM "{table_name}"
                             """
     NOT = "NOT({filter})"
-    SELECT_FROM_DATASET = "SELECT {columns} FROM \"{tablename}\" WHERE {dataset_column} IN ({dataset_uuids})"
-    SELECT_DISTINCT_FROM_DATASET = "SELECT DISTINCT {columns} FROM \"{tablename}\" WHERE {dataset_column} " \
+
+    # todo: As t here as it is used in the filter visitor. This is not good. A better solution is needed.
+    SELECT_FROM_DATASET = "SELECT {columns} FROM \"{table_name}\" AS t WHERE {dataset_column} IN ({dataset_uuids})"
+    SELECT_DISTINCT_FROM_DATASET = "SELECT DISTINCT {columns} FROM \"{table_name}\" AS t WHERE {dataset_column} " \
                                    "IN ({dataset_uuids})"
     WHERE = " WHERE {filter}"
     AND_IN = " AND {column} IN ({values})"
     AND = " AND {filter}"
     WHERE_FROM_DATASET = "WHERE {dataset_column} in ({dataset_uuids})"
-    UPDATE_DATASET_SIZE = "UPDATE '{meta_table_name}' SET {column} = {new_size} WHERE {uuid_column} = '{dataset_uuid}'"
+    UPDATE_DATASET_SIZE = """UPDATE "{meta_table_name}" SET {column} = {new_size} WHERE {uuid_column} = '{dataset_uuid}'"""

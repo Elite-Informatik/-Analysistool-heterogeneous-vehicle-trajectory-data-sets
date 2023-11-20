@@ -54,7 +54,7 @@ class DatasetBaseFrame(UiElement, DatasetEventConsumer):
 
         for dataset_id in self._datasets:
             meta_data = self._data_request.get_dataset_meta(dataset_id)
-            new_entry = self._datasets_tree.insert("", "end", text=meta_data.name, values=[f"{meta_data.size} MB"])
+            new_entry = self._datasets_tree.insert("", "end", text=meta_data.name, values=[f"{meta_data.size} Bytes"])
             self._id_entry_mapping[dataset_id] = new_entry
 
         self._right_click_menu = tk.Menu(master=self._base_frame, tearoff=0)
