@@ -233,9 +233,9 @@ class DateTimeTest(TestCase):
         time_converter = TimeCalculator()
 
         # assert that a ParserError is raised when the column is calculated and not repaired beforehand
-        self.assertRaises(ParserError, date_converter.calculate_column, source_df=source_data,
+        self.assertRaises(ValueError, date_converter.calculate_column, source_df=source_data,
                           result_df=result_data)
-        self.assertRaises(ParserError, time_converter.calculate_column, source_df=source_data, result_df=result_data)
+        self.assertRaises(ValueError, time_converter.calculate_column, source_df=source_data, result_df=result_data)
 
         # assert that the column is repairable and that no fatal corruptions are found
         self.assertTrue(date_converter.is_repairable(source_df=source_data))
@@ -302,14 +302,14 @@ class DateTimeTest(TestCase):
                 date_converter = DateCalculator()
                 time_converter = TimeCalculator()
                 # assert that a ParserError is raised when the column is calculated and not repaired beforehand
-                self.assertRaises(ParserError, date_converter.calculate_column, source_df=source_data,
+                self.assertRaises(ValueError, date_converter.calculate_column, source_df=source_data,
                                   result_df=result_data)
 
                 # assert that the column is repairable and that the correct fatal corruptions are found
                 self.assertTrue(date_converter.is_repairable(source_df=source_data))
                 self.assertListEqual(fatal_errors[i], date_converter.find_fatal_corruptions(source_df=source_data))
 
-                self.assertRaises(ParserError, time_converter.calculate_column, source_df=source_data,
+                self.assertRaises(ValueError, time_converter.calculate_column, source_df=source_data,
                                   result_df=result_data)
                 self.assertTrue(time_converter.is_repairable(source_df=source_data))
                 self.assertListEqual(fatal_errors[i], date_converter.find_fatal_corruptions(source_df=source_data))
@@ -326,12 +326,12 @@ class DateTimeTest(TestCase):
         result_data = DataFrame()
         date_converter = DateCalculator()
         time_converter = TimeCalculator()
-        self.assertRaises(ParserError, date_converter.calculate_column, source_df=source_data,
+        self.assertRaises(ValueError, date_converter.calculate_column, source_df=source_data,
                           result_df=result_data)
         self.assertTrue(date_converter.is_repairable(source_df=source_data))
         self.assertListEqual([2], date_converter.find_repairable_corruptions(source_df=source_data))
 
-        self.assertRaises(ParserError, time_converter.calculate_column, source_df=source_data, result_df=result_data)
+        self.assertRaises(ValueError, time_converter.calculate_column, source_df=source_data, result_df=result_data)
         self.assertTrue(time_converter.is_repairable(source_df=source_data))
         self.assertListEqual([2], time_converter.find_repairable_corruptions(source_df=source_data))
 

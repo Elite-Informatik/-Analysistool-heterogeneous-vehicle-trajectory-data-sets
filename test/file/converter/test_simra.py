@@ -55,18 +55,27 @@ class AbstractColumnCalculatorTest(TestCase, ABC):
         self.column = None
 
     def test_is_repairable(self):
+        # calculator is set for the subclasses.
+        if self.calculator is None:
+            return
         is_repairable = self.calculator.is_repairable(self.source_df_realistic)
         self.assertTrue(is_repairable)
         self.assertTrue(self.calculator.is_repairable(self.source_df_full))
 
     def test_find_repairable_corruptions(self):
+        if self.calculator is None:
+            return
         self.assertListEqual(self.calculator.find_repairable_corruptions(self.source_df_full), [])
         self.assertListEqual(self.calculator.find_repairable_corruptions(self.source_df_realistic), [])
 
     def test_find_fatal_corruptions(self):
+        if self.calculator is None:
+            return
         self.assertListEqual(self.calculator.find_fatal_corruptions(self.source_df_full), [])
 
     def test_repair_column(self):
+        if self.calculator is None:
+            return
         original_full_column_lat = self.source_df_full[SimraColumn.LATITUDE.value].copy()
         self.assertTrue(self.calculator.is_repairable(self.source_df_realistic))
         self.assertTrue(self.calculator.is_repairable(self.source_df_full))
@@ -74,6 +83,8 @@ class AbstractColumnCalculatorTest(TestCase, ABC):
                              original_full_column_lat.to_list())
 
     def test_calculate_column(self):
+        if self.calculator is None:
+            return
         self.test_repair_column()
         self.calculator.calculate_column(self.source_df_full, self.result_df)
         self.assertIsNotNone(self.result_df)
@@ -112,7 +123,7 @@ class SpeedCalculatorTest(TestCase):
     def setUp(self):
         super().setUp()
         self.calculator = SpeedCalculator()
-        self.column = Column.SPEED.value
+        self.column = Column.SPEED
 
     def test_speed(self):
         speed_test_df = pd.DataFrame(
