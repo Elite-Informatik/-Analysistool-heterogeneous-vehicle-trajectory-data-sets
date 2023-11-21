@@ -1,3 +1,4 @@
+from unittest.mock import Mock
 from uuid import UUID
 
 from pandas import DataFrame
@@ -107,9 +108,12 @@ class TestDatabase(AbstractTestDatabase):
         """
         Tests if the add_dataset method adds the dataset correctly.
         """
+        mock_meta_table = Mock(spec=self.dataset_meta_table)
+        mock_meta_table.get_errors.return_value = []
+        self.database.meta_table = mock_meta_table
         data_records: DataRecord = DataRecord(
             _name="test_dataset",
-            _column_names = ("test_column"),
+            _column_names = ("test_column",),
             _data=DataFrame(data={"test_column": [1, 2, 3]}))
         result = self.database.add_dataset(data_records)
         # this should in theory fail but there is no way to check weather the pandas to sql operation was

@@ -146,8 +146,7 @@ class Analysis(ABC):
         # Count the number of occurrences of each value
         value_counts = data_df[column].value_counts()
         # Transpose the Data, so it matches the expected data format of the histogram analysis
-        result_df = value_counts.to_frame().reset_index().rename(columns={'index': column,
-                                                                          column: 'Occurrence'})
+        result_df = value_counts.to_frame().reset_index().rename(columns={'index': column, 'count': 'Occurrence'})
         # Return the data
         return result_df
 

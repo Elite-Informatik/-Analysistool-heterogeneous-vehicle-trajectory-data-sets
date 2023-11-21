@@ -24,8 +24,9 @@ class DataProviderTest(AbstractTestDatabase):
         # Create a DataProvider instance with a mock connection and some dummy attributes
         self.dataset_facade_mock = Mock()
         self.dataset_facade_mock.get_active_datasets.return_value = [self.dataset_id]
-        self.data_provider = DataProvider(connection=self.mock_connection, dataset_facade=self.dataset_facade_mock,
-                                          meta_table=self.dataset_meta_table)
+        self.data_provider = DataProvider()
+        self.data_provider.setParameters(connection=self.mock_connection, dataset_facade=self.dataset_facade_mock,
+                                         meta_table=self.dataset_meta_table)
 
     def test_set_point_filter(self):
         """
@@ -66,8 +67,9 @@ class DataProviderTest(AbstractTestDatabase):
         """
         columns = [Column.LATITUDE, Column.LONGITUDE]
         result = self.data_provider.get_data(columns=columns)
-        expected_query: str = f"SELECT {columns[0].value}, {columns[1].value} FROM {self.mock_connection.data_table} " \
-                              f"WHERE {UUID_COLUMN_NAME} IN ({str(self.dataset_id)})"
+        expected_query: str = f"SELECT {columns[0].value}, {columns[1].value} FROM \"{self.mock_connection.data_table}\"" \
+                              f" AS t " \
+                              f"WHERE {UUID_COLUMN_NAME} IN ('{str(self.dataset_id)}')"
         if point_filter != "":
             expected_query += f" AND {point_filter}"
         self._check_result(result=result, expected_query=expected_query)
@@ -90,8 +92,8 @@ class DataProviderTest(AbstractTestDatabase):
         column: Column = Column.LATITUDE
         result = self.data_provider.get_distinct_data_from_column(column=column)
         # Assert that the correct query was called.
-        expected_query: str = f"SELECT DISTINCT {column.value} FROM {self.mock_connection.data_table} " \
-                              f"WHERE {UUID_COLUMN_NAME} IN ({str(self.dataset_id)})"
+        expected_query: str = f"SELECT DISTINCT {column.value} FROM \"{self.mock_connection.data_table}\" AS t " \
+                              f"WHERE {UUID_COLUMN_NAME} IN ('{str(self.dataset_id)}')"
         self._check_result(result=result, expected_query=expected_query)
 
     def _check_result(self, result: DataRecord, expected_query: str):
@@ -102,8 +104,7 @@ class DataProviderTest(AbstractTestDatabase):
         result_data = [tuple(series.to_list()) for (row, series) in result.data.iterrows()]
         self.assertIsNotNone(result_data)
 
-        # The id of the datasets is not returned as it is not strictly part of the metadata.
-        expected_data = [(name, size) for (name, _, size) in self.mock_cursor.fetchall()]
+        expected_data = self.mock_cursor.fetchall()
         self.assertListEqual(expected_data, result_data)
         self.assertIsInstance(result, DataRecord)
 
@@ -118,8 +119,10 @@ class DataProviderTest(AbstractTestDatabase):
         result = self.data_provider.get_data_of_column_selection(columns=columns, filter_elements=filter_elements,
                                                                  filter_column=filter_column, use_filter=True)
         # Assert that the correct query was called.
-        expected_query: str = f"SELECT {columns[0].value}, {columns[1].value} FROM {self.mock_connection.data_table} " \
-                              f"WHERE {UUID_COLUMN_NAME} IN ({str(self.dataset_id)}) AND " \
+        filter_elements: List[str] = ["'test_id1'", "'test_id2'"]
+        expected_query: str = f"SELECT {columns[0].value}, {columns[1].value} FROM " \
+                              f"\"{self.mock_connection.data_table}\" AS t " \
+                              f"WHERE {UUID_COLUMN_NAME} IN ('{str(self.dataset_id)}') AND " \
                               f"{filter_column.value} IN ({', '.join(filter_elements)})"
         if point_filter != "":
             expected_query += f" AND {point_filter}"
@@ -144,8 +147,8 @@ class DataProviderTest(AbstractTestDatabase):
         """
         result = self.data_provider.get_trajectory_ids()
         trajectory_column: str = Column.TRAJECTORY_ID.value
-        expected_query = f"SELECT DISTINCT {trajectory_column} FROM {self.mock_connection.data_table} " \
-                         f"WHERE {UUID_COLUMN_NAME} IN ({str(self.dataset_id)})"
+        expected_query = f"SELECT DISTINCT {trajectory_column} FROM \"{self.mock_connection.data_table}\" AS t " \
+                         f"WHERE {UUID_COLUMN_NAME} IN ('{str(self.dataset_id)}')"
         self._check_result(result=result, expected_query=expected_query)
 
     def test_get_trajectory_ids_with_point_filter(self):
@@ -157,8 +160,8 @@ class DataProviderTest(AbstractTestDatabase):
         self.data_provider.trajectory_filter_active = True
         result = self.data_provider.get_trajectory_ids()
         trajectory_column: str = Column.TRAJECTORY_ID.value
-        expected_query = f"SELECT DISTINCT {trajectory_column} FROM {self.mock_connection.data_table} " \
-                            f"WHERE {UUID_COLUMN_NAME} IN ({str(self.dataset_id)}) AND {trajectory_filter}"
+        expected_query = f"SELECT DISTINCT {trajectory_column} FROM \"{self.mock_connection.data_table}\" AS t " \
+                         f"WHERE {UUID_COLUMN_NAME} IN ('{str(self.dataset_id)}') AND {trajectory_filter}"
         self._check_result(result=result, expected_query=expected_query)
 
     def test_assert_error_when_connection_is_none(self):
@@ -172,20 +175,4 @@ class DataProviderTest(AbstractTestDatabase):
         self.assertListEqual(expected_errors, actual_errors)
         self.assertIsNone(data)
 
-    def test_uuid_column_not_present(self):
-        """
-        Tests if the correct errors are thrown when the uuid column is not contained in the data
-        the database returns.
-        """
-        columns: List[str] = ["name", "size"]
-        self.mock_cursor.description = [[column] for column in columns]
-        self.mock_cursor.fetchall.return_value = [("test_dataset", 10),
-                                                  ("test_dataset2", 10)]
-        try:
-            self.data_provider._get_data_from_query("query")
-            self.fail("Expected DatabaseException")
-        except DatabaseException as e:
-            self.assertIsInstance(e, DatabaseException)
-            self.assertEqual(ErrorMessage.DATABASE_DATASET_UUID_MISSING_ERROR
-                             .value.format(expected=UUID_COLUMN_NAME, got=columns), e.args[0])
 

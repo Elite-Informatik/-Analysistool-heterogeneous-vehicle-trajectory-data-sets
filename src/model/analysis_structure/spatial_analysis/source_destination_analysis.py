@@ -33,7 +33,7 @@ class SourceDestinationAnalysis(StartEndAnalysis):
         """
         ms_to_kmh = 3.6
         data_df = self._get_distance_time(data)
-        data_df = data_df.groupby(Column.TRAJECTORY_ID.value)['time', 'distance'].last()
+        data_df = data_df.groupby(Column.TRAJECTORY_ID.value)[['time', 'distance']].last()
         data_df.loc['mean'] = data_df.mean()
         data_df['average_speed'] = (data_df['distance'] / data_df['time']) * ms_to_kmh
         data_df['time'] = pd.to_datetime(data_df["time"], unit='s').dt.strftime("%H:%M:%S")

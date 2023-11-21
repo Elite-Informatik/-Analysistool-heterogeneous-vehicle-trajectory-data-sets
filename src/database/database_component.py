@@ -49,7 +49,7 @@ class DatabaseComponent(ErrorHandler):
         :return: the result of the query
         """
         try:
-            return pandas.read_sql_query(text(sql_query), connection)
+            return pandas.read_sql_query(sql_query, connection)
         except SQLAlchemyError as err:
             self.throw_error(ErrorMessage.DATABASE_QUERY_ERROR, str(err))
             return None

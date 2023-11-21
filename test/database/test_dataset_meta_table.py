@@ -4,7 +4,9 @@ from unittest.mock import Mock
 from pandas import DataFrame
 from uuid import uuid4, UUID
 
+from sqlalchemy import text, TextClause
 from sqlalchemy.exc import SQLAlchemyError
+from typing import List
 
 from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.exception.custom_exception import DatabaseConnectionError
@@ -26,7 +28,7 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         # Mock the query_sql method to return a dataframe with the table name
         self.dataset_meta_table.query_sql = Mock(return_value=DataFrame({"table_name": ["meta_table"]}))
         # Call the _exists method and assert that it returns True
-        self.assertTrue(self.dataset_meta_table._exists())
+        self.assertTrue(self.dataset_meta_table._exists(self.dataset_meta_table.name))
 
     def test_exits_false(self):
         """
@@ -35,15 +37,15 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         # Mock the query_sql method to return an empty dataframe
         self.dataset_meta_table.query_sql = Mock(return_value=DataFrame())
         # Call the _exists method and assert that it returns False
-        self.assertFalse(self.dataset_meta_table._exists())
+        self.assertFalse(self.dataset_meta_table._exists(self.dataset_meta_table.name))
 
         self.dataset_meta_table.query_sql = Mock(return_value=DataFrame({"table_name": ["other_table"]}))
-        self.assertFalse(self.dataset_meta_table._exists())
+        self.assertFalse(self.dataset_meta_table._exists(self.dataset_meta_table.name))
 
         self.dataset_meta_table.query_sql = Mock(return_value=DataFrame({"table_name": ["other_table", "another_table"],
                                                                          "table_schema": ["public", "public"],
                                                                          "table_type": ["BASE TABLE", "BASE TABLE"]}))
-        self.assertFalse(self.dataset_meta_table._exists())
+        self.assertFalse(self.dataset_meta_table._exists(self.dataset_meta_table.name))
 
     def test_exists_error(self):
         """
@@ -51,7 +53,7 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         """
         self.mock_connection.get_connection.side_effect = DatabaseConnectionError("error")
         # Call the _exists method and assert that it returns False
-        self.assertFalse(self.dataset_meta_table._exists())
+        self.assertFalse(self.dataset_meta_table._exists(self.dataset_meta_table.name))
 
     def test_exists_static_true(self):
         """
@@ -60,7 +62,7 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         # Mock the query_sql method to return a dataframe with the table name
         self.dataset_meta_table.query_sql = Mock(return_value=DataFrame({"table_name": ["meta_table"]}))
         # Call the _exists method and assert that it returns True
-        new_instance = DatasetMetaTable(self.mock_connection)
+        new_instance = DatasetMetaTable(self.mock_connection, False)
         self.assertTrue(new_instance._table_exists)
 
     def test_create_table_success(self):
@@ -89,7 +91,7 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         self.assertRaises(RuntimeError, self.dataset_meta_table.get_all_datasets)
         self.mock_cursor.description = [[META_TABLE_COLUMNS[1]]]
         ids = [uuid4() for _ in range(10)]
-        self.mock_cursor.fetchall.return_value = [(dataset_id,) for dataset_id in ids]
+        self.mock_cursor.fetchall.return_value = [(str(dataset_id),) for dataset_id in ids]
         result = self.dataset_meta_table.get_all_datasets()
         self.assertListEqual(ids, result)
 
@@ -102,6 +104,11 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         dataset_uuid: UUID = uuid4()
         dataset_size: int = 10
 
+        # database needs to return nothing, as during the creation process the table is queried to check if a dataset
+        # with the same uuid exists, which should return nothing.
+
+        self.mock_cursor.fetchall.return_value = []
+        self.mock_cursor.description = []
         self.dataset_meta_table.add_table(dataset_name=dataset_name, dataset_uuid=dataset_uuid,
                                           dataset_size=dataset_size)
 
@@ -127,7 +134,8 @@ class DatasetMetaTableTest(AbstractTestDatabase):
                                                                     column=META_TABLE_COLUMNS[1],
                                                                     uuid=dataset_uuid)
 
-        self.mock_sql_connection.execute.assert_called_with(expected_sql_query)
+        self._assert_called_with(expected_sql_query)
+
 
     def test_contains(self):
         """
@@ -144,9 +152,10 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         """
         new_size: int = 42
         adjusted: bool = self.dataset_meta_table.adjust_size(dataset_uuid=self.dataset_id, new_size=new_size)
-        expected_sql_query = f"UPDATE '{self.mock_connection.meta_table}' SET {META_TABLE_COLUMNS[META_TABLE_SIZE]} = " \
+        expected_sql_query = f"UPDATE \"{self.mock_connection.meta_table}\" SET {META_TABLE_COLUMNS[META_TABLE_SIZE]} = " \
                              f"{new_size} WHERE {META_TABLE_COLUMNS[META_TABLE_UUID]} = '{self.dataset_id}'"
-        self.mock_sql_connection.execute.assert_called_with(expected_sql_query)
+        self._assert_called_with(expected_sql_query)
+        # objects or check it differently.
         self.assertTrue(adjusted)
 
     def test_adjust_size_error(self):
@@ -185,12 +194,26 @@ class DatasetMetaTableTest(AbstractTestDatabase):
         self.mock_cursor.fetchall.return_value = [("test_dataset", self.dataset_id, 10)]
         adjusted: bool = self.dataset_meta_table.increase_size(dataset_uuid=self.dataset_id,
                                                                size_increase=increase_size)
-        expected_sql_query = f"UPDATE '{self.mock_connection.meta_table}' " \
+        expected_sql_query = f"UPDATE \"{self.mock_connection.meta_table}\" " \
                              f"SET {META_TABLE_COLUMNS[META_TABLE_SIZE]} = " \
                              f"{self.dataset_size + increase_size} " \
                              f"WHERE {META_TABLE_COLUMNS[META_TABLE_UUID]} = '{self.dataset_id}'"
-        self.mock_sql_connection.execute.assert_called_with(expected_sql_query)
+        self._assert_called_with(expected_sql_query)
         self.assertTrue(adjusted)
+
+    def _assert_called_with(self, expected_sql_query):
+        # get all the sql queries that were executed as text objects from the mock sql connection.
+        text_calls: List[str] = [call.args[0].text for call in self.mock_sql_connection.mock_calls if
+                                 len(call.args) == 1 and
+                                 isinstance(call.args[0], TextClause)]
+
+        # filter for those that start the same to make the error message more meaningful.
+        text_calls = [text_call for text_call in text_calls if text_call[0:6] == expected_sql_query[0:6]]
+
+        if len(text_calls) == 1:
+            self.assertEqual(expected_sql_query, text_calls[0])
+
+        self.assertTrue(expected_sql_query in text_calls)
 
     def test_get_size(self):
         """

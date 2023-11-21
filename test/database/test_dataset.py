@@ -25,7 +25,7 @@ class TestDataset(AbstractTestDatabase):
         super().setUp()
 
         self.dataset = Dataset(name="test_dataset", size=10, connection=self.mock_connection,
-                               meta_table=self.dataset_meta_table, uuid=self.dataset_id)
+                               meta_table=self.dataset_meta_table, uuid=self.dataset_id, new_dataset=False)
         # Create a Dataset instance with a mock connection and some dummy attributes
 
     def test_to_dataset_record(self):
@@ -53,7 +53,7 @@ class TestDataset(AbstractTestDatabase):
         result = self.dataset.add_data(data_record)
         # Assert that the result is True and that the to_sql method was called with the expected arguments
         self.assertTrue(result)
-        mock_dataframe.to_sql.assert_called_with(name=self.dataset._name, con="connection", if_exists="append",
+        mock_dataframe.to_sql.assert_called_with(name=self.mock_connection.data_table, con="connection", if_exists="append",
                                                  index=False)
 
     def test_add_data_failure(self):

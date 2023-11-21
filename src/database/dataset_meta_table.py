@@ -23,7 +23,13 @@ class DatasetMetaTable(DatabaseComponent):
     """
     _table_exists: bool = False
 
-    def __init__(self, connection: DatabaseConnection):
+    def __init__(self, connection: DatabaseConnection, check_validity: bool = True):
+        """
+        Creates a new DatasetMetaTable object.
+        :param connection: The connection to the database.
+        :param check_validity: If true, the validity of the meta_table will be checked. That means it will be checked
+        if the table is synchronized with the data table.
+        """
         super().__init__(database_connection=connection)
         self.name = connection.meta_table
         if not DatasetMetaTable._table_exists and not self._exists(self.name):
@@ -31,7 +37,8 @@ class DatasetMetaTable(DatabaseComponent):
             DatasetMetaTable._table_exists = table_created
         else:
             DatasetMetaTable._table_exists = True
-        self.check_meta_table_is_valid()
+        if check_validity:
+            self.check_meta_table_is_valid()
 
     def _exists(self, table_name: str) -> bool:
         """
