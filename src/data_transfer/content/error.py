@@ -41,6 +41,7 @@ class ErrorMessage(Enum):
     DATASET_UUID_COLLISION = "There was an attempt to add a dataset with an already existing uuid to the database."
     META_TABLE_NOT_SYNCED = "The meta table is not synced with the database."
     META_TABLE_DUPLICATE_UUIDS = "The meta table contains duplicate uuids."
+    DATA_LOAD_ERROR = "An error occurred while loading the data from the database."
 
     # file:
     ANALYSIS_PATH_NOT_EXISTING = "The standard analysis path does not exist"

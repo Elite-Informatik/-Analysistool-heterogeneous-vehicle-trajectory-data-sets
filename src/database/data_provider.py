@@ -157,7 +157,10 @@ class DataProvider(DatabaseComponent, DataFacade):
 
         data = self._get_data_from_query(query)
         if data is None:
-            return None
+            self.throw_error(ErrorMessage.DATASET_LOAD_ERROR)
+            return DataRecord(_name=self.database_connection.data_table,
+                              _data=DataFrame(columns=[column for column in Column]),
+                              _column_names=())
 
         return DataRecord(_data=data, _column_names=data.columns, _name=self.database_connection.data_table)
 

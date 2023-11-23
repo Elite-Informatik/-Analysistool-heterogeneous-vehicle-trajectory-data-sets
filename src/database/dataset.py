@@ -25,16 +25,16 @@ class Dataset(DatabaseComponent):
     """
 
     def __init__(self, name: str, size: int, connection: DatabaseConnection, meta_table: DatasetMetaTable,
-                 uuid: UUID = uuid4(), new_dataset: bool = True):
+                 uuid: Optional[UUID] = None, new_dataset: bool = True):
         super().__init__(database_connection=connection)
         self._name: str = name
         self._size: int = size
-        self._uuid: UUID = uuid
+        self._uuid: UUID = uuid4() if uuid is None else uuid
         self.data_table_name: str = connection.data_table
         self.meta_table = meta_table
         self.add_error_handler(self.meta_table)
         if new_dataset:
-            meta_table.add_table(dataset_name=name, dataset_uuid=uuid, dataset_size=size)
+            meta_table.add_table(dataset_name=name, dataset_uuid=self._uuid, dataset_size=size)
 
     def to_dataset_record(self) -> DatasetRecord:
         """

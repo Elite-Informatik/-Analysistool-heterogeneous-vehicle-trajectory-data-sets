@@ -92,7 +92,7 @@ class DatasetMetaTable(DatabaseComponent):
         if dataset_size == -1:
             raise ValueError(ErrorMessage.DATASET_ILLEGAL_DATASET_ADD.value)
         if self.contains(dataset_uuid=dataset_uuid):
-            raise ValueError(ErrorMessage.DATASET_UUID_COLLISION.value)
+            raise ValueError(ErrorMessage.DATASET_UUID_COLLISION.value + " uuid: " + str(dataset_uuid))
         connection: Connection = self._assert_table_exists_get_connection()
         if connection is None:
             self.throw_error(ErrorMessage.DATASET_ADD_META_ERROR, "uuid: " + str(dataset_uuid))
@@ -223,7 +223,6 @@ class DatasetMetaTable(DatabaseComponent):
 
         return self.query_sql(sql_query=query, connection=connection)
 
-
     def get_meta_data_as_record(self, dataset_uuid: UUID) -> Optional[DatasetRecord]:
         """
         Gets the metadata of a dataset as a DatasetRecord. Returns None if the connection to the database failed or if
@@ -334,4 +333,3 @@ class DatasetMetaTable(DatabaseComponent):
             self.throw_error(ErrorMessage.META_TABLE_NOT_SYNCED,
                              "meta_ids: " + str(meta_ids) + " table_ids: " + str(table_ids))
             return
-

@@ -1,5 +1,7 @@
 from typing import List
 
+import pandas as pd
+
 from src.data_transfer.content.column import Column
 from src.data_transfer.record import DataRecord
 from src.file.converter.data_converter import DataConverter
@@ -19,6 +21,8 @@ class InternConverter(DataConverter):
                 data.data[column.value] = DEF_VAL
 
         data.data[Column.ORDER.value] = data.data.reset_index()["index"]
+        # set the time column to type TIME.
+        #data.data[Column.TIME.value] = pd.to_datetime(data.data[Column.TIME.value], format="%H:%M:%S")
         return data
 
     def get_data_format(self) -> str:

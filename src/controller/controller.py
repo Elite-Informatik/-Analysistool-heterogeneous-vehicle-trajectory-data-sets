@@ -1,5 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
+from typing import Optional
 
 from src.controller.execution_handling.analysis_manager import AnalysisManager
 from src.controller.execution_handling.database_manager import DatabaseManager
@@ -71,7 +72,7 @@ class Controller(IController):
         self._abstract_managers = list()
         self._execution_component_consumer = list()
 
-        self._database = None
+        self._database: Optional[IDatabase] = None
         self._view = None
         self._model = None
         self._file_adapter = None

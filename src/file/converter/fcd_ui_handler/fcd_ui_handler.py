@@ -420,6 +420,8 @@ class AccelerationCalculator(AbstractColumnCalculator):
                                  / pd.Timedelta(seconds=1)))
         result_df[Column.ACCELERATION.value] = temp_df['time_diff'].replace({np.inf: 0})
         result_df[Column.ACCELERATION.value] = result_df[Column.ACCELERATION.value].bfill()
+        result_df[Column.ACCELERATION.value] = result_df[Column.ACCELERATION.value].ffill()
+        result_df[Column.ACCELERATION.value] = result_df[Column.ACCELERATION.value].replace({np.nan: 0})
         return True
 
     def repair_column(self, source_df: DataFrame) -> bool:

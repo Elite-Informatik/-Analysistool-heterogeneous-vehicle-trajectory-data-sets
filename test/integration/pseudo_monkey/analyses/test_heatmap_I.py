@@ -21,7 +21,6 @@ class HeatMapTest(FcdUIAnalysisControllerTest):
         super().setUp()
         self.init_analysis(self.name)
 
-    @skip
     def test_set_heatmap(self):
         """
         Tests that the heatmap analysis can be set with all combinations of x, y and color axis.
@@ -43,6 +42,3 @@ class HeatMapTest(FcdUIAnalysisControllerTest):
                         self.assertNotEqual(data_record.data.data.shape[0], 0, "x axis is empty for " + x_axis.name)
                         self.assertNotEqual(data_record.data.data.shape[1], 0, "y axis is empty for " + y_axis.name)
 
-
-if __name__ == '__main__':
-    unittest.main()

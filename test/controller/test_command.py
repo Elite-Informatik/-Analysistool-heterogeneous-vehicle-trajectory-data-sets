@@ -1,4 +1,5 @@
 import os
+from time import sleep
 from typing import List
 from unittest import TestCase
 from uuid import UUID
@@ -12,6 +13,7 @@ from src.controller.execution_handling import database_manager
 from src.controller.output_handling.abstract_event import *
 from src.controller.output_handling.event import *
 from src.data_transfer.content import Column
+from src.data_transfer.content.data_types import DataTypes
 from src.data_transfer.content.error import ErrorMessage
 from src.data_transfer.content.logical_operator import LogicalOperator
 from src.data_transfer.content.settings_enum import SettingsEnum
@@ -40,7 +42,13 @@ class BaseControllerTest(TestCase, UserInputRequestFacade, IEventHandlerNotify, 
     def setUp(self) -> None:
         current_dir = os.getcwd()
         print(current_dir)
-        os.chdir(os.path.join(os.path.dirname(current_dir), 'src'))
+        path, end = os.path.split(current_dir)
+        while end != 'Analysetool':
+            path, end = os.path.split(path)
+            print(path, end)
+        path = os.path.join(path, end)
+        path = os.path.join(path, 'Analysetool')
+        os.chdir(os.path.join(os.path.dirname(path), 'src'))
 
         self.started = False
         self.stopped = False
@@ -182,20 +190,22 @@ class StartedStoppedControllerTest(BaseControllerTest):
         self.events = []
         self.event_types = []
         for dataset in self.open_datasets:
-            self.delete_dataset(dataset)
-
+            self.delete_dataset(dataset, remove_from_list=False)
+        self.open_datasets = []
         self.assert_no_user_inputs()
         self.controller.application_command_facade.stop()
         super().tearDown()
 
-    def delete_dataset(self, dataset_id: UUID):
+    def delete_dataset(self, dataset_id: UUID, remove_from_list: bool = True):
         """
         Deletes a dataset and checks if the dataset was deleted correctly.
         @param dataset_id: the id of the dataset that should be deleted
+        @param remove_from_list: if the dataset should be removed from the list of open datasets
         @return:
         """
         self.controller.communication_facade.delete_dataset(dataset_id)
-        self.open_datasets.remove(dataset_id)
+        if remove_from_list:
+            self.open_datasets.remove(dataset_id)
         self.check_event_types([DatasetDeleted])
         self.get_first_event()
         self.check_messages(["Deletion successful"])
@@ -210,11 +220,13 @@ class StartedStoppedControllerTest(BaseControllerTest):
         :param name: the name of the dataset that it will be imported as
         :return: None
         """
+        sleep(0.1)
         self.current_dir = os.getcwd()
         os.chdir(os.path.join(os.path.dirname(self.current_dir), 'test'))
 
         self.expect_user_input(self.duplicate_dataset_setting)
         self.controller.communication_facade.import_dataset(paths, name, dataset_type)
+        self.check_errors([])
         self.remove_if_user_input_not_requested(self.duplicate_dataset_setting)
 
         self.check_event_types([DatasetAdded])
@@ -261,7 +273,7 @@ class StartedStoppedControllerTest(BaseControllerTest):
         :return: None
         """
         self.assertEqual(3, len(path), "The path to the HighD dataset must contain 3 files (data, meta, config)")
-        self.open_dataset(path, "HighD")
+        self.open_dataset(path, DataTypes.HIGH_D.value)
 
 
 class TestControllerStartStopCommands(BaseControllerTest):
@@ -275,8 +287,8 @@ class TestControllerStartStopCommands(BaseControllerTest):
             self.number_of_analysises = len(
                 os.listdir(os.path.join(os.getcwd(), "model/analysis_structure/concrete_analysis"))) - 1
 
-            dict = pandas.read_json(os.path.join(os.getcwd(), "dictionary/datasets.json"), orient='records')
-            self.number_of_datasets = len(dict.columns)
+            datasets = self.controller._database.dataset_facade.get_all_dataset_ids()
+            self.number_of_datasets = len(datasets)
 
             events = [DatasetAdded] * self.number_of_datasets
             events2 = [AnalysisImported] * self.number_of_analysises
@@ -1165,15 +1177,25 @@ class TestDeleteDataset(StartedStoppedControllerTest):
         self.assertEqual(len(self.messages), 1)
         self.messages.pop()
         self.controller.data_request_facade.get_dataset_meta(uuid)
+        self.delete_dataset(uuid)
+
+        self._check_dataset_not_existing(uuid)
+
+    def delete_dataset(self, uuid: UUID):
         self.controller.communication_facade.delete_dataset(uuid)
         self.check_event_types([DatasetDeleted])
-        try:
-            self.controller.data_request_facade.get_dataset_meta(uuid)
-        except Exception:
-            pass
-        else:
-            self.fail()
-        self.messages.pop()
+        self.assertIsNotNone(self.get_first_event().id)
+        self.assertIsNotNone(self.messages.pop())
+
+        self._check_dataset_not_existing(uuid)
+
+    def _check_dataset_not_existing(self, uuid: UUID):
+        self.controller.data_request_facade.get_dataset_meta(uuid)
+        if len(self.errors) == 1 and self.errors[0].startswith(ErrorMessage.DATASET_NOT_EXISTING.value):
+            self.errors.pop()
+            return
+
+        self.fail("Only dataset not deleted error expected, instead got: " + str(self.errors))
 
     def test_delete_database_deleted_dataset(self):
         self.current_dir = os.getcwd()
@@ -1191,17 +1213,10 @@ class TestDeleteDataset(StartedStoppedControllerTest):
         self.assertEqual(len(self.messages), 1)
         self.messages.pop()
 
-        self.controller.communication_facade.delete_dataset(uuid)
-        self.check_event_types([DatasetDeleted])
-        self.assertIsNotNone(self.get_first_event().id)
-        self.assertIsNotNone(self.messages.pop())
+        self.delete_dataset(uuid)
 
-        try:
-            self.controller.data_request_facade.get_dataset_meta(uuid)
-        except Exception:
-            pass
-        else:
-            self.fail()
+        self._check_dataset_not_existing(uuid=uuid)
+
 
 
 class TestOpenDataset(StartedStoppedControllerTest):

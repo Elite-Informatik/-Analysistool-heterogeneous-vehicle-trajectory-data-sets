@@ -20,5 +20,4 @@ class OpenFCDUIDatasetControllerTest(StartedStoppedControllerTest):
         os.chdir(os.path.join(os.path.dirname(self.current_dir), 'test'))
         self.open_dataset_fcd_ui("file/data_for_tests/part_trimmed.csv")
 
-    def test(self):
-        pass
+

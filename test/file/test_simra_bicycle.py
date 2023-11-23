@@ -20,10 +20,9 @@ class SimraImportTest(StartedStoppedControllerTest):
         print(current_dir)
         # get the path to the test data folder
         test_data_dir = os.path.join(current_dir, 'data_for_tests')
-        # get the path to the test doc file
-        test_doc_file = os.path.join(test_data_dir, 'VM2_-32876717')
+        test_simra_dir = os.path.join(test_data_dir, 'SimraDaten')
 
-        self.open_dataset_simra_bicycle(test_doc_file)
+        self.open_dataset_simra_bicycle(test_simra_dir)
         data: DataRecord = self.controller.data_request_facade.get_rawdata(Column.list())
         self.assertGreater(len(data.data), 0)
         print("Imported data:", data.data)

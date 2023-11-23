@@ -6,6 +6,7 @@ from src.controller.facade_consumer.analysis_facade_consumer import AnalysisFaca
 from src.controller.facade_consumer.dataset_facade_consumer import DatasetFacadeConsumer
 from src.controller.facade_consumer.execution_component_consumer import ExecutionComponentConsumer
 from src.controller.facade_consumer.file_facade_consumer import FileFacadeConsumer
+from src.data_transfer.content.error import ErrorMessage
 
 from src.data_transfer.content.logger import ThreadLogger
 from src.data_transfer.exception.custom_exception import StandardPathNotExisting
@@ -79,7 +80,8 @@ class ApplicationManager(ApplicationFacade, ExecutionComponentConsumer, FileFaca
         Sets the sql connection on start based on the standard path
         """
         if not self._dataset_manager.set_sql_connection(STANDARD_SQL_CONNECTION):
-            raise StandardPathNotExisting("The standard path for the sql connection is not existing")
+            raise ValueError(ErrorMessage.DATABASE_CONNECTION_ERROR.value +
+                             "while setting the sql connection parameters")
 
     def load_datasets(self):
         """

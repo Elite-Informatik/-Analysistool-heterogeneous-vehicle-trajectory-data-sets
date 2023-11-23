@@ -106,7 +106,7 @@ class SimraConverter(DataConverter):
             for column in [column.value for column in Column if column.value not in destination_df.columns]:
                 destination_df[column] = None
 
-            result_df = result_df.append(destination_df)
+            result_df = pd.concat([result_df, destination_df], ignore_index=True, sort=False)
 
         return DataRecord("new fcd ui dataset", (), result_df)
 

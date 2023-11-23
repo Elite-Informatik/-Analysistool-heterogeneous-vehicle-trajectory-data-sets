@@ -24,7 +24,8 @@ class TestDocImporter(TestCase):
         # get the path to the test data folder
         test_data_dir = os.path.join(parent_dir, 'data_for_tests')
         # get the path to the test doc file
-        test_doc_file = os.path.join(test_data_dir, 'VM2_-32876717')
+        test_doc_dir = os.path.join(test_data_dir, 'SimraDaten')
+        test_doc_file = os.path.join(test_doc_dir, 'VM2_-32876717')
         test_empty_doc_file = os.path.join(test_data_dir, 'VM2_1947534984#31')
         # import the data
         imported_data = doc_importer.import_data(test_doc_file)

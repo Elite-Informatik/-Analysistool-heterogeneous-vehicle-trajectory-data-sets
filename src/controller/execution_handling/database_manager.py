@@ -394,10 +394,9 @@ class DatabaseManager(AbstractManager, DatasetFacadeConsumer, DataFacadeConsumer
     @type_check(UUID)
     def get_rawdata_trajectory(self, trajectory_id: UUID) -> Optional[DataRecord]:
 
-        rawdata_trajectory = self._data_facade.get_data_of_column_selection(Column.list(), [trajectory_id],
-                                                                            Column.TRAJECTORY_ID)
-        if rawdata_trajectory is None:
-            raise InvalidUUID("Trajectory with id " + str(trajectory_id) + " does not exist!")
+        rawdata_trajectory = self._data_facade.get_data_of_column_selection(columns=Column.list(),
+                                                                            filter_elements=[trajectory_id],
+                                                                            filter_column=Column.TRAJECTORY_ID)
 
         return rawdata_trajectory
 

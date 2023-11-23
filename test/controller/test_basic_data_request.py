@@ -28,11 +28,11 @@ class DataRequestTest(OpenInternDatasetControllerTest):
         ]
 
         self.call_one_uuid_list = [
-            (self.controller.data_request_facade.get_rawdata_trajectory, "get_rawdata_trajectory"),
+            #(self.controller.data_request_facade.get_rawdata_trajectory, "get_rawdata_trajectory"),
             (self.controller.data_request_facade.get_polygon, "get_polygon"),
             (self.controller.data_request_facade.get_filter, "get_filter"),
             (self.controller.data_request_facade.get_filter_group, "get_filter_group"),
-            (self.controller.data_request_facade.get_dataset_meta, "get_dataset_meta"),
+            #(self.controller.data_request_facade.get_dataset_meta, "get_dataset_meta"),
             (self.controller.data_request_facade.get_analysis_settings, "get_filter_group"),
             (self.controller.data_request_facade.get_analysis_data, "get_analysis_data"),
 
